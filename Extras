@@ -1,0 +1,70 @@
+1. Cadastro de Novo Usuário:
+Método: POST
+
+URL: http://localhost:3000/api/cadastro
+
+Body (JSON):
+{
+  "nome": "Nome Do Novo Usuario",
+  "email": "email.novo@exemplo.com", 
+  "senha": "senhaParaEle",
+  "tipo": "ALUNO" 
+}
+
+(O que mudar: nome, email (tem que ser único!), senha, tipo (ALUNO, PROFESSOR ou RESPONSAVEL).)
+
+2. Login de Usuário
+
+Método: POST
+
+URL: http://localhost:3000/api/login
+
+Body (JSON):
+{
+  "email": "email.do.usuario@exemplo.com",
+  "senha": "senhaDoUsuario"
+}
+
+(O que mudar: email e senha para os dados do usuário que você quer logar.)
+
+3. Adicionar/Remover Pontos
+
+Método: POST
+
+URL: http://localhost:3000/usuarios/ID_DO_USUARIO/pontuacao
+
+O que mudar: Substitua ID_DO_USUARIO pelo ID numérico do aluno (ex: 1 para Ana).
+
+Body (JSON):
+{
+  "pontos": 50 
+}
+
+(O que mudar: O valor de pontos. Use um número positivo para adicionar e um número negativo (ex: -10) para remover pontos.)
+
+4. Registrar Falta (e Penalidade)
+
+Método: POST
+
+URL: http://localhost:3000/registrar-falta
+
+Body (JSON):
+{
+  "alunoId": 2,            
+  "dataFalta": "YYYY-MM-DD", 
+  "professorId": 13,         
+  "pontosDeduzidos": 10,     
+  "motivo": "Falta na aula de Exemplo" 
+}
+
+(O que mudar:
+
+- alunoId: ID do aluno que faltou.
+
+- dataFalta: Data da falta no formato ano-mês-dia.
+
+- professorId: ID do professor que registrou (pode ser o ID do seu "Professor Teste").
+
+- pontosDeduzidos: Quantos pontos serão removidos.
+
+- motivo: Descrição da falta/penalidade.)
