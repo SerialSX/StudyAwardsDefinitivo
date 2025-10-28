@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Professor - StudyAwards</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div>
+                <h2>Painel do Professor</h2>
+                <p>Gerencie atividades e presenças</p>
+            </div>
+            <button class="btn btn-primary">
+                + Nova Atividade
+            </button>
+        </header>
+
+        <section class="status-grid">
+            <div class="status-card">
+                <div class="card-header">
+                    <p>Total de Alunos</p>
+                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/users-group-icon.svg" alt="Ícone de Alunos">
+                </div>
+                <div class="card-body">
+                    <span id="total-alunos" class="main-value">...</span>
+                    <span class="sub-value">Alunos cadastrados</span>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="card-header">
+                    <p>Presentes Hoje</p>
+                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/user-check-icon.svg" alt="Ícone de Presentes">
+                </div>
+                <div class="card-body">
+                    <span id="presentes-hoje" class="main-value">...</span>
+                    <span id="percentual-presenca" class="sub-value">...</span>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="card-header">
+                    <p>Atividades</p>
+                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/book-icon.svg" alt="Ícone de Atividades">
+                </div>
+                <div class="card-body">
+                    <span id="atividades-ativas" class="main-value">...</span>
+                    <span class="sub-value">Atividades ativas</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="teacher-dashboard-grid">
+            <div class="grid-card presence-control-card">
+                <div class="card-header">
+                    <h3>Controle de Presença</h3>
+                    <div class="date-selector">
+                        <span>14/10/2025</span>
+                        <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/calendar-icon.svg" alt="Calendário">
+                    </div>
+                </div>
+                <ul id="lista-presenca" class="presence-control-list">
+                </ul>
+            </div>
+
+            <div class="grid-card">
+                <h3>Relatório de Desempenho</h3>
+                <ol id="lista-desempenho" class="performance-list">
+                </ol>
+            </div>
+        </section>
+
+        <div class="toast-notification">
+            <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Sucesso">
+            Login realizado com sucesso!
+        </div>
+    </div>
+
+    <script src="../scripts/dashboard-professor.js" defer></script>
+</body>
+</html>

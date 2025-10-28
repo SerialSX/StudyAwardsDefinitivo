@@ -1,0 +1,12 @@
+{
+    "totalAlunos": 5,
+    "presentesHoje": 4,
+    "atividadesAtivas": 12,
+    "alunos": [
+        { "nome": "João Silva", "pontuacao": 1250, "presente": true },
+        { "nome": "Maria Santos", "pontuacao": 1450, "presente": true },
+        { "nome": "Pedro Oliveira", "pontuacao": 850, "presente": false },
+        { "nome": "Ana Costa", "pontuacao": 1320, "presente": true },
+        { "nome": "Lucas Ferreira", "pontuacao": 1100, "presente": true }
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "nomeAluno": "João Silva",
+    "serieAluno": "9º Ano A",
+    "ranking": 3,
+    "pontuacaoTotal": 1250,
+    "taxaPresenca": 92,
+    "progressoMeta": 83,
+    "metaPontos": 1500,
+    "evolucaoDesempenho": [
+        { "mes": "Set", "pontos": 980 },
+        { "mes": "Out", "pontos": 1120 },
+        { "mes": "Nov", "pontos": 1080 },
+        { "mes": "Dez", "pontos": 1250 }
+    ],
+    "atividadesRecentes": [
+        { "nome": "Prova de Matemática", "data": "08/01/2025", "status": "+100 pts" },
+        { "nome": "Trabalho de História", "data": "07/01/2025", "status": "+80 pts" },
+        { "nome": "Exercícios de Física", "data": "05/01/2025", "status": "Pendente" }
+    ]
+}

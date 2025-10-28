@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Responsável - StudyAwards</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div>
+                <h2>Painel do Responsável</h2>
+                <p>Acompanhe o desempenho do seu aluno</p>
+            </div>
+        </header>
+
+        <section class="student-id-card">
+            <div class="student-info">
+                <div class="student-avatar">
+                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/user-profile-icon.svg" alt="Avatar do Aluno">
+                </div>
+                <div>
+                    <h3 id="nome-aluno">...</h3>
+                    <p id="serie-aluno">...</p>
+                </div>
+            </div>
+            <div id="ranking-badge" class="rank-badge">
+                ...
+            </div>
+        </section>
+
+        <section class="status-grid">
+            <div class="status-card">
+                <div class="card-header"><p>Pontuação Total</p></div>
+                <div class="card-body">
+                    <span id="pontuacao-total" class="main-value">...</span>
+                    <span class="sub-value">Pontos acumulados</span>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="card-header"><p>Taxa de Presença</p></div>
+                <div class="card-body">
+                    <span id="taxa-presenca" class="main-value">...</span>
+                    <span class="sub-value">Frequência nas aulas</span>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="card-header"><p>Meta Mensal</p></div>
+                <div class="card-body">
+                    <span id="progresso-meta" class="main-value">...</span>
+                    <span class="sub-value">Progresso da meta</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="guardian-dashboard-grid">
+            <div class="grid-card">
+                <h3>Evolução do Desempenho</h3>
+                <div id="performance-chart" class="performance-chart">
+                </div>
+                <p class="chart-summary">Evolução positiva de +270 pontos nos últimos 4 meses</p>
+            </div>
+
+            <div class="grid-card">
+                <h3>Atividades Recentes</h3>
+                <ul id="recent-activities-list" class="recent-activities-list">
+                </ul>
+            </div>
+        </section>
+
+        <section class="grid-card">
+            <h3>Progresso da Meta Mensal</h3>
+            <div class="progress-info">
+                <span id="meta-texto">...</span>
+                <span id="meta-progresso-texto">...</span>
+            </div>
+            <div class="progress-bar-container">
+                <div id="meta-progress-bar" class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <div class="incentive-message">
+                <p id="meta-incentivo">...</p>
+            </div>
+        </section>
+        
+        <div class="toast-notification">
+            <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Sucesso">
+            Login realizado com sucesso!
+        </div>
+    </div>
+
+    <script src="../scripts/dashboard-responsavel.js" defer></script>
+</body>
+</html>

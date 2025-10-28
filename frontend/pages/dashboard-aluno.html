@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard do Aluno - StudyAwards</title>
+    <link rel="stylesheet" href="../styles/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div>
+                <h2 id="saudacao-aluno">Olá, ...</h2>
+                <p>Acompanhe seu progresso e conquistas</p>
+            </div>
+            <button class="btn btn-outline">
+                <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/award-icon.svg" alt="Ícone de Conquistas">
+                Minhas Conquistas
+            </button>
+        </header>
+
+        <section class="status-grid">
+            <div class="status-card">
+                <div class="card-header">
+                    <p>Pontuação Total</p>
+                </div>
+                <div class="card-body">
+                    <span id="pontuacao-valor" class="main-value">...</span>
+                    <span class="sub-value">Pontos acumulados</span>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="card-header">
+                    <p>Ranking</p>
+                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/star-icon.svg" alt="Ícone de Estrela">
+                </div>
+                <div class="card-body">
+                    <span id="ranking-valor" class="main-value">...</span>
+                    <span id="ranking-total" class="sub-value">...</span>
+                </div>
+            </div>
+            <div class="status-card">
+                <div class="card-header">
+                    <p>Presença</p>
+                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Ícone de Presença">
+                </div>
+                <div class="card-body">
+                    <span id="presenca-valor" class="main-value">...</span>
+                    <span class="sub-value">Taxa de presença</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <div class="grid-card">
+                <h3>Meta Mensal</h3>
+                <div class="progress-info">
+                    <span>Progresso</span>
+                    <span>1250 / 1500 pontos</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 83%;"></div>
+                </div>
+                <p class="meta-description">Você está a 250 pontos de atingir sua meta!</p>
+            </div>
+
+            <div class="grid-card">
+                <h3>Histórico de Presença</h3>
+                <ul class="presence-list">
+                    <li><span>09 de Jan.</span><img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
+                    <li><span>08 de Jan.</span><img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
+                    <li><span>07 de Jan.</span><img src="https://raw.githubusercontent.com/7ody1/img/main/icons/cancel-icon.svg" alt="Ausente"></li>
+                    <li><span>06 de Jan.</span><img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
+                    <li><span>05 de Jan.</span><img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
+                    <li><span>04 de Jan.</span><img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="grid-card">
+            <h3>Atividades Disponíveis</h3>
+            <div class="activities-grid">
+                <div class="activity-card">
+                    <div>
+                        <h4>Prova de Matemática</h4>
+                        <p>Matemática</p>
+                    </div>
+                    <div class="activity-points">100 pts</div>
+                    <button class="btn btn-primary btn-small">Iniciar Atividade</button>
+                </div>
+                <div class="activity-card">
+                    <div>
+                        <h4>Trabalho de História</h4>
+                        <p>História</p>
+                    </div>
+                    <div class="activity-points">80 pts</div>
+                    <button class="btn btn-primary btn-small">Iniciar Atividade</button>
+                </div>
+                <div class="activity-card concluded">
+                    <div>
+                        <h4>Exercícios de Física</h4>
+                        <p>Física</p>
+                    </div>
+                    <div class="activity-status">Concluída ✓</div>
+                </div>
+                <div class="activity-card">
+                    <div>
+                        <h4>Redação - Literatura</h4>
+                        <p>Português</p>
+                    </div>
+                    <div class="activity-points">90 pts</div>
+                    <button class="btn btn-primary btn-small">Iniciar Atividade</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="../scripts/dashboard-aluno.js" defer></script>
+</body>
+</html>
