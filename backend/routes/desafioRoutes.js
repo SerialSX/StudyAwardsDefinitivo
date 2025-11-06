@@ -14,5 +14,6 @@ router.get('/api/desafios', authMiddleware, desafioController.getDesafiosAluno);
 // 3. Rota de criar (protegida por login E por tipo "Professor")
 // Roda 'authMiddleware' (checa crachá) -> Roda 'isProfessor' (checa se é professor) -> Roda o controller
 router.post('/api/desafios', authMiddleware, isProfessor, desafioController.criarDesafio);
+router.post('/api/desafios/completar/:id', authMiddleware, desafioController.completarDesafio);
 
 module.exports = router;

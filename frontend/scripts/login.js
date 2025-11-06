@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     
                     localStorage.setItem('usuarioLogado', JSON.stringify(data.usuario));
+                    localStorage.setItem('token', data.token);
 
                     let destination = '';
                     if (data.usuario.tipo === 'ALUNO') {

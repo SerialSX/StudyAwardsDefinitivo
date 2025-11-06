@@ -17,14 +17,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function carregarDadosAluno() {
+        const token = localStorage.getItem('token');
         try {
             const urlPontuacao = `http://localhost:3000/usuarios/${usuarioLogado.id}/pontuacao`;
             const urlRanking = `http://localhost:3000/ranking`;
             const urlDesafios = `http://localhost:3000/api/desafios?alunoId=${usuarioLogado.id}`;
             const [respostaPontuacao, respostaRanking, respostaDesafios] = await Promise.all([
-                fetch(urlPontuacao),
-                fetch(urlRanking),
-                fetch(urlDesafios)
+                fetch(urlPontuacao, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(urlRanking,   { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(urlDesafios,  { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
 
             if (!respostaPontuacao.ok || !respostaRanking.ok || !respostaDesafios.ok) {
