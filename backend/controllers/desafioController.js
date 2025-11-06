@@ -1,8 +1,5 @@
-// backend/controllers/desafioController.js
-
 const { db } = require('../config/database.js');
 
-// Lógica para GET /api/desafios
 exports.getDesafiosAluno = (req, res, next) => {
   const alunoId = req.query.alunoId;
 
@@ -31,12 +28,9 @@ exports.getDesafiosAluno = (req, res, next) => {
   });
 };
 
-// Lógica para POST /api/desafios (Criar Desafio)
 exports.criarDesafio = (req, res, next) => {
-  // Pega os dados do corpo da requisição
   const { titulo, descricao, pontos, prazo_final } = req.body;
 
-  // Pega o ID do professor logado (que o nosso middleware 'authMiddleware' colocou no 'req')
   const professorId = req.usuario.id; 
 
   if (!titulo || !pontos) {
@@ -49,7 +43,7 @@ exports.criarDesafio = (req, res, next) => {
   `;
 
   db.run(sql, [titulo, descricao, pontos, prazo_final, professorId], function(err) {
-    if (err) { return next(err); } // Passa o erro para o errorHandler
+    if (err) { return next(err); }
 
     res.status(201).json({
       id: this.lastID,
@@ -60,14 +54,9 @@ exports.criarDesafio = (req, res, next) => {
   });
 };
 
-// Lógica para POST /api/desafios/completar/:id (Concluir Desafio)
-// :id aqui será o 'aluno_desafio_id'
 exports.completarDesafio = (req, res, next) => {
   const alunoDesafioId = req.params.id;
-  const alunoId = req.usuario.id; // Pega o ID do aluno logado (do token)
-
-  // 1. Primeiro, buscar o desafio para saber quantos pontos ele vale
-  //    e garantir que pertence ao aluno logado e está pendente
+  const alunoId = req.usuario.id;
   const sqlGetDesafio = `
     SELECT 
       ad.status, 
@@ -89,12 +78,9 @@ exports.completarDesafio = (req, res, next) => {
 
     const pontosGanhos = row.pontos;
 
-    // 2. Se tudo estiver OK, atualizar o status e os pontos (em uma transação)
     db.serialize(() => {
-      // Começa a "transação"
       db.run('BEGIN TRANSACTION');
 
-      // Atualiza o status do desafio
       const sqlUpdateStatus = `
         UPDATE aluno_desafios 
         SET status = 'concluido', data_conclusao = DATETIME('now') 
@@ -102,11 +88,10 @@ exports.completarDesafio = (req, res, next) => {
       `;
       db.run(sqlUpdateStatus, [alunoDesafioId], function(err) {
         if (err) {
-          db.run('ROLLBACK'); // Desfaz a transação
+          db.run('ROLLBACK');
           return next(err);
         }
 
-        // Adiciona os pontos ao aluno
         const sqlUpdatePontos = `
           UPDATE usuarios 
           SET pontuacao_total = pontuacao_total + ? 
@@ -114,11 +99,10 @@ exports.completarDesafio = (req, res, next) => {
         `;
         db.run(sqlUpdatePontos, [pontosGanhos, alunoId], function(err) {
           if (err) {
-            db.run('ROLLBACK'); // Desfaz a transação
+            db.run('ROLLBACK');
             return next(err);
           }
 
-          // Se tudo deu certo, confirma a transação
           db.run('COMMIT');
           res.json({
             message: "Desafio concluído com sucesso!",

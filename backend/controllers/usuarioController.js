@@ -1,7 +1,6 @@
 const { db } = require('../config/database.js');
 const jwt = require('jsonwebtoken');
 
-// 1. Lógica para GET /usuarios/:id/pontuacao
 exports.getPontuacao = (req, res, next) => {
   const usuarioId = req.params.id;
   db.get(`SELECT nome, pontuacao_total FROM usuarios WHERE id = ?`, [usuarioId], (err, row) => {
@@ -11,7 +10,6 @@ exports.getPontuacao = (req, res, next) => {
   });
 };
 
-// 2. Lógica para POST /usuarios/:id/pontuacao
 exports.updatePontuacao = (req, res, next) => {
   const usuarioId = req.params.id;
   const { pontos } = req.body;
@@ -26,7 +24,6 @@ exports.updatePontuacao = (req, res, next) => {
   });
 };
 
-// 3. Lógica para POST /api/cadastro
 exports.cadastro = (req, res, next) => {
   const { nome, email, senha, tipo } = req.body;
   if (!nome || !email || !senha || !tipo) {
@@ -44,7 +41,6 @@ exports.cadastro = (req, res, next) => {
   });
 };
 
-// 4. Lógica para POST /api/login
 exports.login = (req, res, next) => {
   const { email, senha } = req.body;
   if (!email || !senha) {
@@ -59,23 +55,20 @@ exports.login = (req, res, next) => {
     if (row.senha !== senha) {
       return res.status(401).json({ erro: "Senha incorreta." });
     }
-    // 1. Criar o "payload" (o que vamos guardar no crachá)
+
     const payload = {
       id: row.id,
       nome: row.nome,
       tipo: row.tipo
     };
 
-    // 2. Assinar o token com uma "senha secreta"
-    // (Guarde essa senha em um lugar seguro no futuro, não direto no código)
     const secret = "minha-senha-secreta-super-dificil"; 
 
-    const token = jwt.sign(payload, secret, { expiresIn: '1h' }); // Token expira em 1 hora
+    const token = jwt.sign(payload, secret, { expiresIn: '1h' });
 
-    // 3. Enviar o Token e os dados do usuário
     res.json({
       message: "Login bem-sucedido!",
-      token: token, // <-- O crachá digital!
+      token: token,
       usuario: {
         id: row.id,
         nome: row.nome,

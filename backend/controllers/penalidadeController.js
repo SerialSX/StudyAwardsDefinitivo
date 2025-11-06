@@ -1,6 +1,5 @@
 const { db } = require('../config/database.js');
 
-// 1. GET /alunos/:id/penalidades
 exports.getPenalidades = (req, res, next) => {
   const alunoId = req.params.id;
   const sql = "SELECT motivo, pontos_deduzidos, data FROM penalidades WHERE aluno_id = ?";
@@ -10,7 +9,6 @@ exports.getPenalidades = (req, res, next) => {
   });
 };
 
-// 2. POST /registrar-falta
 exports.registrarFalta = (req, res, next) => {
   const { alunoId, dataFalta, professorId, pontosDeduzidos, motivo } = req.body;
   const dataAtual = new Date().toISOString();
@@ -32,7 +30,6 @@ exports.registrarFalta = (req, res, next) => {
   });
 };
 
-// 3. GET /verificar-atrasos
 exports.verificarAtrasos = (req, res, next) => {
   const sqlBuscaAtrasos = `
       SELECT 

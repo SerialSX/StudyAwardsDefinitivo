@@ -5,11 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            // 1. Pegar os dados dos campos de input
             const email = document.getElementById('usuario').value; 
             const senha = document.getElementById('senha').value;
 
-            // 2. Tentar fazer o login na API do backend
             try {
                 const response = await fetch('http://localhost:3000/api/login', {
                     method: 'POST',
@@ -24,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const data = await response.json();
 
-                // 3. Verificar a resposta do backend
                 if (response.ok) {
                     
                     localStorage.setItem('usuarioLogado', JSON.stringify(data.usuario));
