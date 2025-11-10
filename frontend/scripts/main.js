@@ -1,12 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const profileCards = document.querySelectorAll('.profile-card');
+    //botões
+    const profileButtons = document.querySelectorAll('.btn-profile');
 
-    profileCards.forEach(card => {
-        card.addEventListener('click', () => {
-            const profileType = card.dataset.profile;
+    profileButtons.forEach(button => {
+        //botão
+        button.addEventListener('click', () => {
+            const profileType = button.dataset.profile;
             
             if (profileType) {
+                //Manda para a página de login
                 window.location.href = `pages/login-${profileType}.html`;
             }
         });

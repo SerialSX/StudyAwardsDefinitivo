@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudyAwards - Seleção de Perfil</title>
+    
     <link rel="stylesheet" href="styles/style.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -13,37 +15,71 @@
 
     <main class="main-container">
         <header class="main-header">
-            <h1>StudyAwards</h1>
-            <p>Transforme o aprendizado em uma aventura gamificada</p>
+            
+            <h1 style="color: #2563eb; font-size: 2.75rem;">StudyAwards</h1>
+            <p style="font-size: 1.125rem; color: #718096; margin-bottom: 3rem;">
+                Sistema gamificado de gestão escolar
+            </p>
         </header>
 
         <section class="profile-selection">
+            
             <div class="profile-card aluno" data-profile="aluno">
                 <div class="icon-container">
-                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/student-icon.svg" alt="Ícone de Aluno">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 17a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2z"/>
+                        <path d="M3 15V9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/>
+                        <path d="M12 11V3"/>
+                        <path d="M6 3h12"/>
+                    </svg>
                 </div>
                 <h2>Aluno</h2>
-                <p>Acompanhe sua pontuação e atividades</p>
+                <p>Visualize suas atividades, pontos e ranking</p>
+                <button class="btn btn-profile btn-aluno" data-profile="aluno">
+                    Entrar como Aluno
+                </button>
             </div>
 
             <div class="profile-card professor" data-profile="professor">
                 <div class="icon-container">
-                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/teacher-icon.svg" alt="Ícone de Professor">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
                 </div>
                 <h2>Professor</h2>
-                <p>Gerencie atividades e presenças</p>
+                <p>Gerencie atividades e registre presenças</p>
+                <button class="btn btn-profile btn-professor" data-profile="professor">
+                    Entrar como Professor
+                </button>
             </div>
 
             <div class="profile-card responsavel" data-profile="responsavel">
                 <div class="icon-container">
-                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/guardian-icon.svg" alt="Ícone de Responsável">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                         <circle cx="12" cy="7" r="4"/>
+                    </svg>
                 </div>
                 <h2>Responsável</h2>
-                <p>Acompanhe o desempenho do aluno</p>
+                <p>Acompanhe o progresso do seu filho</p>
+                <button class="btn btn-profile btn-responsavel" data-profile="responsavel">
+                    Entrar como Responsável
+                </button>
             </div>
         </section>
-    </main>
 
+        <footer class="main-footer" style="margin-top: 3rem;">
+            <p style="font-size: 1rem; color: #4a5568;">
+                Não tem uma conta? 
+                <a href="pages/cadastro.html" style="color: #2563eb; font-weight: 600; text-decoration: none;">
+                    Cadastre-se
+                </a>
+            </p>
+        </footer>
+
+    </main>
+    
     <script src="scripts/main.js" defer></script>
 </body>
 </html>

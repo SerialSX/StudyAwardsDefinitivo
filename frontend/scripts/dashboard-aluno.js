@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-
+    //Checa se exite usuario logado
     const usuarioLogadoString = localStorage.getItem('usuarioLogado');
     if (!usuarioLogadoString) {
         console.error('Nenhum usuário logado encontrado. Redirecionando para o login.');

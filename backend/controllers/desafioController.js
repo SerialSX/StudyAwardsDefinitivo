@@ -113,3 +113,50 @@ exports.completarDesafio = (req, res, next) => {
     });
   });
 };
+
+
+exports.atribuirDesafioParaTodos = (req, res, next) => {
+  const { desafio_id } = req.body;
+  const professorId = req.usuario.id; //
+
+  if (!desafio_id) {
+    return res.status(400).json({ erro: "ID do desafio é obrigatório." });
+  }
+  // Busca o ID de todos os alunos
+  const sqlFindAlunos = "SELECT id FROM usuarios WHERE tipo = 'ALUNO'";
+  
+  db.all(sqlFindAlunos, [], (err, alunos) => {
+    if (err) { return next(err); }
+    if (alunos.length === 0) {
+      return res.status(404).json({ erro: "Nenhum aluno encontrado para atribuir." });
+    }
+
+    const sqlInsert = `
+      INSERT OR IGNORE INTO aluno_desafios (aluno_id, desafio_id, status) 
+      VALUES (?, ?, 'pendente')
+    `;
+
+    db.serialize(() => {
+      db.run('BEGIN TRANSACTION');
+      
+      let alunosAtribuidos = 0;
+      alunos.forEach(aluno => {
+        db.run(sqlInsert, [aluno.id, desafio_id], function(err) {
+          if (err) {
+            console.error('Erro ao atribuir desafio:', err);
+          } else if (this.changes > 0) {
+            alunosAtribuidos++;
+          }
+        });
+      });
+
+      db.run('COMMIT', (err) => {
+        if (err) { return next(err); }
+        res.status(201).json({ 
+          message: `Desafio atribuído com sucesso.`,
+          total_alunos_atribuidos: alunosAtribuidos
+        });
+      });
+    });
+  });
+};

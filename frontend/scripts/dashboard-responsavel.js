@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     const usuarioLogado = JSON.parse(usuarioLogadoString);
-
+    //Nega entrada de usuario em tipos diferentes, não cadastrados
     if (usuarioLogado.tipo !== 'RESPONSAVEL') {
         console.error('Usuário logado não é um responsável. Acesso negado.');
         alert('Acesso negado. Esta área é apenas para responsáveis.');
@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log(`Responsável logado: ${usuarioLogado.nome}, buscando dados do Aluno ID: ${alunoResponsavelId}`);
 
     async function carregarDadosResponsavel() {
+        //Puxa os dados do back
         try {
             const urlPontuacaoAluno = `http://localhost:3000/usuarios/${alunoResponsavelId}/pontuacao`;
             const urlRanking = `http://localhost:3000/ranking`;
@@ -31,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ]);
 
             if (!respostaPontuacao.ok || !respostaRanking.ok) {
-                console.error('Erro ao buscar dados do aluno ou ranking:', respostaPontuacao.status, respostaRanking.status);
+                console.error(`Erro ao buscar dados do aluno ou ranking: ${respostaPontuacao.status}, ${respostaRanking.status}`);
                 alert('Erro ao carregar os dados do aluno. Tente recarregar.');
                 return;
             }
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             preencherCabecalhoAluno(dadosAluno, dadosRanking);
             preencherStatusCards(dadosAluno);
 
+            //Preenchendo os dados 
             const dadosFakeResponsavel = await fetch('../data/responsavel.json').then(res => res.json());
             preencherEvolucaoDesempenho(dadosFakeResponsavel.evolucaoDesempenho); 
             preencherAtividadesRecentes(dadosFakeResponsavel.atividadesRecentes);
@@ -52,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Erro de conexão ao carregar dados do dashboard do responsável.');
         }
     }
-
+    //Preenchendo os dados do Aluno
     function preencherCabecalhoAluno(dadosAluno, dadosRanking) {
         document.getElementById('nome-aluno').textContent = dadosAluno.nome;
         document.getElementById('serie-aluno').textContent = '...';

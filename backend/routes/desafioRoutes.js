@@ -7,5 +7,6 @@ router.get('/api/desafios', authMiddleware, desafioController.getDesafiosAluno);
 
 router.post('/api/desafios', authMiddleware, isProfessor, desafioController.criarDesafio);
 router.post('/api/desafios/completar/:id', authMiddleware, desafioController.completarDesafio);
+router.post('/api/desafios/atribuir-todos', authMiddleware, isProfessor, desafioController.atribuirDesafioParaTodos);
 
 module.exports = router;

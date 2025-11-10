@@ -26,7 +26,7 @@
             <div class="status-card">
                 <div class="card-header">
                     <p>Total de Alunos</p>
-                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/users-group-icon.svg" alt="Ícone de Alunos">
+                    <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/users-group-icon.svg" alt="Ícone de Alunos">
                 </div>
                 <div class="card-body">
                     <span id="total-alunos" class="main-value">...</span>
@@ -36,7 +36,7 @@
             <div class="status-card">
                 <div class="card-header">
                     <p>Presentes Hoje</p>
-                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/user-check-icon.svg" alt="Ícone de Presentes">
+                    <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/user-check-icon.svg" alt="Ícone de Presentes">
                 </div>
                 <div class="card-body">
                     <span id="presentes-hoje" class="main-value">...</span>
@@ -46,7 +46,7 @@
             <div class="status-card">
                 <div class="card-header">
                     <p>Atividades</p>
-                    <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/book-icon.svg" alt="Ícone de Atividades">
+                    <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/book-icon.svg" alt="Ícone de Atividades">
                 </div>
                 <div class="card-body">
                     <span id="atividades-ativas" class="main-value">...</span>
@@ -61,7 +61,7 @@
                     <h3>Controle de Presença</h3>
                     <div class="date-selector">
                         <span>14/10/2025</span>
-                        <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/calendar-icon.svg" alt="Calendário">
+                        <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/calendar-icon.svg" alt="Calendário">
                     </div>
                 </div>
                 <ul id="lista-presenca" class="presence-control-list">
@@ -76,11 +76,47 @@
         </section>
 
         <div class="toast-notification">
-            <img src="https://raw.githubusercontent.com/7ody1/img/main/icons/check-circle-icon.svg" alt="Sucesso">
+            <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/check-circle-icon.svg" alt="Sucesso">
             Login realizado com sucesso!
         </div>
     </div>
 
     <script src="../scripts/dashboard-professor.js" defer></script>
+
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Criar Nova Atividade (Desafio)</h2>
+            
+            <form id="form-criar-desafio" class="modal-form">
+                <div class="form-group">
+                    <label for="desafio-titulo">Título</label>
+                    <input type="text" id="desafio-titulo" placeholder="Ex: Pesquisa sobre IA" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="desafio-descricao">Descrição (Opcional)</label>
+                    <input type="text" id="desafio-descricao" placeholder="Ex: Escrever 300 palavras...">
+                </div>
+
+                <div class="form-group">
+                    <label for="desafio-pontos">Pontos</label>
+                    <input type="number" id="desafio-pontos" placeholder="Ex: 50" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="desafio-prazo">Prazo Final (Opcional)</label>
+                    <input type="date" id="desafio-prazo">
+                </div>
+
+                <p id="modal-error-message" style="color: red; text-align: center;"></p>
+
+                <div class="form-actions">
+                    <button type="button" id="btn-cancelar-modal" class="btn btn-secondary">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="background-color: #2563eb;">Salvar Desafio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>

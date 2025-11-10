@@ -4,11 +4,21 @@
     box-sizing: border-box;
 }
 
+/* Fundo */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #f7f9fc;
     color: #4a5568;
     min-height: 100vh;
+
+    /* Fundo cor base */
+    background-color: #e2e8f0; 
+
+    /* Luzes */
+    background-image: 
+        radial-gradient(at 0% 0%, #e3f2fd 0%, transparent 40%),
+        radial-gradient(at 100% 0%, #e8f5e9 0%, transparent 40%),
+        radial-gradient(at 0% 100%, #f3e5f5 0%, transparent 40%);
+        background-attachment: fixed;  /* Deixa o fundo fixo */
 }
 
 .main-container {
@@ -51,8 +61,26 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     border: 2px solid transparent;
     transition: all 0.3s ease;
-    cursor: pointer;
     text-decoration: none;
+    cursor: default; 
+    padding-bottom: 2.5rem;
+}
+
+/* Hover do card */
+.profile-card.aluno:hover {
+    transform: translateY(-5px);
+    border-color: #2298f8; 
+    box-shadow: 0 10px 15px -3px rgba(34, 152, 248, 0.2), 0 4px 6px -4px rgba(34, 152, 248, 0.2);
+}
+.profile-card.professor:hover {
+    transform: translateY(-5px);
+    border-color: #51bb55; 
+    box-shadow: 0 10px 15px -3px rgba(81, 187, 85, 0.2), 0 4px 6px -4px rgba(81, 187, 85, 0.2);
+}
+.profile-card.responsavel:hover {
+    transform: translateY(-5px);
+    border-color: #9a23af; 
+    box-shadow: 0 10px 15px -3px rgba(154, 35, 175, 0.2), 0 4px 6px -4px rgba(154, 35, 175, 0.2);
 }
 
 .profile-card .icon-container {
@@ -63,12 +91,47 @@ body {
     justify-content: center;
     align-items: center;
     margin: 0 auto 1.5rem auto;
+    transition: all 0.3s ease; /* Transição suave para a cor de fundo */
 }
 
-.profile-card.aluno .icon-container { background-color: #e0f2f1; }
-.profile-card.professor .icon-container { background-color: #e3f2fd; }
-.profile-card.responsavel .icon-container { background-color: #f3e5f5; }
+/* Fundos dos ícones SVG */
+.profile-card.aluno .icon-container { background-color: #e3f2fd; } 
+.profile-card.professor .icon-container { background-color: #e8f5e9; } 
+.profile-card.responsavel .icon-container { background-color: #f3e5f5; } 
+
 .profile-card .icon-container img { width: 36px; height: 36px; }
+
+/* Cores dos icones SVG dos cards */
+.profile-card.aluno .icon-container svg {
+    color: #2298f8; 
+    transition: all 0.3s ease;
+}
+.profile-card.professor .icon-container svg {
+    color: #51bb55; 
+    transition: all 0.3s ease;
+}
+.profile-card.responsavel .icon-container svg {
+    color: #9a23af; 
+    transition: all 0.3s ease;
+}
+
+/* hover do icone */
+.profile-card.aluno:hover .icon-container {
+    background-color: #2298f8; /* */
+}
+.profile-card.professor:hover .icon-container {
+    background-color: #51bb55;
+}
+.profile-card.responsavel:hover .icon-container {
+    background-color: #9a23af;
+}
+.profile-card.aluno:hover .icon-container svg,
+.profile-card.professor:hover .icon-container svg,
+.profile-card.responsavel:hover .icon-container svg {
+    color: #ffffff; 
+}
+
+
 
 .profile-card h2 {
     font-size: 1.25rem;
@@ -77,27 +140,10 @@ body {
     margin-bottom: 0.5rem;
 }
 
+/* Texto dos cards */
 .profile-card p {
     font-size: 0.875rem;
-    color: #a0aec0;
-}
-
-.profile-card.aluno:hover {
-    transform: translateY(-5px);
-    border-color: #4caf50;
-    box-shadow: 0 10px 15px -3px rgba(76, 175, 80, 0.2), 0 4px 6px -4px rgba(76, 175, 80, 0.2);
-}
-
-.profile-card.professor:hover {
-    transform: translateY(-5px);
-    border-color: #2196f3;
-    box-shadow: 0 10px 15px -3px rgba(33, 150, 243, 0.2), 0 4px 6px -4px rgba(33, 150, 243, 0.2);
-}
-
-.profile-card.responsavel:hover {
-    transform: translateY(-5px);
-    border-color: #9c27b0;
-    box-shadow: 0 10px 15px -3px rgba(156, 39, 176, 0.2), 0 4px 6px -4px rgba(156, 39, 176, 0.2);
+    color: #718096; 
 }
 
 .login-form-container { display: flex; justify-content: center; }
@@ -249,6 +295,20 @@ body {
 
 .incentive-message { background-color: #f3e5f5; color: #9c27b0; border-radius: 8px; padding: 1rem; margin-top: 1rem; font-weight: 500; }
 
+/* formulário de cadastro */
+.radio-group {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+
 @media (max-width: 1024px) {
     .dashboard-grid, .teacher-dashboard-grid, .guardian-dashboard-grid { grid-template-columns: 1fr; }
 }
@@ -257,3 +317,65 @@ body {
     .profile-selection, .status-grid, .activities-grid { grid-template-columns: 1fr; }
     .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
 }
+
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 2rem;
+}
+
+.modal-form .form-group {
+    margin-bottom: 1.5rem;
+}
+.modal-form .form-actions {
+    margin-top: 2rem;
+}
+
+/* perfil */
+.btn-profile {
+    width: 100%;
+    margin-top: 1.5rem;
+    height: 50px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+}
+
+/* Cores dos botões */
+.btn-aluno { background-color: #2298f8; } 
+.btn-professor { background-color: #51bb55; } 
+.btn-responsavel { background-color: #9a23af; } 
+
+/* hover dos botões */
+.btn-aluno:hover { background-color: #1e8ae9; } 
+.btn-professor:hover { background-color: #3fa144; } 
+.btn-responsavel:hover { background-color: #8e24aa; }

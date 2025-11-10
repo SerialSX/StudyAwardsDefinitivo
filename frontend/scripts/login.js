@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('usuario').value; 
             const senha = document.getElementById('senha').value;
 
+            //Puxa a API
             try {
                 const response = await fetch('http://localhost:3000/api/login', {
                     method: 'POST',
@@ -20,13 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
 
+
+
                 const data = await response.json();
 
                 if (response.ok) {
-                    
                     localStorage.setItem('usuarioLogado', JSON.stringify(data.usuario));
                     localStorage.setItem('token', data.token);
 
+                //checa o tipo de usuario
                     let destination = '';
                     if (data.usuario.tipo === 'ALUNO') {
                         destination = 'dashboard-aluno.html';
@@ -43,12 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
                 } else {
-                    // ERRO! O backend retornou um erro (senha errada, email não encontrado)
+                    //Erro no login
                     alert(`Erro no login: ${data.erro}`);
                 }
 
             } catch (error) {
-                // Erro de rede (backend desligado ou CORS)
+                //Erro de rede 
                 console.error('Erro ao tentar fazer login:', error);
                 alert('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
             }
