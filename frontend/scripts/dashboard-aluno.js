@@ -95,12 +95,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         activitiesGrid.querySelectorAll('.btn-primary').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const alunoDesafioId = event.target.dataset.alunoDesafioId;
-                console.log(`Clicou em concluir desafio ID (aluno_desafios): ${alunoDesafioId}`);
-                alert(`Funcionalidade "Concluir Desafio" ainda não implementada no backend.`);
+    button.addEventListener('click', async (event) => {
+        const alunoDesafioId = event.target.dataset.alunoDesafioId;
+        const token = localStorage.getItem('token');
+        event.target.disabled = true;
+        event.target.textContent = 'Processando...';
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/desafios/completar/${alunoDesafioId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                    // Não precisa de Body, o ID está na URL
+                }
             });
-        });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // SUCESSO!
+                alert(`Desafio concluído! Você ganhou ${data.pontosGanhos} pontos!`);
+                // Recarrega a página para atualizar a pontuação e o status do desafio
+                window.location.reload(); 
+            } else {
+                // Erro (ex: desafio já concluído, como no seu teste)
+                alert(`Erro: ${data.erro}`);
+                event.target.disabled = false;
+                event.target.textContent = 'Marcar como Concluído';
+            }
+
+        } catch (error) {
+            console.error('Erro ao completar desafio:', error);
+            alert('Erro de conexão ao tentar completar o desafio.');
+            event.target.disabled = false;
+            event.target.textContent = 'Marcar como Concluído';
+        }
+    });
+});
     }
     carregarDadosAluno();
 
