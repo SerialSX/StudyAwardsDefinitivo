@@ -1,5 +1,3 @@
-// backend/controllers/usuarioController.js (Refatorado com Model)
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 // 1. Importa o MODELO em vez do banco
@@ -48,10 +46,8 @@ exports.cadastro = (req, res, next) => {
 
   bcrypt.hash(senha, 10, (err, hash) => {
     if (err) { return next(err); }
-
-    // 4. Chama o MODEL
     usuarioModel.createUser(nome, email, hash, tipo, (err, novoUsuario) => {
-      if (err) { return next(err); } // Erro (ex: email duplicado)
+      if (err) { return next(err); }
 
       res.status(201).json({
         id: novoUsuario.id,
@@ -68,25 +64,19 @@ exports.login = (req, res, next) => {
   if (!email || !senha) {
     return res.status(400).json({ erro: "Email e senha são obrigatórios." });
   }
-
-  // 5. Chama o MODEL
   usuarioModel.findUserByEmail(email, (err, row) => {
     if (err) { return next(err); }
     if (!row) {
       return res.status(404).json({ erro: "Email não encontrado." });
     }
-
     bcrypt.compare(senha, row.senha, (err, isMatch) => {
       if (err) { return next(err); }
       if (!isMatch) {
         return res.status(401).json({ erro: "Senha incorreta." });
       }
-
-      // A senha bateu! Gerar o token
       const payload = { id: row.id, nome: row.nome, tipo: row.tipo };
       const secret = "minha-senha-secreta-super-dificil";
       const token = jwt.sign(payload, secret, { expiresIn: '1h' });
-
       res.json({
         message: "Login bem-sucedido!",
         token: token,
