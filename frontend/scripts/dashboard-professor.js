@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    //Verifica se é um professor
+        //Checa se exite usuario logado
     const usuarioLogadoString = localStorage.getItem('usuarioLogado');
     if (!usuarioLogadoString) {
         console.error('Nenhum usuário logado encontrado. Redirecionando para o login.');
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     const usuarioLogado = JSON.parse(usuarioLogadoString);
-
+    //Verifica se é um professor
     if (usuarioLogado.tipo !== 'PROFESSOR') {
         console.error('Usuário logado não é um professor. Acesso negado.');
         alert('Acesso negado. Esta área é apenas para professores.');
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalErrorMessage.textContent = 'Não foi possível conectar ao servidor.';
         }
     });
-
+        //carrega dados do professor
          async function carregarDadosProfessor() {
         try {
             const token = localStorage.getItem('token');

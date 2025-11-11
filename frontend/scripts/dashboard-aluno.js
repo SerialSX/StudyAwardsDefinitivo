@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     const usuarioLogado = JSON.parse(usuarioLogadoString);
-
+        //nega a entrada de NÃO aluno
     if (usuarioLogado.tipo !== 'ALUNO') {
         console.error('Usuário logado não é um aluno. Acesso negado.');
         alert('Acesso negado. Esta área é apenas para alunos.');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '../index.html';
         return;
     }
-
+        //puxa os dados do aluno
     async function carregarDadosAluno() {
         const token = localStorage.getItem('token');
         try {
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch(urlRanking,   { headers: { 'Authorization': `Bearer ${token}` } }),
                 fetch(urlDesafios,  { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
-
+                //erro backend
             if (!respostaPontuacao.ok || !respostaRanking.ok || !respostaDesafios.ok) {
                 console.error('Erro ao buscar dados do backend:', respostaPontuacao.status, respostaRanking.status, respostaDesafios.status);
                 alert('Erro ao carregar os dados do dashboard. Tente recarregar a página.');
@@ -38,8 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const dadosRanking = await respostaRanking.json();
             const dadosDesafios = await respostaDesafios.json();
 
+            //dados
             document.getElementById('saudacao-aluno').textContent = `Olá, ${dadosPontuacao.nome}!`;
             document.getElementById('pontuacao-valor').textContent = dadosPontuacao.pontuacao_total;
+
+            //Calcula posiçao no ranking
             const minhaPosicao = dadosRanking.ranking.findIndex(aluno => aluno.id === usuarioLogado.id) + 1;
             const totalAlunos = dadosRanking.ranking.length;
             if (minhaPosicao > 0) {
@@ -53,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             preencherAtividadesDisponiveis(dadosDesafios.desafios);
 
+            //Sistema de metas
             const metaPontos = 1500;
             const progressoMeta = Math.round((dadosPontuacao.pontuacao_total / metaPontos) * 100);
             document.querySelector('.progress-info span:nth-child(2)').textContent = `${dadosPontuacao.pontuacao_total} / ${metaPontos} pontos`;
@@ -65,16 +69,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    //criar card de Desafios/Atividades
     function preencherAtividadesDisponiveis(desafios) {
         const activitiesGrid = document.querySelector('.activities-grid');
         if (!activitiesGrid) return;
-        activitiesGrid.innerHTML = '';
-
+        activitiesGrid.innerHTML = '';//Limpa A lista
+    
         if (!desafios || desafios.length === 0) {
             activitiesGrid.innerHTML = '<p>Nenhum desafio disponível no momento.</p>';
             return;
         }
 
+        //cria um card para kd desafio
         desafios.forEach(desafio => {
             const card = document.createElement('div');
             card.className = 'activity-card';
@@ -106,19 +112,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`
-                    // Não precisa de Body, o ID está na URL
+                    // ID na URL
                 }
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                // SUCESSO!
                 alert(`Desafio concluído! Você ganhou ${data.pontosGanhos} pontos!`);
-                // Recarrega a página para atualizar a pontuação e o status do desafio
+                // Recarrega a página para atualizar 
                 window.location.reload(); 
             } else {
-                // Erro (ex: desafio já concluído, como no seu teste)
+                // Erro 
                 alert(`Erro: ${data.erro}`);
                 event.target.disabled = false;
                 event.target.textContent = 'Marcar como Concluído';
