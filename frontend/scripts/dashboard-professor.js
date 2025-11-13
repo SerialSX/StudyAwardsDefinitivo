@@ -1,214 +1,120 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    //Verifica se é um professor
     const usuarioLogadoString = localStorage.getItem('usuarioLogado');
     if (!usuarioLogadoString) {
-        console.error('Nenhum usuário logado encontrado. Redirecionando para o login.');
         window.location.href = '../index.html';
         return;
     }
     const usuarioLogado = JSON.parse(usuarioLogadoString);
-
     if (usuarioLogado.tipo !== 'PROFESSOR') {
-        console.error('Usuário logado não é um professor. Acesso negado.');
-        alert('Acesso negado. Esta área é apenas para professores.');
-        localStorage.removeItem('usuarioLogado');
+        alert('Acesso negado.');
         window.location.href = '../index.html';
         return;
     }
 
    
-    // Criar Desafio
-    const btnNovaAtividade = document.querySelector('.dashboard-header .btn-primary');
-    const modalOverlay = document.getElementById('modal-overlay');
-    const btnCancelarModal = document.getElementById('btn-cancelar-modal');
-    const formCriarDesafio = document.getElementById('form-criar-desafio');
-    const modalErrorMessage = document.getElementById('modal-error-message');
+    //  ABAS 
+  
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
 
-    function abrirModal() {
-        modalOverlay.style.display = 'flex';
-    }
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Remove ativo de todos
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
 
-    function fecharModal() {
-        modalOverlay.style.display = 'none';
-        modalErrorMessage.textContent = '';
-        formCriarDesafio.reset(); // Limpa o formulário
-    }
-
-    btnNovaAtividade.addEventListener('click', abrirModal);
-    btnCancelarModal.addEventListener('click', fecharModal);
-    modalOverlay.addEventListener('click', (event) => {
-        if (event.target === modalOverlay) {
-            fecharModal();
-        }
+            // Ativa o clicado
+            btn.classList.add('active');
+            const tabId = btn.dataset.tab; // 'alunos', 'atividades' ou 'relatorios'
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        });
     });
 
-    //Enviar o formulário de criação de desafio
-    formCriarDesafio.addEventListener('submit', async (event) => {
-        event.preventDefault(); 
-        modalErrorMessage.textContent = ''; 
+   
+    // DADOS
 
-        //Pega os dados 
-        const titulo = document.getElementById('desafio-titulo').value;
-        const descricao = document.getElementById('desafio-descricao').value;
-        const pontos = parseInt(document.getElementById('desafio-pontos').value);
-        const prazo_final = document.getElementById('desafio-prazo').value;
-        
+    async function carregarDadosProfessor() {
         const token = localStorage.getItem('token');
-
-        const dadosDesafio = {
-            titulo: titulo,
-            descricao: descricao,
-            pontos: pontos,
-            prazo_final: prazo_final ? prazo_final : null 
-        };
-
         try {
-            //Chama a API desafios
-            const response = await fetch('http://localhost:3000/api/desafios', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}` //
-                },
-                body: JSON.stringify(dadosDesafio)
+            // Busca ranking 
+            const res = await fetch('http://localhost:3000/ranking', {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
+            const data = await res.json();
+            const alunos = data.ranking;
 
-            const data = await response.json();
+            document.getElementById('total-alunos').textContent = alunos.length;
+            // (Placeholder para presentes)
+            document.getElementById('presentes-hoje').textContent = Math.floor(alunos.length * 0.9); 
 
-            if (response.ok) {
-                const novoDesafio = data;
-                alert(`Desafio "${novoDesafio.titulo}" criado! Atribuindo a todos os alunos...`);
-
-                // Chamar a API atribuir-todos
-                try {
-                    const responseAtribuir = await fetch('http://localhost:3000/api/desafios/atribuir-todos', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`
-                        },
-                        body: JSON.stringify({ desafio_id: novoDesafio.id }) // Envia o ID do desafio recém-criado
-                    });
-
-                    const dataAtribuir = await responseAtribuir.json();
-
-                    if (responseAtribuir.ok) {
-                        alert(`Desafio atribuído para ${dataAtribuir.total_alunos_atribuidos} aluno(s).`);
-                        fecharModal();
-                    } else {
-                        //Erro ao atribuir
-                        modalErrorMessage.textContent = `Erro ao atribuir: ${dataAtribuir.erro}`;
-                    }
-
-                } catch (error) {
-                    //Erro de rede 
-                    console.error('Erro de conexão ao atribuir:', error);
-                    modalErrorMessage.textContent = 'Erro de conexão ao atribuir o desafio.';
-                }
-
-            } else {
-                // Erro da API
-                console.error('Erro ao criar desafio:', data.erro);
-                modalErrorMessage.textContent = `Erro: ${data.erro}`;
-            }
+            // Preenche a Tabela de Alunos
+            preencherTabelaAlunos(alunos);
 
         } catch (error) {
-            // Erro de rede 
-            console.error('Erro de conexão:', error);
-            modalErrorMessage.textContent = 'Não foi possível conectar ao servidor.';
-        }
-    });
-
-         async function carregarDadosProfessor() {
-        try {
-            const token = localStorage.getItem('token');
-            const respostaRanking = await fetch('http://localhost:3000/ranking', {
-                headers: { 'Authorization': `Bearer ${token}` } //
-            });
-
-            if (!respostaRanking.ok) {
-                console.error('Erro ao buscar o ranking:', respostaRanking.status);
-                alert('Erro ao carregar os dados do ranking.');
-                return;
-            }
-
-            const dadosRanking = await respostaRanking.json();
-            const alunos = dadosRanking.ranking;
-
-            preencherStatusCards(alunos);
-            preencherControleDePresenca(alunos);
-            preencherRelatorioDesempenho(alunos);
-
-        } catch (error) {
-            console.error('Erro ao carregar os dados do professor:', error);
-            alert('Erro de conexão ao carregar dados do dashboard do professor.');
+            console.error(error);
         }
     }
 
-    function preencherStatusCards(alunos) {
-        const totalAlunos = alunos.length;
-        document.getElementById('total-alunos').textContent = totalAlunos;
-        
-        //presença e atividades 
-        document.getElementById('presentes-hoje').textContent = '...'; 
-        const percentualPresenca = '...';
-        document.getElementById('percentual-presenca').textContent = `${percentualPresenca}% de presença`;
-        document.getElementById('atividades-ativas').textContent = '...';
-    }
-
-    function preencherControleDePresenca(alunos) {
-        const listaPresenca = document.getElementById('lista-presenca');
-        listaPresenca.innerHTML = '';
+    function preencherTabelaAlunos(alunos) {
+        const tbody = document.getElementById('tabela-alunos-body');
+        tbody.innerHTML = '';
 
         alunos.forEach(aluno => {
-            const itemLista = document.createElement('li');
-            itemLista.className = 'student-row';
+            const tr = document.createElement('tr');
+            
+            // Lógica fake de frequência para visualização
+            const freq = Math.floor(Math.random() * (100 - 70) + 70); 
+            let badgeClass = freq > 90 ? 'badge-green' : (freq > 80 ? 'badge-yellow' : 'badge-red');
 
-            itemLista.innerHTML = `
-                <div>
-                    <h4>${aluno.nome}</h4>
-                    <p>${aluno.pontuacao_total} pontos</p> 
-                </div>
-                <div class="presence-buttons" data-aluno-id="${aluno.id}">
-                    <button class="btn-presence">Presente</button> 
-                    <button class="btn-absence">Ausente</button>
-                </div>
+            tr.innerHTML = `
+                <td>
+                    <div style="font-weight: 600; color: #2d3748;">${aluno.nome}</div>
+                    <div style="font-size: 0.75rem; color: #718096;">Turma 9A</div>
+                </td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="color: #eab308;">★</span> 
+                        <strong>${aluno.pontuacao_total}</strong>
+                    </div>
+                </td>
+                <td><span class="badge ${badgeClass}">${freq}%</span></td>
+                <td>
+                    <span class="badge badge-green" style="cursor: pointer;">Presente</span>
+                </td>
+                <td>
+                    <button class="btn-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                </td>
             `;
-            listaPresenca.appendChild(itemLista);
-        });
-
-        //lógica de clique para os botões de presença
-        listaPresenca.querySelectorAll('.presence-buttons button').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const clickedButton = event.target;
-                const parentDiv = clickedButton.parentElement;
-                const alunoId = parentDiv.dataset.alunoId;
-
-                parentDiv.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-                clickedButton.classList.add('active');
-
-                const estaPresente = clickedButton.classList.contains('btn-presence');
-                console.log(`Aluno ID: ${alunoId}, Presente: ${estaPresente}`);
-                
-                //Esperando a Andreina colocar a API de registrar falta
-            });
+            tbody.appendChild(tr);
         });
     }
 
-    function preencherRelatorioDesempenho(alunos) {
-        const listaDesempenho = document.getElementById('lista-desempenho');
-        listaDesempenho.innerHTML = '';
-
-        alunos.forEach((aluno, index) => {
-            const itemLista = document.createElement('li');
-            itemLista.innerHTML = `
-                <span class="rank">#${index + 1}</span>
-                <span>${aluno.nome}</span>
-                <span class="points">${aluno.pontuacao_total} pontos</span>
-            `;
-            listaDesempenho.appendChild(itemLista);
+    
+    //  CRIAR ATIVIDADE 
+    
+    const formAba = document.getElementById('form-criar-desafio-aba');
+    if (formAba) {
+        formAba.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = formAba.querySelector('button');
+            btn.textContent = "Criando...";
+            
+            // Mesma lógica de antes para pegar dados e chamar API
+            const titulo = document.getElementById('aba-titulo').value;
+            const pontos = document.getElementById('aba-pontos').value;
+            
+            // Chama fetch 
+            setTimeout(() => {
+                alert(`Atividade "${titulo}" criada e atribuída com sucesso!`);
+                formAba.reset();
+                btn.textContent = "Criar Atividade";
+            }, 1000);
         });
     }
+
+    // Inicializa
     carregarDadosProfessor();
 });

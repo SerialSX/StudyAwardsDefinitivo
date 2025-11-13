@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard do Aluno - StudyAwards</title>
+    <title>Painel do Aluno - StudyAwards</title>
     <link rel="stylesheet" href="../styles/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,75 +14,124 @@
     <div class="dashboard-container">
         <header class="dashboard-header">
             <div>
-                <h2 id="saudacao-aluno">Olá, ...</h2>
-                <p>Acompanhe seu progresso e conquistas</p>
+                <h2 id="saudacao-aluno">Olá, Aluno! 👋</h2>
+                <p>Continue assim e alcance o topo do ranking!</p>
             </div>
             <button class="btn btn-outline">
-                <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/award-icon.svg" alt="Ícone de Conquistas">
-                Minhas Conquistas
+                Sair
             </button>
         </header>
 
         <section class="status-grid">
-            <div class="status-card">
-                <div class="card-header">
-                    <p>Pontuação Total</p>
+            <div class="status-card card-blue">
+                <div>
+                    <h3>Pontuação Total</h3>
+                    <span id="pontuacao-valor" class="main-value">0</span>
                 </div>
-                <div class="card-body">
-                    <span id="pontuacao-valor" class="main-value">...</span>
-                    <span class="sub-value">Pontos acumulados</span>
-                </div>
-            </div>
-            <div class="status-card">
-                <div class="card-header">
-                    <p>Ranking</p>
-                    <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/star-icon.svg" alt="Ícone de Estrela">
-                </div>
-                <div class="card-body">
-                    <span id="ranking-valor" class="main-value">...</span>
-                    <span id="ranking-total" class="sub-value">...</span>
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 </div>
             </div>
-            <div class="status-card">
-                <div class="card-header">
-                    <p>Presença</p>
-                    <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/check-circle-icon.svg" alt="Ícone de Presença">
+
+            <div class="status-card card-green">
+                <div>
+                    <h3>Ranking na Turma</h3>
+                    <div style="display: flex; align-items: baseline; gap: 0.25rem;">
+                        <span id="ranking-valor" class="main-value">#</span>
+                        <span id="ranking-total" class="sub-value">/ --</span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <span id="presenca-valor" class="main-value">...</span>
-                    <span class="sub-value">Taxa de presença</span>
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                </div>
+            </div>
+
+            <div class="status-card card-purple">
+                <div>
+                    <h3>Frequência</h3>
+                    <span id="presenca-valor" class="main-value">--%</span>
+                </div>
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
                 </div>
             </div>
         </section>
 
         <section class="dashboard-grid">
+            
             <div class="grid-card">
-                <h3>Meta Mensal</h3>
-                <div class="progress-info">
-                    <span>Progresso</span>
-                    <span>1250 / 1500 pontos</span>
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    Histórico de Presenças
+                </h3>
+                
+                <div class="presence-grid">
+                    <div class="presence-item">
+                        <span class="presence-date">13/10</span>
+                        <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <div class="presence-item">
+                        <span class="presence-date">12/10</span>
+                        <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                    <div class="presence-item">
+                        <span class="presence-date">11/10</span>
+                        <svg class="icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </div>
+                    <div class="presence-item">
+                        <span class="presence-date">10/10</span>
+                        <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: 83%;"></div>
+
+                <div class="presence-bar-container">
+                    <span style="font-size: 0.875rem; color: #718096;">Taxa de Presença</span>
+                    <div class="presence-bar-bg">
+                        <div class="presence-bar-fill" style="width: 75%;"></div>
+                    </div>
+                    <span style="font-weight: 600; color: #2563eb;">75%</span>
                 </div>
-                <p class="meta-description">Você está a 250 pontos de atingir sua meta!</p>
             </div>
 
             <div class="grid-card">
-                <h3>Histórico de Presença</h3>
-                <ul class="presence-list">
-                    <li><span>09 de Jan.</span><img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
-                    <li><span>08 de Jan.</span><img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
-                    <li><span>07 de Jan.</span><img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/cancel-icon.svg" alt="Ausente"></li>
-                    <li><span>06 de Jan.</span><img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
-                    <li><span>05 de Jan.</span><img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
-                    <li><span>04 de Jan.</span><img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/check-circle-icon.svg" alt="Presente"></li>
-                </ul>
+                <h3>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                    Metas e Objetivos
+                </h3>
+
+                <div class="goals-container">
+                    <div class="goal-item">
+                        <label>
+                            Meta de Pontos Mensal
+                            <span class="badge-blue" style="background: #e3f2fd; color: #2563eb; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">850 / 1000</span>
+                        </label>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 85%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="goal-item">
+                        <label>
+                            Atividades Concluídas
+                            <span class="badge-green" style="background: #dcfce7; color: #16a34a; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">8 / 12</span>
+                        </label>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 66%; background-color: #22c55e;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-full">
+                    Ver Ranking Completo
+                </button>
             </div>
         </section>
 
-        <section class="grid-card">
-            <h3>Atividades Disponíveis</h3>
+        <section class="grid-card" style="display: block;">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                Atividades Disponíveis
+            </h3>
             <div class="activities-grid">
                 </div>
         </section>
