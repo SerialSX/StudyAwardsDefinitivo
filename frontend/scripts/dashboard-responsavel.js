@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
     const usuarioLogado = JSON.parse(usuarioLogadoString);
-    //Nega entrada de usuario em tipos diferentes, não cadastrados
+    //Checa se o usuario é um responsavel
     if (usuarioLogado.tipo !== 'RESPONSAVEL') {
         console.error('Usuário logado não é um responsável. Acesso negado.');
         alert('Acesso negado. Esta área é apenas para responsáveis.');

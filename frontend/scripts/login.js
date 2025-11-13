@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (loginForm) {
         loginForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
+            event.preventDefault();//Não deixa recarregar
 
             const email = document.getElementById('usuario').value; 
             const senha = document.getElementById('senha').value;
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
 
-
+                //resposta da API
                 const data = await response.json();
 
                 if (response.ok) {

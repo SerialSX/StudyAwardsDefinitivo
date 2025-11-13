@@ -6,9 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (cadastroForm) {
         cadastroForm.addEventListener('submit', async (event) => {
-            // Impede o envio padrão do formulário 
-            event.preventDefault();
-            errorMessageEl.textContent = ''; // Limpa erros antigos
+            event.preventDefault(); // Impede o envio padrão do formulário 
+            errorMessageEl.textContent = '';
 
             //Pega os valores
             const nome = document.getElementById('nome').value;

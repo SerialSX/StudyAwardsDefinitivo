@@ -17,13 +17,13 @@
                 <h2>Painel do Professor 📚</h2>
                 <p>Gerencie suas turmas, atividades e acompanhe o desempenho</p>
             </div>
-            <button class="btn btn-primary" id="btn-nova-atividade-header">
-                + Nova Atividade
+            <button class="btn btn-outline" onclick="window.location.href='../index.html'">
+                Sair
             </button>
         </header>
 
         <section class="status-grid" style="grid-template-columns: repeat(4, 1fr);">
-            <div class="status-card" style="background: white; color: #4a5568;">
+            <div class="status-card">
                 <div>
                     <h3>Total de Alunos</h3>
                     <span id="total-alunos" class="main-value" style="color: #2563eb;">--</span>
@@ -33,7 +33,7 @@
                 </div>
             </div>
             
-            <div class="status-card" style="background: white; color: #4a5568;">
+            <div class="status-card">
                 <div>
                     <h3>Presentes Hoje</h3>
                     <span id="presentes-hoje" class="main-value" style="color: #16a34a;">--</span>
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <div class="status-card" style="background: white; color: #4a5568;">
+            <div class="status-card">
                 <div>
                     <h3>Atividades Ativas</h3>
                     <span id="atividades-ativas" class="main-value" style="color: #2563eb;">--</span>
@@ -53,7 +53,7 @@
                 </div>
             </div>
 
-            <div class="status-card" style="background: white; color: #4a5568;">
+            <div class="status-card">
                 <div>
                     <h3>Média da Turma</h3>
                     <span class="main-value" style="color: #9333ea;">85%</span>
@@ -84,7 +84,7 @@
                         <tr>
                             <th>Aluno</th>
                             <th>Pontos</th>
-                            <th>Frequência</th>
+                            <th>Frequência (Fake)</th>
                             <th>Presença Hoje</th>
                             <th>Ações</th>
                         </tr>
@@ -97,34 +97,42 @@
 
         <div id="tab-atividades" class="tab-content">
             <div class="dashboard-grid">
+                
                 <div class="grid-card">
-                    <h3>Cadastrar Nova Atividade</h3>
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #2563eb;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        Cadastrar Nova Atividade
+                    </h3>
+                    
                     <form id="form-criar-desafio-aba">
                         <div class="form-group">
-                            <label>Título</label>
+                            <label>Título da Atividade</label>
                             <input type="text" id="aba-titulo" placeholder="Ex: Trabalho de História" required>
                         </div>
                         <div class="form-group">
                             <label>Descrição</label>
-                            <input type="text" id="aba-descricao" placeholder="Detalhes da atividade...">
+                            <input type="text" id="aba-descricao" placeholder="Descreva a atividade...">
                         </div>
                         <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                             <div>
                                 <label>Pontos</label>
-                                <input type="number" id="aba-pontos" placeholder="50" required>
+                                <input type="number" id="aba-pontos" placeholder="100" required>
                             </div>
                             <div>
-                                <label>Prazo</label>
+                                <label>Prazo (Opcional)</label>
                                 <input type="date" id="aba-prazo">
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Criar Atividade</button>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            Criar Atividade e Atribuir
+                        </button>
                     </form>
                 </div>
 
                 <div class="grid-card">
                     <h3>Atividades Recentes</h3>
-                    <ul class="recent-activities-list">
+                    <ul class="recent-activities-list" id="lista-atividades-recentes">
                         <li>
                             <div><h4>Trabalho de Matemática</h4><p>Entregas: 28 / 35</p></div>
                             <span class="badge badge-green">85%</span>
@@ -132,6 +140,10 @@
                         <li>
                             <div><h4>Redação de Português</h4><p>Entregas: 32 / 35</p></div>
                             <span class="badge badge-green">92%</span>
+                        </li>
+                        <li>
+                            <div><h4>Experimento de Física</h4><p>Entregas: 25 / 35</p></div>
+                            <span class="badge badge-yellow">78%</span>
                         </li>
                     </ul>
                 </div>
@@ -141,24 +153,10 @@
         <div id="tab-relatorios" class="tab-content">
             <div class="grid-card">
                 <h3>Relatório de Desempenho da Turma</h3>
-                <p>Gráficos e estatísticas aparecerão aqui.</p>
+                <p style="color: #718096; margin-top: 1rem;">Gráficos detalhados aparecerão aqui em breve.</p>
             </div>
         </div>
 
-    </div>
-
-    <div id="modal-overlay" class="modal-overlay">
-        <div class="modal-content">
-            <h2>Criar Nova Atividade</h2>
-            <form id="form-criar-desafio" class="modal-form">
-                <div class="form-group"><label>Título</label><input type="text" id="desafio-titulo" required></div>
-                <div class="form-group"><label>Pontos</label><input type="number" id="desafio-pontos" required></div>
-                <div class="form-actions">
-                    <button type="button" id="btn-cancelar-modal" class="btn btn-secondary">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Salvar</button>
-                </div>
-            </form>
-        </div>
     </div>
 
     <script src="../scripts/dashboard-professor.js" defer></script>

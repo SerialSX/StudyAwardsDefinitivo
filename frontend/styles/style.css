@@ -148,6 +148,7 @@ body {
 
 .login-form-container { display: flex; justify-content: center; }
 
+/* Formularo do login */
 .login-card {
     background-color: #ffffff;
     border-radius: 16px;
@@ -208,9 +209,11 @@ body {
 .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
 .dashboard-header h2 { font-size: 2rem; font-weight: 700; color: #1a202c; }
 .dashboard-header p { font-size: 1rem; color: #718096; }
+/*Botão de desafios/atividade*/
 .dashboard-header .btn-primary { background-color: #2563eb; height: 40px; font-size: 0.875rem; }
 .dashboard-header .btn-primary:hover { background-color: #1d4ed8; }
 
+/* Botão Conquistas */
 .btn-outline {
     background-color: transparent;
     color: #9c27b0;
@@ -219,9 +222,9 @@ body {
     height: 40px;
     padding: 0 1rem;
 }
-
 .btn-outline:hover { background-color: #f9fafb; border-color: #cbd5e0; }
 
+/* Cards */
 .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
 .status-card { background-color: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
 .status-card .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -229,26 +232,33 @@ body {
 .status-card .card-body .main-value { font-size: 2.25rem; font-weight: 700; color: #1a202c; display: block; }
 .status-card .card-body .sub-value { font-size: 0.875rem; color: #a0aec0; }
 
+/*Dash*/
 .dashboard-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
 .grid-card { background-color: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); }
 .grid-card h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 1.5rem; }
+
+/*Meta Mensal*/
 .progress-info { display: flex; justify-content: space-between; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem; }
 .progress-bar-container { width: 100%; height: 10px; background-color: #e2e8f0; border-radius: 5px; overflow: hidden; margin-bottom: 0.75rem; }
 .progress-bar { height: 100%; background-color: #4caf50; border-radius: 5px; }
 .meta-description { font-size: 0.875rem; color: #718096; }
 
+/*Presneça*/
 .presence-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
 .presence-list li { display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; }
 
+/*desafio/atividades*/
 .activities-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .activity-card { background-color: #f8f9fa; border-radius: 12px; padding: 1rem; display: grid; grid-template-columns: 1fr auto; grid-template-rows: auto auto; align-items: center; gap: 0.5rem 1rem; }
 .activity-card h4 { grid-column: 1 / 2; font-size: 1rem; font-weight: 600; color: #2d3748; }
 .activity-card p { grid-column: 1 / 2; font-size: 0.875rem; color: #a0aec0; }
 .activity-points { grid-column: 2 / 3; grid-row: 1 / 3; background-color: #e0f2f1; color: #4caf50; font-weight: 600; font-size: 0.875rem; padding: 0.25rem 0.75rem; border-radius: 20px; justify-self: end; align-self: start; }
 .btn-small { grid-column: 1 / -1; height: 40px; font-size: 0.875rem; }
+/*Desafio Concluido*/
 .activity-card.concluded { background-color: #edf2f7; grid-template-columns: 1fr; }
 .activity-status { grid-column: 1 / -1; color: #718096; font-weight: 500; text-align: center; }
 
+/*Dash Professor*/
 .teacher-dashboard-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 1.5rem; }
 .presence-control-card .card-header { display: flex; justify-content: space-between; align-items: center; }
 .date-selector { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #4a5568; }
@@ -257,18 +267,22 @@ body {
 .student-row:last-child { border-bottom: none; padding-bottom: 0; }
 .student-row h4 { font-weight: 500; color: #2d3748; }
 .student-row p { font-size: 0.875rem; color: #a0aec0; }
+/*Botões Presença/Ausencia*/
 .presence-buttons { display: flex; gap: 0.5rem; }
 .btn-presence, .btn-absence { border: 1px solid #e2e8f0; background-color: #f8fafc; color: #a0aec0; font-size: 0.875rem; font-weight: 500; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
 .btn-presence.active { background-color: #4caf50; color: white; border-color: #4caf50; }
 .btn-absence.active { background-color: #f44336; color: white; border-color: #f44336; }
 
+/*Ranking*/
 .performance-list { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; }
 .performance-list li { display: flex; align-items: center; gap: 1rem; }
 .performance-list .rank { background-color: #e3f2fd; color: #2196f3; font-weight: 600; width: 32px; height: 32px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; }
 .performance-list .points { margin-left: auto; font-weight: 500; color: #718096; }
 
+/*pop-up login*/
 .toast-notification { position: fixed; bottom: 2rem; right: 2rem; background-color: #ffffff; color: #2d3748; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); display: flex; align-items: center; gap: 0.75rem; font-weight: 500; }
 
+/*Dash Responsavel*/
 .student-id-card { background-color: #fff; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05); display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
 .student-info { display: flex; align-items: center; gap: 1rem; }
 .student-avatar { width: 60px; height: 60px; border-radius: 50%; background-color: #f3e5f5; display: flex; justify-content: center; align-items: center; }
@@ -310,16 +324,17 @@ body {
 
 
 @media (max-width: 1024px) {
-    .dashboard-grid, .teacher-dashboard-grid, .guardian-dashboard-grid { grid-template-columns: 1fr; }
+    .dashboard-grid, .teacher-dashboard-grid, .guardian-dashboard-grid { grid-template-columns: 1fr; }/*colunas unicas*/
 }
 
 @media (max-width: 768px) {
+    /*colunas unicas*/
     .profile-selection, .status-grid, .activities-grid { grid-template-columns: 1fr; }
     .dashboard-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
 }
 
 
-/* Modal */
+/* Modal pop-up criar desafio*/
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -356,7 +371,7 @@ body {
     margin-top: 2rem;
 }
 
-/* perfil */
+/* Botões inex.html*/
 .btn-profile {
     width: 100%;
     margin-top: 1.5rem;

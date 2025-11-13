@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    //Não deixa os usuarios logarem em tipos não cadastrados
+    // 1. Proteção de Rota
     const usuarioLogadoString = localStorage.getItem('usuarioLogado');
     if (!usuarioLogadoString) {
         console.error('Nenhum usuário logado encontrado. Redirecionando para o login.');
@@ -17,12 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Carrega dados da página
+    // 2. Carrega todos os dados da página
     async function carregarDadosAluno() {
         const token = localStorage.getItem('token');
         if (!token) {
-
-             // Sem token não vai
+             // Se não tiver token, não pode fazer nada
             window.location.href = '../index.html';
             return;
         }
@@ -30,8 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const urlPontuacao = `http://localhost:3000/usuarios/${usuarioLogado.id}/pontuacao`;
             const urlRanking = `http://localhost:3000/ranking`;
-
-            // Busca os desafios para aluno 
+            // Busca os desafios para este aluno específico
             const urlDesafios = `http://localhost:3000/api/desafios?alunoId=${usuarioLogado.id}`; 
             
             const [respostaPontuacao, respostaRanking, respostaDesafios] = await Promise.all([
@@ -64,12 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('ranking-valor').textContent = `N/A`;
                 document.getElementById('ranking-total').textContent = `de ${totalAlunos} alunos`;
             }
-            document.getElementById('presenca-valor').textContent = `...%`; 
+            document.getElementById('presenca-valor').textContent = `...%`; // Placeholder
 
-            // Preenche a lista de desafios
+            // Preenche a lista de desafios (atividades)
             preencherAtividadesDisponiveis(dadosDesafios.desafios);
 
-            // Preenche a meta
+            // Preenche a meta (placeholder)
             const metaPontos = 1500;
             const progressoMeta = Math.round((dadosPontuacao.pontuacao_total / metaPontos) * 100);
             document.querySelector('.progress-info span:nth-child(2)').textContent = `${dadosPontuacao.pontuacao_total} / ${metaPontos} pontos`;
@@ -82,11 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    //Mostra os cards de desafio
+    // 3. Renderiza os cards de desafio
     function preencherAtividadesDisponiveis(desafios) {
         const activitiesGrid = document.querySelector('.activities-grid');
         if (!activitiesGrid) return;
-        activitiesGrid.innerHTML = ''; // Limpa Lista
+        activitiesGrid.innerHTML = ''; // Limpa a lista
 
         if (!desafios || desafios.length === 0) {
             activitiesGrid.innerHTML = '<p>Nenhum desafio disponível no momento.</p>';
@@ -96,7 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
         desafios.forEach(desafio => {
             const card = document.createElement('div');
             card.className = 'activity-card';
-            card.id = `desafio-card-${desafio.aluno_desafio_id}`; // ID para atualizar o card depois do clique
+            // ID para conseguirmos atualizar o card depois do clique
+            card.id = `desafio-card-${desafio.aluno_desafio_id}`; 
 
             if (desafio.status === 'concluido' || desafio.status === 'atrasado') {
                  card.classList.add('concluded');
@@ -130,16 +129,17 @@ document.addEventListener('DOMContentLoaded', () => {
             activitiesGrid.appendChild(card);
         });
 
-        //Event par botão completar desafio
+        // Adiciona o Event Listener para os botões "Completar"
         activitiesGrid.querySelectorAll('.btn-primary').forEach(button => {
             button.addEventListener('click', (event) => {
                 const alunoDesafioId = event.target.dataset.alunoDesafioId;
+                // Chama a função de completar (que agora tem a lógica da API)
                 completarDesafio(alunoDesafioId); 
             });
         });
     }
 
-    // Lógica para completarDesafio 
+    // 4. Lógica para "Completar Desafio" (A PARTE QUE FALTAVA)
     async function completarDesafio(alunoDesafioId) {
         const token = localStorage.getItem('token');
         const botao = document.querySelector(`button[data-aluno-desafio-id="${alunoDesafioId}"]`);
@@ -162,9 +162,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             if (response.ok) {
+                // SUCESSO!
                 alert(`Desafio concluído! Você ganhou +${data.pontosGanhos} pontos!`);
 
-                // Atualiza o card sem recarregar a página
+                // Atualiza a UI (o card) sem recarregar a página
                 card.classList.add('concluded');
                 card.innerHTML = `
                     <div>
@@ -182,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pontuacaoEl.textContent = pontuacaoAtual + data.pontosGanhos;
 
             } else {
-                // Erro da API 
+                // Erro da API (ex: desafio já concluído)
                 alert(`Erro: ${data.erro}`);
                 botao.disabled = false;
                 botao.textContent = 'Marcar como Concluído';

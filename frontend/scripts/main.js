@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileButtons = document.querySelectorAll('.btn-profile');
 
     profileButtons.forEach(button => {
-        //botão
+        //botão do Card
         button.addEventListener('click', () => {
             const profileType = button.dataset.profile;
             
