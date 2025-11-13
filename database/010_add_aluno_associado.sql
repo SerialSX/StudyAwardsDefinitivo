@@ -1,0 +1,1 @@
+ALTER TABLE usuarios ADD COLUMN aluno_associado_id INTEGER REFERENCES usuarios(id);

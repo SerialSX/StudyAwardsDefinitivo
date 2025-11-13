@@ -3,16 +3,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Proteção de Rota
     const usuarioLogadoString = localStorage.getItem('usuarioLogado');
     if (!usuarioLogadoString) {
-        console.error('Nenhum usuário logado encontrado. Redirecionando para o login.');
         window.location.href = '../index.html';
         return;
     }
     const usuarioLogado = JSON.parse(usuarioLogadoString);
 
     if (usuarioLogado.tipo !== 'ALUNO') {
-        console.error('Usuário logado não é um aluno. Acesso negado.');
         alert('Acesso negado. Esta área é apenas para alunos.');
-        localStorage.removeItem('usuarioLogado');
         window.location.href = '../index.html';
         return;
     }
@@ -21,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
     async function carregarDadosAluno() {
         const token = localStorage.getItem('token');
         if (!token) {
-             // Se não tiver token, não pode fazer nada
             window.location.href = '../index.html';
             return;
         }
@@ -29,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const urlPontuacao = `http://localhost:3000/usuarios/${usuarioLogado.id}/pontuacao`;
             const urlRanking = `http://localhost:3000/ranking`;
-            // Busca os desafios para este aluno específico
             const urlDesafios = `http://localhost:3000/api/desafios?alunoId=${usuarioLogado.id}`; 
             
             const [respostaPontuacao, respostaRanking, respostaDesafios] = await Promise.all([
@@ -39,8 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ]);
 
             if (!respostaPontuacao.ok || !respostaRanking.ok || !respostaDesafios.ok) {
-                console.error('Erro ao buscar dados do backend:', respostaPontuacao.status, respostaRanking.status, respostaDesafios.status);
-                alert('Erro ao carregar os dados do dashboard. Tente recarregar a página.');
+                console.error('Erro nas requisições');
+                alert('Erro ao carregar os dados do dashboard.');
                 return;
             }
 
@@ -48,34 +43,38 @@ document.addEventListener('DOMContentLoaded', () => {
             const dadosRanking = await respostaRanking.json();
             const dadosDesafios = await respostaDesafios.json();
 
-            // Preenche o cabeçalho
-            document.getElementById('saudacao-aluno').textContent = `Olá, ${dadosPontuacao.nome}!`;
+            // --- ATUALIZADO: Preenche Cabeçalho e ID ---
+            document.getElementById('saudacao-aluno').textContent = `Olá, ${dadosPontuacao.nome}! 👋`;
+            document.getElementById('id-aluno-display').textContent = usuarioLogado.id; // MOSTRA O ID AQUI
+            
+            // Card Pontuação
             document.getElementById('pontuacao-valor').textContent = dadosPontuacao.pontuacao_total;
             
-            // Preenche o ranking
+            // Card Ranking
             const minhaPosicao = dadosRanking.ranking.findIndex(aluno => aluno.id === usuarioLogado.id) + 1;
             const totalAlunos = dadosRanking.ranking.length;
-            if (minhaPosicao > 0) {
-                document.getElementById('ranking-valor').textContent = `#${minhaPosicao}`;
-                document.getElementById('ranking-total').textContent = `de ${totalAlunos} alunos`;
-            } else {
-                document.getElementById('ranking-valor').textContent = `N/A`;
-                document.getElementById('ranking-total').textContent = `de ${totalAlunos} alunos`;
-            }
-            document.getElementById('presenca-valor').textContent = `...%`; // Placeholder
+            document.getElementById('ranking-valor').textContent = minhaPosicao > 0 ? `#${minhaPosicao}` : 'N/A';
+            document.getElementById('ranking-total').textContent = `/ ${totalAlunos}`;
+            
+            // Card Presença (Placeholder)
+            document.getElementById('presenca-valor').textContent = `92%`; 
 
-            // Preenche a lista de desafios (atividades)
+            // Preenche Atividades
             preencherAtividadesDisponiveis(dadosDesafios.desafios);
 
-            // Preenche a meta (placeholder)
+            // Preenche Meta
             const metaPontos = 1500;
-            const progressoMeta = Math.round((dadosPontuacao.pontuacao_total / metaPontos) * 100);
-            document.querySelector('.progress-info span:nth-child(2)').textContent = `${dadosPontuacao.pontuacao_total} / ${metaPontos} pontos`;
-            document.querySelector('.progress-bar').style.width = `${Math.min(progressoMeta, 100)}%`;
-            document.querySelector('.meta-description').textContent = `Você está a ${Math.max(0, metaPontos - dadosPontuacao.pontuacao_total)} pontos de atingir sua meta!`;
+            const pontuacaoAtual = dadosPontuacao.pontuacao_total;
+            const progressoMeta = Math.min(Math.round((pontuacaoAtual / metaPontos) * 100), 100);
+            
+            const elMetaTexto = document.getElementById('meta-pontos-texto');
+            const elMetaBarra = document.getElementById('meta-barra-progresso');
+
+            if (elMetaTexto) elMetaTexto.textContent = `${pontuacaoAtual} / ${metaPontos}`;
+            if (elMetaBarra) elMetaBarra.style.width = `${progressoMeta}%`;
 
         } catch (error) {
-            console.error('Erro ao carregar os dados do aluno:', error);
+            console.error('Erro JS:', error);
             alert('Erro de conexão ao carregar os dados do dashboard.');
         }
     }
@@ -84,17 +83,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function preencherAtividadesDisponiveis(desafios) {
         const activitiesGrid = document.querySelector('.activities-grid');
         if (!activitiesGrid) return;
-        activitiesGrid.innerHTML = ''; // Limpa a lista
+        activitiesGrid.innerHTML = ''; 
 
         if (!desafios || desafios.length === 0) {
-            activitiesGrid.innerHTML = '<p>Nenhum desafio disponível no momento.</p>';
+            activitiesGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #718096;">Nenhuma atividade pendente!</p>';
             return;
         }
 
         desafios.forEach(desafio => {
             const card = document.createElement('div');
             card.className = 'activity-card';
-            // ID para conseguirmos atualizar o card depois do clique
             card.id = `desafio-card-${desafio.aluno_desafio_id}`; 
 
             if (desafio.status === 'concluido' || desafio.status === 'atrasado') {
@@ -108,19 +106,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            // Mostra o botão ou o status, dependendo do desafio
             if (desafio.status === 'pendente') {
                 cardHTML += `
                     <div class="activity-points">${desafio.pontos} pts</div>
                     <button class="btn btn-primary btn-small" data-aluno-desafio-id="${desafio.aluno_desafio_id}">
-                        Marcar como Concluído
+                        Concluir
                     </button>
                 `;
             } else {
                 let statusTexto = desafio.status.charAt(0).toUpperCase() + desafio.status.slice(1);
                 cardHTML += `
                     <div class="activity-status" style="grid-column: 1 / -1; text-align: right; color: #4a5568; font-weight: 500;">
-                        Status: ${statusTexto} ✓
+                        ${statusTexto} ✓
                     </div>
                 `;
             }
@@ -129,74 +126,47 @@ document.addEventListener('DOMContentLoaded', () => {
             activitiesGrid.appendChild(card);
         });
 
-        // Adiciona o Event Listener para os botões "Completar"
+        // Lógica do botão concluir
         activitiesGrid.querySelectorAll('.btn-primary').forEach(button => {
             button.addEventListener('click', (event) => {
                 const alunoDesafioId = event.target.dataset.alunoDesafioId;
-                // Chama a função de completar (que agora tem a lógica da API)
                 completarDesafio(alunoDesafioId); 
             });
         });
     }
 
-    // 4. Lógica para "Completar Desafio" (A PARTE QUE FALTAVA)
+    // 4. Completar Desafio
     async function completarDesafio(alunoDesafioId) {
         const token = localStorage.getItem('token');
         const botao = document.querySelector(`button[data-aluno-desafio-id="${alunoDesafioId}"]`);
-        const card = document.getElementById(`desafio-card-${alunoDesafioId}`);
-
-        if (!botao || !card) return;
-
+        
+        if (!botao) return;
         botao.disabled = true;
-        botao.textContent = 'Enviando...';
+        botao.textContent = '...';
 
         try {
-            // Chama a API de completar desafio
             const response = await fetch(`http://localhost:3000/api/desafios/completar/${alunoDesafioId}`, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                // SUCESSO!
-                alert(`Desafio concluído! Você ganhou +${data.pontosGanhos} pontos!`);
-
-                // Atualiza a UI (o card) sem recarregar a página
-                card.classList.add('concluded');
-                card.innerHTML = `
-                    <div>
-                        <h4>${card.querySelector('h4').textContent}</h4>
-                        <p>${card.querySelector('p').textContent}</p> 
-                    </div>
-                    <div class="activity-status" style="grid-column: 1 / -1; text-align: right; color: #4a5568; font-weight: 500;">
-                        Status: Concluído ✓
-                    </div>
-                `;
-                
-                // Atualiza a pontuação total na tela
-                const pontuacaoEl = document.getElementById('pontuacao-valor');
-                const pontuacaoAtual = parseInt(pontuacaoEl.textContent);
-                pontuacaoEl.textContent = pontuacaoAtual + data.pontosGanhos;
-
+                alert(`Parabéns! +${data.pontosGanhos} pontos!`);
+                location.reload(); 
             } else {
-                // Erro da API (ex: desafio já concluído)
                 alert(`Erro: ${data.erro}`);
                 botao.disabled = false;
-                botao.textContent = 'Marcar como Concluído';
+                botao.textContent = 'Concluir';
             }
         } catch (error) {
-            // Erro de rede
-            console.error('Erro de rede ao completar desafio:', error);
-            alert('Erro de conexão. Tente novamente.');
+            console.error('Erro ao completar:', error);
+            alert('Erro de conexão.');
             botao.disabled = false;
-            botao.textContent = 'Marcar como Concluído';
+            botao.textContent = 'Concluir';
         }
     }
 
-    // Chuta o início de tudo
     carregarDadosAluno();
 });

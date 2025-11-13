@@ -14,83 +14,80 @@
     <div class="dashboard-container">
         <header class="dashboard-header">
             <div>
-                <h2>Painel do Responsável</h2>
-                <p>Acompanhe o desempenho do seu aluno</p>
+                <h2>Painel do Responsável 👨‍👩‍👧‍👦</h2>
+                <p>Acompanhe o desempenho escolar</p>
             </div>
+            <button class="btn btn-outline" onclick="window.location.href='../index.html'">
+                Sair
+            </button>
         </header>
 
-        <section class="student-id-card">
-            <div class="student-info">
-                <div class="student-avatar">
-                    <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/user-profile-icon.svg" alt="Avatar do Aluno">
+        <section class="student-id-card" style="background: linear-gradient(135deg, #a855f7, #9333ea); color: white; margin-bottom: 2rem; border-radius: 16px; padding: 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.3);">
+            <div class="student-info" style="display: flex; align-items: center; gap: 1.5rem;">
+                <div class="student-avatar" style="background: rgba(255,255,255,0.2); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
                 <div>
-                    <h3 id="nome-aluno">...</h3>
-                    <p id="serie-aluno">...</p>
+                    <h3 id="nome-aluno" style="font-size: 1.5rem; font-weight: 700; margin: 0; color: white;">...</h3>
+                    <p id="serie-aluno" style="color: rgba(255,255,255,0.9); margin: 0;">Turma 9A</p>
                 </div>
             </div>
-            <div id="ranking-badge" class="rank-badge">
+            <div id="ranking-badge" style="background: white; color: #9333ea; padding: 0.5rem 1rem; border-radius: 20px; font-weight: 700;">
                 ...
             </div>
         </section>
 
         <section class="status-grid">
-            <div class="status-card">
-                <div class="card-header"><p>Pontuação Total</p></div>
-                <div class="card-body">
-                    <span id="pontuacao-total" class="main-value">...</span>
-                    <span class="sub-value">Pontos acumulados</span>
+            <div class="status-card" style="background: white; color: #4a5568;">
+                <div>
+                    <h3>Pontuação Total</h3>
+                    <span id="pontuacao-total" class="main-value" style="color: #2563eb;">--</span>
+                </div>
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#eab308" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 </div>
             </div>
-            <div class="status-card">
-                <div class="card-header"><p>Taxa de Presença</p></div>
-                <div class="card-body">
-                    <span id="taxa-presenca" class="main-value">...</span>
-                    <span class="sub-value">Frequência nas aulas</span>
+            <div class="status-card" style="background: white; color: #4a5568;">
+                <div>
+                    <h3>Frequência</h3>
+                    <span id="taxa-presenca" class="main-value" style="color: #16a34a;">--%</span>
+                </div>
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
                 </div>
             </div>
-            <div class="status-card">
-                <div class="card-header"><p>Meta Mensal</p></div>
-                <div class="card-body">
-                    <span id="progresso-meta" class="main-value">...</span>
-                    <span class="sub-value">Progresso da meta</span>
+            <div class="status-card" style="background: white; color: #4a5568;">
+                <div>
+                    <h3>Atividades</h3>
+                    <span id="progresso-meta" class="main-value" style="color: #9333ea;">--</span>
+                </div>
+                <div class="card-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 </div>
             </div>
         </section>
 
         <section class="guardian-dashboard-grid">
             <div class="grid-card">
-                <h3>Evolução do Desempenho</h3>
-                <div id="performance-chart" class="performance-chart">
-                </div>
-                <p class="chart-summary">Evolução positiva de +270 pontos nos últimos 4 meses</p>
-            </div>
-
-            <div class="grid-card">
                 <h3>Atividades Recentes</h3>
                 <ul id="recent-activities-list" class="recent-activities-list">
-                </ul>
+                    </ul>
+            </div>
+            
+            <div class="grid-card">
+                <h3>Progresso da Meta</h3>
+                <div class="progress-info">
+                    <span id="meta-texto">Meta: 1500 pts</span>
+                    <span id="meta-progresso-texto">...</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div id="meta-progress-bar" class="progress-bar" style="width: 0%;"></div>
+                </div>
+                <div class="incentive-message" style="margin-top: 1.5rem;">
+                    <p id="meta-incentivo">Acompanhe o progresso!</p>
+                </div>
             </div>
         </section>
-
-        <section class="grid-card">
-            <h3>Progresso da Meta Mensal</h3>
-            <div class="progress-info">
-                <span id="meta-texto">...</span>
-                <span id="meta-progresso-texto">...</span>
-            </div>
-            <div class="progress-bar-container">
-                <div id="meta-progress-bar" class="progress-bar" style="width: 0%;"></div>
-            </div>
-            <div class="incentive-message">
-                <p id="meta-incentivo">...</p>
-            </div>
-        </section>
-        
-        <div class="toast-notification">
-            <img src="https://raw.githubusercontent.com/LauanAlv/img/main/icons/check-circle-icon.svg" alt="Sucesso">
-            Login realizado com sucesso!
-        </div>
     </div>
 
     <script src="../scripts/dashboard-responsavel.js" defer></script>

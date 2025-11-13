@@ -8,16 +8,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .id-badge {
+            display: inline-block;
+            background-color: #e3f2fd;
+            color: #2563eb;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            border: 1px solid #bfdbfe;
+        }
+    </style>
 </head>
 <body>
 
     <div class="dashboard-container">
         <header class="dashboard-header">
             <div>
-                <h2 id="saudacao-aluno">Olá, Aluno! 👋</h2>
+                <h2 id="saudacao-aluno" style="color: #2d3748;">Olá, Aluno! 👋</h2>
                 <p>Continue assim e alcance o topo do ranking!</p>
+                
+                <div class="id-badge">
+                    ID: # <span id="id-aluno-display">...</span>
+                </div>
             </div>
-            <button class="btn btn-outline">
+            <button class="btn btn-outline" onclick="window.location.href='../index.html'">
                 Sair
             </button>
         </header>
@@ -103,27 +121,23 @@
                     <div class="goal-item">
                         <label>
                             Meta de Pontos Mensal
-                            <span class="badge-blue" style="background: #e3f2fd; color: #2563eb; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">850 / 1000</span>
+                            <span id="meta-pontos-texto" class="badge badge-blue" style="background: #e3f2fd; color: #2563eb;">0 / 1500</span>
                         </label>
                         <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 85%;"></div>
+                            <div id="meta-barra-progresso" class="progress-bar" style="width: 0%;"></div>
                         </div>
                     </div>
 
                     <div class="goal-item">
                         <label>
                             Atividades Concluídas
-                            <span class="badge-green" style="background: #dcfce7; color: #16a34a; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">8 / 12</span>
+                            <span class="badge badge-green" style="background: #dcfce7; color: #16a34a;">8 / 12</span>
                         </label>
                         <div class="progress-bar-container">
                             <div class="progress-bar" style="width: 66%; background-color: #22c55e;"></div>
                         </div>
                     </div>
                 </div>
-
-                <button class="btn btn-primary btn-full">
-                    Ver Ranking Completo
-                </button>
             </div>
         </section>
 
