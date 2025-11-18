@@ -33,7 +33,19 @@ exports.cadastro = (req, res, next) => {
     return res.status(400).json({ erro: "Todos os campos obrigatórios são necessários." });
   }
 
-  // Se for responsável, EXIGE o ID do aluno
+  if (senha.length < 6) {
+    return res.status(400).json({ erro: "A senha deve ter no mínimo 6 caracteres." });
+  }
+
+  if (tipo === 'PROFESSOR') {
+      const CODIGO_SECRETO = "ADMIN123";
+      const { codigoProfessor } = req.body;
+
+      if (!codigoProfessor || codigoProfessor !== CODIGO_SECRETO) {
+          return res.status(403).json({ erro: "Código de verificação de professor inválido ou ausente." });
+      }
+  }
+
   if (tipo === 'RESPONSAVEL' && !alunoId) {
     return res.status(400).json({ erro: "Para cadastrar como Responsável, informe o ID ou Matrícula do Aluno." });
   }
