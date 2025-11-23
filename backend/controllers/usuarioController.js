@@ -93,8 +93,8 @@ exports.login = (req, res, next) => {
       return res.status(404).json({ erro: "Email não encontrado." });
     }
 
-console.log("Senha digitada:", senha);
-    console.log("Hash no banco:", row.senha);
+    console.log("Senha digitada:", senha);
+    console.log("Hash no banco:", row.senha));
 
     bcrypt.compare(senha, row.senha, (err, isMatch) => {
         if (err) { return next(err); }
@@ -104,8 +104,8 @@ console.log("Senha digitada:", senha);
         
         if (!isMatch) {
             return res.status(401).json({ erro: "Senha incorreta." });
-        }
-
+        };
+    
     if (row.senha !== senha) {
       return res.status(401).json({ erro: "Senha incorreta." });
     }
