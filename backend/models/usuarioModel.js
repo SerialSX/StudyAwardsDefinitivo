@@ -7,9 +7,12 @@ exports.findUserByEmail = (email, callback) => {
   });
 };
 
-exports.createUser = (nome, email, hash, tipo, callback) => {
-  const sql = `INSERT INTO usuarios (nome, email, senha, tipo) VALUES (?, ?, ?, ?)`;
-  db.run(sql, [nome, email, hash, tipo], function(err) {
+// --- CORREÇÃO AQUI: Adicionado alunoAssociadoId nos parâmetros ---
+exports.createUser = (nome, email, hash, tipo, alunoAssociadoId, callback) => {
+  // Agora inserimos 5 valores no banco, incluindo o ID do aluno associado
+  const sql = `INSERT INTO usuarios (nome, email, senha, tipo, aluno_associado_id) VALUES (?, ?, ?, ?, ?)`;
+  
+  db.run(sql, [nome, email, hash, tipo, alunoAssociadoId], function(err) {
     if (err) {
       return callback(err);
     }

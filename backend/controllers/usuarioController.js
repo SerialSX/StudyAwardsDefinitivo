@@ -1,6 +1,8 @@
 // 1. IMPORTANTE: Importa o banco de dados
 const { db } = require('../config/database.js');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const usuarioModel = require('../models/usuarioModel.js');
 
 exports.getPontuacao = (req, res, next) => {
   const usuarioId = req.params.id;
@@ -90,6 +92,20 @@ exports.login = (req, res, next) => {
     if (!row) {
       return res.status(404).json({ erro: "Email não encontrado." });
     }
+
+console.log("Senha digitada:", senha);
+    console.log("Hash no banco:", row.senha);
+
+    bcrypt.compare(senha, row.senha, (err, isMatch) => {
+        if (err) { return next(err); }
+        
+        // --- O VEREDITO REAL ---
+        console.log("A SENHA BATEU?", isMatch); // Se der TRUE, está tudo perfeito
+        
+        if (!isMatch) {
+            return res.status(401).json({ erro: "Senha incorreta." });
+        }
+
     if (row.senha !== senha) {
       return res.status(401).json({ erro: "Senha incorreta." });
     }
