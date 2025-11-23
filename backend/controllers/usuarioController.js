@@ -27,48 +27,54 @@ exports.updatePontuacao = (req, res, next) => {
 
 // --- FUNÇÃO DE CADASTRO ATUALIZADA (Com vínculo de Responsável) ---
 exports.cadastro = (req, res, next) => {
-  const { nome, email, senha, tipo, alunoId } = req.body;
+  const { nome, email, senha, tipo, alunoAssociadoId, codigoProfessor } = req.body; // Adicionei codigoProfessor aqui
 
   if (!nome || !email || !senha || !tipo) {
     return res.status(400).json({ erro: "Todos os campos obrigatórios são necessários." });
   }
 
+  // --- 1. SEGURANÇA: Senha Mínima ---
   if (senha.length < 6) {
     return res.status(400).json({ erro: "A senha deve ter no mínimo 6 caracteres." });
   }
 
+  // --- 2. SEGURANÇA: Validação de Professor ---
   if (tipo === 'PROFESSOR') {
-      const CODIGO_SECRETO = "ADMIN123";
-      const { codigoProfessor } = req.body;
-
+      const CODIGO_SECRETO = "ADMIN123"; // Defina a senha da escola aqui
       if (!codigoProfessor || codigoProfessor !== CODIGO_SECRETO) {
-          return res.status(403).json({ erro: "Código de verificação de professor inválido ou ausente." });
+          return res.status(403).json({ erro: "Código da instituição inválido. Você não tem permissão para criar conta de Professor." });
       }
   }
 
-  if (tipo === 'RESPONSAVEL' && !alunoId) {
-    return res.status(400).json({ erro: "Para cadastrar como Responsável, informe o ID ou Matrícula do Aluno." });
+  // Lógica do Responsável (Mantendo o trabalho dos seus colegas)
+  let idDoAluno = null;
+  if (tipo === 'RESPONSAVEL') {
+    if (!alunoAssociadoId) {
+        // Se quiser tornar obrigatório vincular agora, descomente a linha abaixo
+        // return res.status(400).json({ erro: "Responsável deve vincular um ID de aluno." });
+    }
+    idDoAluno = alunoAssociadoId;
   }
 
-  const idDoAluno = (tipo === 'RESPONSAVEL') ? alunoId : null;
-
-  const sql = `INSERT INTO usuarios (nome, email, senha, tipo, aluno_associado_id) VALUES (?, ?, ?, ?, ?)`;
-
-  db.run(sql, [nome, email, senha, tipo, idDoAluno], function(err) {
-    if (err) { 
-        // Verifica erro de email duplicado
-        if (err.message.includes('UNIQUE constraint failed')) {
-            return res.status(400).json({ erro: "Este email já está cadastrado." });
-        }
-        return next(err); 
-    }
+  bcrypt.hash(senha, 10, (err, hash) => {
+    if (err) { return next(err); }
     
-    res.status(201).json({
-      id: this.lastID,
-      nome: nome,
-      email: email,
-      tipo: tipo,
-      aluno_associado_id: idDoAluno
+    // Chama o model (que seus colegas atualizaram para aceitar 5 argumentos)
+    usuarioModel.createUser(nome, email, hash, tipo, idDoAluno, (err, resultado) => {
+      if (err) { 
+          if (err.message && err.message.includes('UNIQUE constraint failed')) {
+              return res.status(400).json({ erro: "Este email já está cadastrado." });
+          }
+          return next(err); 
+      }
+      
+      res.status(201).json({
+        id: resultado.id, // O model retorna { id: this.lastID }
+        nome: nome,
+        email: email,
+        tipo: tipo,
+        aluno_associado_id: idDoAluno
+      });
     });
   });
 };

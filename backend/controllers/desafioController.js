@@ -57,61 +57,37 @@ exports.criarDesafio = (req, res, next) => {
 exports.completarDesafio = (req, res, next) => {
   const alunoDesafioId = req.params.id;
   const alunoId = req.usuario.id;
-  
-  // Busca o desafio para saber quantos pontos ele vale
-  const sqlGetDesafio = `
-    SELECT 
-      ad.status, 
-      d.pontos,
-      d.id as desafio_id
-    FROM aluno_desafios ad
-    JOIN desafios d ON ad.desafio_id = d.id
+  // Pega o caminho do arquivo se ele foi enviado
+  const comprovantePath = req.file ? req.file.path : null; 
+
+  const sqlCheck = `
+    SELECT ad.status 
+    FROM aluno_desafios ad 
     WHERE ad.id = ? AND ad.aluno_id = ?
   `;
 
-  db.get(sqlGetDesafio, [alunoDesafioId, alunoId], (err, row) => {
-    if (err) { return next(err); }
-    if (!row) {
-      return res.status(404).json({ erro: "Desafio não encontrado." });
-    }
+  db.get(sqlCheck, [alunoDesafioId, alunoId], (err, row) => {
+    if (err) return next(err);
+    if (!row) return res.status(404).json({ erro: "Desafio não encontrado." });
+    
     if (row.status !== 'pendente') {
-      return res.status(400).json({ erro: `Este desafio já está com status: ${row.status}` });
+      return res.status(400).json({ erro: `Desafio já está com status: ${row.status}` });
     }
 
-    const pontosGanhos = row.pontos;
+    // ATUALIZAÇÃO: Salva status 'em_analise' E o caminho da imagem
+    const sqlUpdate = `
+      UPDATE aluno_desafios 
+      SET status = 'em_analise', data_conclusao = DATETIME('now'), comprovante_path = ? 
+      WHERE id = ?
+    `;
 
-    // Inicia transação para atualizar status E pontos do aluno
-    db.serialize(() => {
-      db.run('BEGIN TRANSACTION');
-
-      const sqlUpdateStatus = `
-        UPDATE aluno_desafios 
-        SET status = 'concluido', data_conclusao = DATETIME('now') 
-        WHERE id = ?
-      `;
-      db.run(sqlUpdateStatus, [alunoDesafioId], function(err) {
-        if (err) {
-          db.run('ROLLBACK');
-          return next(err);
-        }
-
-        const sqlUpdatePontos = `
-          UPDATE usuarios 
-          SET pontuacao_total = pontuacao_total + ? 
-          WHERE id = ?
-        `;
-        db.run(sqlUpdatePontos, [pontosGanhos, alunoId], function(err) {
-          if (err) {
-            db.run('ROLLBACK');
-            return next(err);
-          }
-
-          db.run('COMMIT');
-          res.json({
-            message: "Desafio concluído com sucesso!",
-            pontosGanhos: pontosGanhos
-          });
-        });
+    db.run(sqlUpdate, [comprovantePath, alunoDesafioId], function(err) {
+      if (err) return next(err);
+      
+      res.json({ 
+        message: "Desafio enviado com comprovante! Aguarde a aprovação.",
+        status: "em_analise",
+        comprovante: comprovantePath
       });
     });
   });

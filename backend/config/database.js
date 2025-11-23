@@ -27,8 +27,19 @@ const criarTabelas = () => {
     db.run(`CREATE TABLE IF NOT EXISTS penalidades (id INTEGER PRIMARY KEY AUTOINCREMENT, aluno_id INTEGER NOT NULL, motivo TEXT NOT NULL, pontos_deduzidos INTEGER DEFAULT 0, data TEXT NOT NULL, FOREIGN KEY (aluno_id) REFERENCES usuarios (id))`);
     db.run(`CREATE TABLE IF NOT EXISTS frequencia (id INTEGER PRIMARY KEY AUTOINCREMENT, aluno_id INTEGER NOT NULL, data_falta TEXT NOT NULL, registrado_por_professor_id INTEGER, FOREIGN KEY (aluno_id) REFERENCES usuarios (id))`);
     db.run(`CREATE TABLE IF NOT EXISTS desafios (id INTEGER PRIMARY KEY AUTOINCREMENT, titulo TEXT NOT NULL, descricao TEXT, pontos INTEGER NOT NULL, prazo_final TEXT, criado_por_professor_id INTEGER, FOREIGN KEY (criado_por_professor_id) REFERENCES usuarios (id))`);
-    db.run(`CREATE TABLE IF NOT EXISTS aluno_desafios (id INTEGER PRIMARY KEY AUTOINCREMENT, aluno_id INTEGER NOT NULL, desafio_id INTEGER NOT NULL, status TEXT NOT NULL DEFAULT 'pendente', data_conclusao TEXT, FOREIGN KEY (aluno_id) REFERENCES usuarios (id), FOREIGN KEY (desafio_id) REFERENCES desafios (id))`);
+    db.run(`CREATE TABLE IF NOT EXISTS aluno_desafios (
+      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+      aluno_id INTEGER NOT NULL, 
+      desafio_id INTEGER NOT NULL, 
+      status TEXT NOT NULL DEFAULT 'pendente', 
+      data_conclusao TEXT, 
+      comprovante_path TEXT,  -- <--- ADICIONE ISTO
+      FOREIGN KEY (aluno_id) REFERENCES usuarios (id), 
+      FOREIGN KEY (desafio_id) REFERENCES desafios (id)
+    )`);
   });
 };
+
+
 
 module.exports = { db, criarTabelas };
