@@ -10,20 +10,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Lógica para Mostrar/Esconder o campo de Aluno ID
     radiosTipo.forEach(radio => {
         radio.addEventListener('change', (e) => {
-            console.log("Mudou o tipo para:", e.target.value); // Log para debug
+            const tipo = e.target.value;
+            
+            // Elementos visuais
+            const campoResponsavel = document.getElementById('campo-aluno-container');
+            const campoProfessor = document.getElementById('campo-professor-container'); // <--- NOVO
+            const inputCodigoProf = document.getElementById('codigoProfessor'); // <--- NOVO
 
-            if (e.target.value === 'RESPONSAVEL') {
-                // Se for responsável, MOSTRA o campo
-                if(campoAlunoContainer) {
-                    campoAlunoContainer.style.display = 'block';
-                    inputAlunoId.required = true;
+            // Reseta tudo primeiro (esconde tudo)
+            if(campoResponsavel) {
+                campoResponsavel.style.display = 'none';
+                document.getElementById('alunoId').required = false;
+            }
+            if(campoProfessor) { // <--- NOVO
+                campoProfessor.style.display = 'none';
+                inputCodigoProf.required = false;
+            }
+
+            // Ativa o específico
+            if (tipo === 'RESPONSAVEL') {
+                if(campoResponsavel) {
+                    campoResponsavel.style.display = 'block';
+                    document.getElementById('alunoId').required = true;
                 }
-            } else {
-                // Se não, ESCONDE
-                if(campoAlunoContainer) {
-                    campoAlunoContainer.style.display = 'none';
-                    inputAlunoId.required = false;
-                    inputAlunoId.value = ''; 
+            } else if (tipo === 'PROFESSOR') { // <--- BLOCO NOVO
+                if(campoProfessor) {
+                    campoProfessor.style.display = 'block';
+                    inputCodigoProf.required = true;
                 }
             }
         });
@@ -44,12 +57,16 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const alunoId = document.getElementById('alunoId').value;
 
+            const codigoProfessorValor = document.getElementById('codigoProfessor').value;
+
             const dadosCadastro = {
                 nome: nome,
                 email: email,
                 senha: senha,
                 tipo: tipo,
-                alunoId: alunoId ? parseInt(alunoId) : null
+                alunoId: alunoId ? parseInt(alunoId) : null,
+                // Envia o código SE for professor
+                codigoProfessor: (tipo === 'PROFESSOR') ? codigoProfessorValor : undefined
             };
 
             try {

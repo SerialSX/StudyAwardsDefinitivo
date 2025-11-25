@@ -39,14 +39,6 @@
                         <input type="password" id="senha" placeholder="Crie uma senha" required>
                     </div>
 
-                    <div class="form-group" id="campo-aluno-container" style="display: none;">
-                        <label for="alunoId">ID do Aluno (Filho)</label>
-                        <input type="number" id="alunoId" placeholder="Digite o ID do aluno (ex: 1)">
-                        <p style="font-size: 0.75rem; color: #718096; margin-top: 0.25rem;">
-                            *Necessário para vincular os dados do aluno.
-                        </p>
-                    </div>
-
                     <div class="form-group">
                         <label>Eu sou:</label>
                         <div class="radio-group">
@@ -63,6 +55,20 @@
                                 Responsável
                             </label>
                         </div>
+                    </div>
+
+                    <div class="form-group" id="campo-professor-container" style="display: none;">
+                        <label for="codigoProfessor" style="color: #d97706; font-weight: bold;">Código da Instituição</label>
+                        <input type="password" id="codigoProfessor" placeholder="Senha Mestra (Ex: ADMIN123)">
+                        <small style="font-size: 0.75rem; color: #718096;">Obrigatório para cadastrar Professor.</small>
+                    </div>
+
+                    <div class="form-group" id="campo-aluno-container" style="display: none;">
+                        <label for="alunoId">ID do Aluno (Filho)</label>
+                        <input type="number" id="alunoId" placeholder="Digite o ID do aluno (ex: 1)">
+                        <p style="font-size: 0.75rem; color: #718096; margin-top: 0.25rem;">
+                            *Necessário para vincular os dados do aluno.
+                        </p>
                     </div>
 
                     <div class="form-actions">
