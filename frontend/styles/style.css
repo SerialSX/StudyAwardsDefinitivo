@@ -1,27 +1,23 @@
 /* frontend/styles/style.css */
 
 :root {
-    /* --- MODO CLARO "BLUE TECH" (Inspirado no Card de Pontuação) --- */
+    /* --- MODO CLARO "BLUE TECH" --- */
+
+    --bg-body: #244064;
+    --bg-card: #ffffff;
     
-    /* Fundo: Não é branco puro. É um azul muiito pálido (quase branco) */
-    --bg-body: #92c1ff; /* (Blue 50) - Confortável para os olhos */
-    --bg-card: #ffffff; /* Card Branco puro para destacar do fundo */
+    --text-primary: #8fa4e7;
+    --text-secondary: #475569;
     
-    /* Textos: Azul Marinho Profundo (para contraste) e Cinza Azulado */
-    --text-primary: #172554; /* (Blue 950) Quase preto, mas com tom azul */
-    --text-secondary: #475569; /* (Slate 600) */
-    
-    /* O AZUL EXATO DO CARD DE PONTUAÇÃO */
     --primary-color: #2563eb; 
     --primary-hover: #1d4ed8;
     
-    /* Bordas sutis em azul claro */
-    --border-color: #dbeafe; /* (Blue 100) */
-    --shadow-color: rgba(37, 99, 235, 0.1); /* Sombra levemente azulada */
+    --border-color: #dbeafe;
+    --shadow-color: rgba(37, 99, 235, 0.1);
     
     /* Gradiente Suave (Mesma lógica do Dark Mode, mas claro) */
     --bg-gradiente: 
-        radial-gradient(at 0% 0%, #dbeafe 0%, transparent 50%), /* Brilho azul claro na esq */
+        radial-gradient(at 0% 0%, #132c4d 0%, transparent 50%), /* Brilho azul claro na esq */
         radial-gradient(at 100% 100%, #3c94ff 0%, transparent 50%); /* Brilho azul claro na dir */
 }
 
@@ -30,7 +26,7 @@
 body.dark-mode {
     --bg-body: #020617; /* Um preto com um toque azulado imperceptível (Slate 950) */
     --bg-card: #1e293b; /* Cinza escuro para os cards */
-    --text-primary: #f8fafc; /* Branco gelo */
+    --text-primary: #c5daff; /* Branco gelo */
     --text-secondary: #94a3b8; /* Cinza claro */
     
     --primary-color: #3b82f6; /* Azul um pouco mais vivo pra contrastar com o preto */
@@ -98,12 +94,31 @@ a, .main-header h1, h3 svg {
     color: var(--primary-color) !important; /* Agora eles ficam azul escuro no dark mode */
 }
 
-/* Ajuste específico para os cards coloridos do topo (não ficarem apagados) */
+/* --- TRATAMENTO INTELIGENTE DOS CARDS DE STATUS (Fim do Arquivo) --- */
+
+/* 1. Regra Padrão (Para cards do Professor - Texto Escuro) */
 .status-card {
-    border: none;
-    color: white !important; /* Texto branco sempre */
+    background-color: var(--bg-card) !important;
+    color: var(--text-secondary) !important; 
+    border: 1px solid var(--border-color);
 }
-.status-card h3, .status-card span {
+.status-card h3, .status-card span, .status-card svg {
+    color: var(--text-primary) !important; /* Títulos escuros no painel prof */
+}
+
+/* 2. Regra de Exceção (Só para os Cards Coloridos do Aluno - Texto Branco) */
+/* Essas classes .card-blue etc estão no HTML do aluno */
+.status-card.card-blue,
+.status-card.card-green,
+.status-card.card-purple {
+    border: none; 
+    background-color: transparent !important; /* O fundo vem do gradiente linear */
+}
+
+/* Força texto branco APENAS nos coloridos */
+.status-card.card-blue *, 
+.status-card.card-green *, 
+.status-card.card-purple * {
     color: white !important;
 }
 
@@ -141,7 +156,7 @@ a, .main-header h1, h3 svg {
 }
 
 .profile-card {
-    background-color: #ffffff;
+    background-color: #adadad;
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
@@ -1023,3 +1038,50 @@ a, .main-header h1, h3 svg {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* --- ESTILOS DO PAINEL DE CORREÇÃO (ADAPTÁVEL) --- */
+
+/* 1. Configuração Base (Modo Claro - Amarelo) */
+.correction-panel {
+    background-color: #fffbeb; /* Fundo Amarelo Claro */
+    border: 1px solid #fbbf24; /* Borda Laranja */
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.correction-panel h3 {
+    color: #d97706 !important; /* Título Laranja Escuro */
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem;
+}
+
+/* 2. Configuração do Modo Escuro (O que você pediu) */
+body.dark-mode .correction-panel {
+    /* Fundo: Transparente ou igual ao fundo da página (Cinza Chumbo) */
+    background-color: var(--bg-body); 
+    border: 1px solid var(--border-color);
+}
+
+body.dark-mode .correction-panel h3 {
+    /* Título: Branco/Claro para dar leitura no fundo escuro */
+    /* (Preto aqui ficaria invisível) */
+    color: var(--text-primary) !important; 
+}
+
+/* 3. Cards Internos (Os retângulos de cada aluno) */
+/* O JavaScript cria eles com style branco fixo, vamos forçar o tema aqui */
+#lista-correcoes > div {
+    background-color: var(--bg-card) !important; /* Cinza do Card no Dark Mode */
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    box-shadow: none !important; /* Remove sombra pra ficar "flat" se quiser */
+}
+
+/* Arruma as cores dos textos dentro do cardzinho */
+#lista-correcoes strong { color: var(--text-primary) !important; } /* Nome do Aluno */
+#lista-correcoes p { color: var(--text-secondary) !important; } /* Descrição */
+#lista-correcoes a { color: var(--primary-color) !important; } /* Link "Ver Foto" */

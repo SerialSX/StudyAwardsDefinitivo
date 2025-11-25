@@ -183,18 +183,14 @@ exports.avaliarEntrega = (req, res, next) => {
     // Se aprovou, temos que somar os pontos no usuário
     if (aprovado) {
         db.get(`SELECT pontos FROM desafios WHERE id = ?`, [row.desafio_id], (err, desafio) => {
-            // Transação pra garantir que tudo funciona junto
             db.serialize(() => {
                 db.run('BEGIN TRANSACTION');
-                // 1. Muda status da tarefa
                 db.run(`UPDATE aluno_desafios SET status = ? WHERE id = ?`, [novoStatus, id]);
-                // 2. Dá os pontos pro aluno
                 db.run(`UPDATE usuarios SET pontuacao_total = pontuacao_total + ? WHERE id = ?`, [desafio.pontos, row.aluno_id]);
                 db.run('COMMIT', () => res.json({ message: "Aprovado com sucesso!" }));
             });
         });
     } else {
-        // Se rejeitou, só muda o status e apaga o comprovante pra ele mandar outro
         db.run(`UPDATE aluno_desafios SET status = ?, comprovante_path = NULL WHERE id = ?`, [novoStatus, id], (err) => {
             res.json({ message: "Rejeitado. O aluno terá que enviar de novo." });
         });

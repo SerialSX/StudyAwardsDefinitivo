@@ -96,9 +96,6 @@ exports.login = (req, res, next) => {
         if (!isMatch) {
             return res.status(401).json({ erro: "Senha incorreta." });
         }
-    
-        // CORREÇÃO 2: Apaguei o bloco 'if (row.senha !== senha)' antigo que estava aqui.
-        // Ele impedia o login de funcionar porque comparava hash com texto puro.
 
         const payload = {
             id: row.id,
