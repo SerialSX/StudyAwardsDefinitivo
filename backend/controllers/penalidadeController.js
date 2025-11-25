@@ -1,5 +1,5 @@
 const penalidadeModel = require('../models/penalidadeModel.js');
-const usuarioModel = require('../models/usuarioModel.js'); // Precisamos dele para atualizar a pontuação
+const usuarioModel = require('../models/usuarioModel.js');
 
 // 1. Lógica para GET /alunos/:id/penalidades
 exports.getPenalidades = (req, res, next) => {

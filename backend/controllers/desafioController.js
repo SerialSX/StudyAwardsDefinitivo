@@ -1,4 +1,3 @@
-// ADICIONEI ESTA LINHA:
 const { db } = require('../config/database.js');
 
 exports.getDesafiosAluno = (req, res, next) => {
@@ -57,7 +56,6 @@ exports.criarDesafio = (req, res, next) => {
 exports.completarDesafio = (req, res, next) => {
   const alunoDesafioId = req.params.id;
   const alunoId = req.usuario.id;
-  // Pega o caminho do arquivo se ele foi enviado
   const comprovantePath = req.file ? req.file.path : null; 
 
   const sqlCheck = `
@@ -74,7 +72,6 @@ exports.completarDesafio = (req, res, next) => {
       return res.status(400).json({ erro: `Desafio já está com status: ${row.status}` });
     }
 
-    // ATUALIZAÇÃO: Salva status 'em_analise' E o caminho da imagem
     const sqlUpdate = `
       UPDATE aluno_desafios 
       SET status = 'em_analise', data_conclusao = DATETIME('now'), comprovante_path = ? 
@@ -93,7 +90,7 @@ exports.completarDesafio = (req, res, next) => {
   });
 };
 
-// ATRIBUIR A TODOS (Lógica Recursiva para evitar travamento do banco)
+// ATRIBUIR A TODOS (Lógica Recursiva para evitar travamento do banco)z
 exports.atribuirDesafioParaTodos = (req, res, next) => {
   const { desafio_id } = req.body;
 
@@ -147,7 +144,6 @@ exports.atribuirDesafioParaTodos = (req, res, next) => {
   });
 };
 
-// 1. Busca tudo que está com status 'em_analise'
 exports.listarEntregasPendentes = (req, res, next) => {
   const sql = `
     SELECT 
@@ -168,19 +164,15 @@ exports.listarEntregasPendentes = (req, res, next) => {
   });
 };
 
-// 2. Professor Aprova (Dá pontos) ou Rejeita
 exports.avaliarEntrega = (req, res, next) => {
-  const { id } = req.params; // ID da entrega
-  const { aprovado } = req.body; // true ou false
+  const { id } = req.params;
+  const { aprovado } = req.body;
 
-  // Se aprovar, vira 'concluido'. Se rejeitar, volta pra 'pendente' pro aluno refazer.
   const novoStatus = aprovado ? 'concluido' : 'pendente'; 
 
-  // Pega os dados pra saber quantos pontos dar
   db.get(`SELECT aluno_id, desafio_id FROM aluno_desafios WHERE id = ?`, [id], (err, row) => {
     if (err || !row) return res.status(404).json({ erro: "Entrega não encontrada" });
 
-    // Se aprovou, temos que somar os pontos no usuário
     if (aprovado) {
         db.get(`SELECT pontos FROM desafios WHERE id = ?`, [row.desafio_id], (err, desafio) => {
             db.serialize(() => {

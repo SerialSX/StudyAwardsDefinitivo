@@ -1,4 +1,3 @@
-// ADICIONEI ESTA LINHA:
 const { db } = require('../config/database.js');
 
 exports.getRanking = (req, res, next) => { 

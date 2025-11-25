@@ -1,4 +1,4 @@
-// 1. IMPORTANTE: Importa o banco de dados
+// 1 - Importa o banco de dados
 const { db } = require('../config/database.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
