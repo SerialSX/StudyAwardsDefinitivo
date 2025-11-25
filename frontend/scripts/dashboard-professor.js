@@ -206,4 +206,63 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     carregarDadosProfessor();
+
+    async function carregarCorrecoes() {
+    const token = localStorage.getItem('token');
+    const divLista = document.getElementById('lista-correcoes');
+
+    // 1. Pede pro backend a lista de pendentes
+    const res = await fetch('http://localhost:3000/api/desafios/pendentes', {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    // 2. Limpa a div
+    divLista.innerHTML = '';
+
+    if (!data.entregas || data.entregas.length === 0) {
+        divLista.innerHTML = '<p>Nenhuma tarefa pendente. Tudo em dia! 😎</p>';
+        return;
+    }
+
+    // 3. Cria um card para cada entrega
+    data.entregas.forEach(entrega => {
+        // Arruma o link da imagem
+        const imgUrl = `http://localhost:3000/${entrega.comprovante_path}`;
+
+        const card = document.createElement('div');
+        card.style.cssText = "background: white; padding: 10px; margin-top: 10px; border-radius: 8px; border: 1px solid #ddd;";
+        
+        card.innerHTML = `
+            <strong>Aluno: ${entrega.nome_aluno}</strong> <br>
+            Tarefa: ${entrega.titulo_desafio} (${entrega.pontos} pts) <br>
+            <a href="${imgUrl}" target="_blank" style="color: blue; text-decoration: underline;">Ver Foto</a>
+            <br><br>
+            <button onclick="avaliar(${entrega.aluno_desafio_id}, true)" style="background: green; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">Aprovar ✅</button>
+            <button onclick="avaliar(${entrega.aluno_desafio_id}, false)" style="background: red; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer;">Rejeitar ❌</button>
+        `;
+        divLista.appendChild(card);
+    });
+}
+
+// Função que os botões chamam
+window.avaliar = async (id, aprovou) => {
+    const token = localStorage.getItem('token');
+    if(!confirm("Tem certeza?")) return;
+
+    await fetch(`http://localhost:3000/api/desafios/avaliar/${id}`, {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json', 
+            'Authorization': `Bearer ${token}` 
+        },
+        body: JSON.stringify({ aprovado: aprovou })
+    });
+
+    alert("Feito!");
+    carregarCorrecoes(); // Atualiza a lista na hora
+};
+
+// Chama a função assim que abrir a tela
+carregarCorrecoes();
 });

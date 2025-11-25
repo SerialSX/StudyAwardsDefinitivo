@@ -141,16 +141,27 @@
             </div>
         </section>
 
-        <section class="grid-card" style="display: block;">
-            <h3>
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                Atividades Disponíveis
+        <section class="grid-card" style="display: block; margin-top: 2rem;">
+            <h3 style="color: #d97706; display: flex; align-items: center; gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10"/><path d="M18.4 10a9 9 0 1 1-6-8.5"/></svg>
+                Atividades Pendentes
             </h3>
-            <div class="activities-grid">
+            <div id="container-pendentes" class="activities-grid">
                 </div>
         </section>
-    </div>
 
-    <script src="../scripts/dashboard-aluno.js" defer></script>
+        <section class="grid-card" style="display: block; margin-top: 2rem;">
+            <h3 style="color: #16a34a; display: flex; align-items: center; gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Atividades Realizadas
+            </h3>
+            <div id="container-realizadas" class="activities-grid">
+                 <p style="color: #718096;grid-column: 1 / -1;">Nenhuma atividade concluída ainda.</p>
+            </div>
+        </section>
+
+    </div> <script src="../scripts/dashboard-aluno.js" defer></script>
+    <script src="../scripts/theme.js"></script>
+    <script src="scripts/theme.js"></script>
 </body>
 </html>

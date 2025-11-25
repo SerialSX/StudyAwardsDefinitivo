@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { db, criarTabelas } = require('./config/database.js'); 
 const rankingRoutes = require('./routes/rankingRoutes.js');
 const usuarioRoutes = require('./routes/usuarioRoutes.js');
@@ -21,6 +22,8 @@ app.use('/', usuarioRoutes);
 app.use('/', penalidadeRoutes);
 app.use('/', desafioRoutes);
 app.use(errorHandler);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
   res.send('Servidor funcionando e conectado ao banco de dados!');

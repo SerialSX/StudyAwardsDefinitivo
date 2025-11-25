@@ -1,24 +1,110 @@
+/* frontend/styles/style.css */
+
+:root {
+    /* --- MODO CLARO "BLUE TECH" (Inspirado no Card de Pontuação) --- */
+    
+    /* Fundo: Não é branco puro. É um azul muiito pálido (quase branco) */
+    --bg-body: #92c1ff; /* (Blue 50) - Confortável para os olhos */
+    --bg-card: #ffffff; /* Card Branco puro para destacar do fundo */
+    
+    /* Textos: Azul Marinho Profundo (para contraste) e Cinza Azulado */
+    --text-primary: #172554; /* (Blue 950) Quase preto, mas com tom azul */
+    --text-secondary: #475569; /* (Slate 600) */
+    
+    /* O AZUL EXATO DO CARD DE PONTUAÇÃO */
+    --primary-color: #2563eb; 
+    --primary-hover: #1d4ed8;
+    
+    /* Bordas sutis em azul claro */
+    --border-color: #dbeafe; /* (Blue 100) */
+    --shadow-color: rgba(37, 99, 235, 0.1); /* Sombra levemente azulada */
+    
+    /* Gradiente Suave (Mesma lógica do Dark Mode, mas claro) */
+    --bg-gradiente: 
+        radial-gradient(at 0% 0%, #dbeafe 0%, transparent 50%), /* Brilho azul claro na esq */
+        radial-gradient(at 100% 100%, #3c94ff 0%, transparent 50%); /* Brilho azul claro na dir */
+}
+
+/* --- MODO ESCURO (Dark Mode) --- */
+/* --- OPÇÃO 1: MODO ESCURO "ECLIPSE" --- */
+body.dark-mode {
+    --bg-body: #020617; /* Um preto com um toque azulado imperceptível (Slate 950) */
+    --bg-card: #1e293b; /* Cinza escuro para os cards */
+    --text-primary: #f8fafc; /* Branco gelo */
+    --text-secondary: #94a3b8; /* Cinza claro */
+    
+    --primary-color: #3b82f6; /* Azul um pouco mais vivo pra contrastar com o preto */
+    --primary-hover: #2563eb;
+    
+    --border-color: #1e293b; /* Borda bem sutil */
+    --shadow-color: rgba(0, 0, 0, 0.7);
+
+    /* AQUI ESTÁ A MUDANÇA DO GRADIENTE */
+    --bg-gradiente: 
+        /* Esquerda: Cinza Muito Escuro (quase preto) */
+        radial-gradient(at 0% 0%, #090c14 0%, transparent 50%), 
+        /* Direita: O Azul Profundo */
+        radial-gradient(at 100% 0%, #09143a 0%, transparent 50%);
+}
+
+/* Aplicação Global */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
-/* Fundo */
 body {
     font-family: 'Poppins', sans-serif;
-    color: #4a5568;
     min-height: 100vh;
+    background-color: var(--bg-body);
+    background-image: var(--bg-gradiente); 
+    background-attachment: fixed;
+    color: var(--text-secondary);
+}
 
-    /* Fundo cor base */
-    background-color: #e2e8f0; 
+/* FORÇAR AS CORES NOS ELEMENTOS */
 
-    /* Luzes */
-    background-image: 
-        radial-gradient(at 0% 0%, #e3f2fd 0%, transparent 40%),
-        radial-gradient(at 100% 0%, #e8f5e9 0%, transparent 40%),
-        radial-gradient(at 0% 100%, #f3e5f5 0%, transparent 40%);
-        background-attachment: fixed;  /* Deixa o fundo fixo */
+/* Títulos */
+h1, h2, h3, h4, strong {
+    color: var(--text-primary) !important;
+}
+
+/* Todos os Cards */
+.login-card, .profile-card, .status-card, .grid-card, .student-list-container, .student-id-card, .modal-content, .activity-card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color);
+}
+
+/* Inputs */
+input, select, textarea {
+    background-color: var(--bg-body) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* ONDE A MÁGICA DO AZUL ACONTECE */
+/* Botões, Títulos Azuis, Ícones e Links vão obedecer a variável do azul */
+.btn-primary, .btn-aluno {
+    background-color: var(--primary-color) !important;
+}
+.btn-primary:hover, .btn-aluno:hover {
+    background-color: var(--primary-hover) !important;
+}
+
+/* Textos que eram azuis fixos */
+a, .main-header h1, h3 svg {
+    color: var(--primary-color) !important; /* Agora eles ficam azul escuro no dark mode */
+}
+
+/* Ajuste específico para os cards coloridos do topo (não ficarem apagados) */
+.status-card {
+    border: none;
+    color: white !important; /* Texto branco sempre */
+}
+.status-card h3, .status-card span {
+    color: white !important;
 }
 
 .main-container {

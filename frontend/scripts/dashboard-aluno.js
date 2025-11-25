@@ -60,96 +60,116 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderizarDesafios(desafios) {
-        const activitiesGrid = document.querySelector('.grid-card'); // Ajuste o seletor se necessário, baseando-se no seu HTML
-        
-        // Limpa o conteúdo atual (mas mantém o título se houver)
-        // O ideal é ter um container específico para a lista. 
-        // Vou assumir que você vai criar ou limpar a lista existente.
-        // No seu HTML original, a estrutura era um pouco diferente, vou recriar a lista aqui.
-        
-        // Procura se já existe uma lista, se não, cria ou limpa o container de atividades
-        let listaContainer = document.querySelector('.activities-list-container');
-        if (!listaContainer) {
-            // Se não tiver container específico, usamos o grid-card das atividades disponíveis
-            // Nota: Baseado no seu HTML, as atividades ficavam na segunda section .grid-card
-            const sections = document.querySelectorAll('.grid-card');
-            const activitySection = sections[1]; // A segunda section é a de atividades
-            if (activitySection) {
-                activitySection.innerHTML = `
-                    <h3>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                        Atividades Disponíveis
-                    </h3>
-                    <div class="activities-list-container" style="display: grid; gap: 1rem; margin-top: 1rem;"></div>
-                `;
-                listaContainer = activitySection.querySelector('.activities-list-container');
-            }
-        }
-        
-        if (!listaContainer) return;
-        listaContainer.innerHTML = ''; // Limpa
+    // --- FUNÇÃO DE RENDERIZAÇÃO ATUALIZADA ---
+function renderizarDesafios(desafios) {
+    const containerPendentes = document.getElementById('container-pendentes');
+    const containerRealizadas = document.getElementById('container-realizadas');
 
-        if (desafios.length === 0) {
-            listaContainer.innerHTML = '<p style="color: #718096;">Nenhum desafio pendente no momento.</p>';
-            return;
+    // Limpa os containers e aplica estilo de grid
+    [containerPendentes, containerRealizadas].forEach(c => {
+        if(c) {
+            c.innerHTML = '';
+            c.style.display = 'grid';
+            // Grid responsivo: cria colunas de no mínimo 250px
+            c.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
+            c.style.gap = '1rem';
         }
+    });
 
-        desafios.forEach(desafio => {
+    // --- PARTE 1: FILTRAR OS DADOS ---
+    // Pendentes = status 'pendente' ou 'atrasado'
+    const pendentesList = desafios.filter(d => d.status === 'pendente' || d.status === 'atrasado');
+    // Realizadas = status 'em_analise' ou 'concluido'
+    const realizadasList = desafios.filter(d => d.status === 'em_analise' || d.status === 'concluido');
+
+
+    // --- PARTE 2: RENDERIZAR PENDENTES (Igual era antes) ---
+    if (pendentesList.length === 0) {
+        containerPendentes.innerHTML = '<p style="color: #718096; grid-column: 1 / -1;">Nenhuma atividade pendente! 🎉</p>';
+    } else {
+        pendentesList.forEach(desafio => {
             const card = document.createElement('div');
-            card.className = 'activity-card'; 
-            // Estilo inline para garantir o visual do card
-            card.style.cssText = "background: white; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #2563eb; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;";
-
-            // Filtra visualmente baseado no status
-            if (desafio.status === 'concluido') {
-                // Se já estiver concluído, nem mostra ou mostra diferente (sua lógica antiga não mostrava)
-                return; 
-            }
+            card.className = 'activity-card';
             
-            // Se estiver EM ANÁLISE
-            if (desafio.status === 'em_analise') {
-                 card.style.borderLeft = "4px solid #f59e0b"; // Amarelo
-                 card.innerHTML = `
-                    <div>
-                        <h4 style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">${desafio.titulo}</h4>
-                        <p style="color: #718096; font-size: 0.9rem; margin-top: 0.25rem;">${desafio.descricao || 'Sem descrição'}</p>
-                        <small style="color: #f59e0b; font-weight: bold;">Aguardando Aprovação 🕒</small>
-                    </div>
-                 `;
-                 listaContainer.appendChild(card);
-                 return;
-            }
+            // Lógica de atraso
+            const prazo = new Date(desafio.prazo_final);
+            const hoje = new Date();
+            const atrasado = prazo < hoje && desafio.status === 'pendente';
+            if(atrasado) card.style.border = '1px solid #ef4444';
 
-            // --- MUDANÇA NO HTML DO CARD: Campo de Arquivo Adicionado ---
             card.innerHTML = `
-                <div>
-                    <h4 style="font-size: 1.1rem; font-weight: 600; color: #2d3748;">${desafio.titulo}</h4>
-                    <p style="color: #718096; font-size: 0.9rem; margin-top: 0.25rem;">${desafio.descricao || 'Sem descrição'}</p>
-                    <small style="color: #2563eb; font-weight: bold;">Valendo: ${desafio.pontos} pts</small>
-                    
-                    <div style="margin-top: 10px;">
-                        <label style="font-size: 0.8rem; display: block; color: #4a5568; margin-bottom: 4px;">Comprovante (Foto/Print):</label>
-                        <input type="file" id="arquivo-${desafio.aluno_desafio_id}" accept="image/*" style="font-size: 0.85rem;">
-                    </div>
+                <div class="card-header">
+                    <h4>${desafio.titulo}</h4>
+                    <span class="points-badge">+${desafio.pontos} pts</span>
                 </div>
-                
-                <button class="btn btn-primary btn-sm" data-aluno-desafio-id="${desafio.aluno_desafio_id}" style="height: fit-content;">
-                    Enviar
-                </button>
+                <p>${desafio.descricao || 'Sem descrição.'}</p>
+                <div class="card-footer">
+                    <span class="deadline" style="${atrasado ? 'color: #ef4444; font-weight:bold;' : ''}">
+                        ${atrasado ? '⚠️ Atrasado!' : 'Prazo: ' + prazo.toLocaleDateString()}
+                    </span>
+                    <button onclick="abrirModalEnvio(${desafio.aluno_desafio_id})" class="btn btn-primary btn-sm">
+                        Enviar Atividade
+                    </button>
+                </div>
             `;
-            
-            listaContainer.appendChild(card);
-        });
-
-        // Adiciona os eventos nos botões gerados
-        listaContainer.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', (event) => {
-                const alunoDesafioId = event.target.dataset.alunoDesafioId;
-                completarDesafio(alunoDesafioId, event.target); 
-            });
+            containerPendentes.appendChild(card);
         });
     }
+
+    // --- PARTE 3: RENDERIZAR REALIZADAS (Com link da foto!) ---
+    if (realizadasList.length === 0) {
+        containerRealizadas.innerHTML = '<p style="color: #718096; grid-column: 1 / -1;">Você ainda não entregou nenhuma atividade.</p>';
+    } else {
+        realizadasList.forEach(desafio => {
+            const card = document.createElement('div');
+            const isConcluido = desafio.status === 'concluido';
+            
+            // Estilo diferente se já foi aprovado (verde) ou se está em análise (amarelo)
+            const bgColor = isConcluido ? '#dcfce7' : '#fffbeb'; 
+            const borderColor = isConcluido ? '#22c55e' : '#fbbf24';
+            
+            card.style.cssText = `background: ${bgColor}; border: 1px solid ${borderColor}; padding: 1.5rem; border-radius: 12px;`;
+
+            // Define o badge de status
+            let statusBadge = '<span class="badge badge-yellow">Em Análise ⏳</span>';
+            if(isConcluido) statusBadge = '<span class="badge badge-green">Concluído ✅</span>';
+
+            // --- LÓGICA DA FOTO ---
+            let htmlComprovante = '';
+            if(desafio.comprovante_path) {
+                // Corrige barras invertidas do Windows se necessário
+                const caminhoArr = desafio.comprovante_path.split(/[/\\]/);
+                // Pega só o nome do arquivo no final
+                const nomeArquivo = caminhoArr[caminhoArr.length - 1];
+                // Monta a URL final
+                const imgUrl = `http://localhost:3000/uploads/${nomeArquivo}`;
+                
+                htmlComprovante = `
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid ${borderColor}aa;">
+                        <a href="${imgUrl}" target="_blank" style="display: flex; align-items: center; gap: 0.5rem; color: #2563eb; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15"/></svg>
+                            Ver Comprovante Enviado
+                        </a>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                    <h4 style="margin: 0; font-size: 1.1rem;">${desafio.titulo}</h4>
+                    <span style="font-weight: 700; color: #2563eb;">+${desafio.pontos} pts</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
+                        ${statusBadge}
+                        <small style="color: #718096;">
+                            ${desafio.data_conclusao ? new Date(desafio.data_conclusao).toLocaleDateString() : ''}
+                        </small>
+                </div>
+                ${htmlComprovante} `;
+            containerRealizadas.appendChild(card);
+        });
+    }
+}
 
     // 4. Completar Desafio (COM UPLOAD)
     async function completarDesafio(alunoDesafioId, botao) {

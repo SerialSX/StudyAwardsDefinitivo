@@ -1,0 +1,15 @@
+-- Apaga todas as entregas e vínculos de desafios
+DELETE FROM aluno_desafios;
+
+-- Apaga as penalidades e frequências
+DELETE FROM penalidades;
+DELETE FROM frequencia;
+
+-- Apaga os desafios criados pelos professores
+DELETE FROM desafios;
+
+-- Apaga todos os usuários (Professores, Alunos, Responsáveis)
+DELETE FROM usuarios;
+
+-- (Opcional) Reseta os contadores de ID para começar do 1 novamente
+DELETE FROM sqlite_sequence;

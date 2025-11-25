@@ -27,41 +27,36 @@ exports.updatePontuacao = (req, res, next) => {
   });
 };
 
-// --- FUNÇÃO DE CADASTRO ATUALIZADA (Com vínculo de Responsável) ---
+// --- FUNÇÃO DE CADASTRO ATUALIZADA ---
 exports.cadastro = (req, res, next) => {
-  const { nome, email, senha, tipo, alunoAssociadoId, codigoProfessor } = req.body; // Adicionei codigoProfessor aqui
+  const { nome, email, senha, tipo, alunoAssociadoId, codigoProfessor } = req.body;
 
   if (!nome || !email || !senha || !tipo) {
     return res.status(400).json({ erro: "Todos os campos obrigatórios são necessários." });
   }
 
-  // --- 1. SEGURANÇA: Senha Mínima ---
+  // 1. SEGURANÇA: Senha Mínima
   if (senha.length < 6) {
     return res.status(400).json({ erro: "A senha deve ter no mínimo 6 caracteres." });
   }
 
-  // --- 2. SEGURANÇA: Validação de Professor ---
+  // 2. SEGURANÇA: Validação de Professor
   if (tipo === 'PROFESSOR') {
-      const CODIGO_SECRETO = "ADMIN123"; // Defina a senha da escola aqui
+      const CODIGO_SECRETO = "ADMIN123"; 
       if (!codigoProfessor || codigoProfessor !== CODIGO_SECRETO) {
           return res.status(403).json({ erro: "Código da instituição inválido. Você não tem permissão para criar conta de Professor." });
       }
   }
 
-  // Lógica do Responsável (Mantendo o trabalho dos seus colegas)
+  // Lógica do Responsável
   let idDoAluno = null;
   if (tipo === 'RESPONSAVEL') {
-    if (!alunoAssociadoId) {
-        // Se quiser tornar obrigatório vincular agora, descomente a linha abaixo
-        // return res.status(400).json({ erro: "Responsável deve vincular um ID de aluno." });
-    }
     idDoAluno = alunoAssociadoId;
   }
 
   bcrypt.hash(senha, 10, (err, hash) => {
     if (err) { return next(err); }
     
-    // Chama o model (que seus colegas atualizaram para aceitar 5 argumentos)
     usuarioModel.createUser(nome, email, hash, tipo, idDoAluno, (err, resultado) => {
       if (err) { 
           if (err.message && err.message.includes('UNIQUE constraint failed')) {
@@ -71,7 +66,7 @@ exports.cadastro = (req, res, next) => {
       }
       
       res.status(201).json({
-        id: resultado.id, // O model retorna { id: this.lastID }
+        id: resultado.id,
         nome: nome,
         email: email,
         tipo: tipo,
@@ -86,46 +81,40 @@ exports.login = (req, res, next) => {
   if (!email || !senha) {
     return res.status(400).json({ erro: "Email e senha são obrigatórios." });
   }
+  
   const sql = `SELECT * FROM usuarios WHERE email = ?`;
+  
   db.get(sql, [email], (err, row) => {
     if (err) { return next(err); }
     if (!row) {
       return res.status(404).json({ erro: "Email não encontrado." });
     }
 
-    console.log("Senha digitada:", senha);
-    console.log("Hash no banco:", row.senha));
-
     bcrypt.compare(senha, row.senha, (err, isMatch) => {
         if (err) { return next(err); }
         
-        // --- O VEREDITO REAL ---
-        console.log("A SENHA BATEU?", isMatch); // Se der TRUE, está tudo perfeito
-        
         if (!isMatch) {
             return res.status(401).json({ erro: "Senha incorreta." });
-        };
+        }
     
-    if (row.senha !== senha) {
-      return res.status(401).json({ erro: "Senha incorreta." });
-    }
+        // CORREÇÃO 2: Apaguei o bloco 'if (row.senha !== senha)' antigo que estava aqui.
+        // Ele impedia o login de funcionar porque comparava hash com texto puro.
 
-    // Payload do token agora inclui o ID do aluno associado (se for responsável)
-    const payload = {
-      id: row.id,
-      nome: row.nome,
-      tipo: row.tipo,
-      alunoIdAssociado: row.aluno_associado_id 
-    };
+        const payload = {
+            id: row.id,
+            nome: row.nome,
+            tipo: row.tipo,
+            alunoIdAssociado: row.aluno_associado_id 
+        };
 
-    const secret = "minha-senha-secreta-super-dificil"; 
+        const secret = "minha-senha-secreta-super-dificil"; 
+        const token = jwt.sign(payload, secret, { expiresIn: '1h' });
 
-    const token = jwt.sign(payload, secret, { expiresIn: '1h' });
-
-    res.json({
-      message: "Login bem-sucedido!",
-      token: token,
-      usuario: payload
+        res.json({
+            message: "Login bem-sucedido!",
+            token: token,
+            usuario: payload
+        });
     });
   });
 };

@@ -146,3 +146,58 @@ exports.atribuirDesafioParaTodos = (req, res, next) => {
     });
   });
 };
+
+// 1. Busca tudo que está com status 'em_analise'
+exports.listarEntregasPendentes = (req, res, next) => {
+  const sql = `
+    SELECT 
+      ad.id as aluno_desafio_id,
+      u.nome as nome_aluno,
+      d.titulo as titulo_desafio,
+      d.pontos,
+      ad.comprovante_path
+    FROM aluno_desafios ad
+    JOIN usuarios u ON ad.aluno_id = u.id
+    JOIN desafios d ON ad.desafio_id = d.id
+    WHERE ad.status = 'em_analise'
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) return next(err);
+    res.json({ entregas: rows });
+  });
+};
+
+// 2. Professor Aprova (Dá pontos) ou Rejeita
+exports.avaliarEntrega = (req, res, next) => {
+  const { id } = req.params; // ID da entrega
+  const { aprovado } = req.body; // true ou false
+
+  // Se aprovar, vira 'concluido'. Se rejeitar, volta pra 'pendente' pro aluno refazer.
+  const novoStatus = aprovado ? 'concluido' : 'pendente'; 
+
+  // Pega os dados pra saber quantos pontos dar
+  db.get(`SELECT aluno_id, desafio_id FROM aluno_desafios WHERE id = ?`, [id], (err, row) => {
+    if (err || !row) return res.status(404).json({ erro: "Entrega não encontrada" });
+
+    // Se aprovou, temos que somar os pontos no usuário
+    if (aprovado) {
+        db.get(`SELECT pontos FROM desafios WHERE id = ?`, [row.desafio_id], (err, desafio) => {
+            // Transação pra garantir que tudo funciona junto
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION');
+                // 1. Muda status da tarefa
+                db.run(`UPDATE aluno_desafios SET status = ? WHERE id = ?`, [novoStatus, id]);
+                // 2. Dá os pontos pro aluno
+                db.run(`UPDATE usuarios SET pontuacao_total = pontuacao_total + ? WHERE id = ?`, [desafio.pontos, row.aluno_id]);
+                db.run('COMMIT', () => res.json({ message: "Aprovado com sucesso!" }));
+            });
+        });
+    } else {
+        // Se rejeitou, só muda o status e apaga o comprovante pra ele mandar outro
+        db.run(`UPDATE aluno_desafios SET status = ?, comprovante_path = NULL WHERE id = ?`, [novoStatus, id], (err) => {
+            res.json({ message: "Rejeitado. O aluno terá que enviar de novo." });
+        });
+    }
+  });
+};
