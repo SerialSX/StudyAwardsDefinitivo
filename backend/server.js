@@ -7,6 +7,7 @@ const usuarioRoutes = require('./routes/usuarioRoutes.js');
 const penalidadeRoutes = require('./routes/penalidadeRoutes.js');
 const desafioRoutes = require('./routes/desafioRoutes.js');
 const errorHandler = require('./middleware/errorHandler.js');
+const dashboardRoutes = require('./routes/dashboardRoutes.js');
 
 const app = express();
 
@@ -17,6 +18,7 @@ const PORT = 3000;
 
 criarTabelas();
 
+app.use('/', dashboardRoutes);
 app.use('/', rankingRoutes);
 app.use('/', usuarioRoutes);
 app.use('/', penalidadeRoutes);

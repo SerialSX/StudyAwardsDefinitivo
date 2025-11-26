@@ -1,72 +1,68 @@
 document.addEventListener('DOMContentLoaded', () => {
     const cadastroForm = document.getElementById('cadastro-form');
-    const errorMessageEl = document.getElementById('error-message');
     
-    // Elementos para controle do campo extra
-    const campoAlunoContainer = document.getElementById('campo-aluno-container');
-    const inputAlunoId = document.getElementById('alunoId');
+    // Elementos para controle dos campos extras
     const radiosTipo = document.querySelectorAll('input[name="tipo"]');
+    
+    // --- CORREÇÃO: Pegando os IDs certos do HTML ---
+    const campoAlunoContainer = document.getElementById('campo-aluno-container');
+    const campoProfessorContainer = document.getElementById('campo-professor-container');
+    
+    const inputAlunoId = document.getElementById('alunoId');
+    const inputCodigoProf = document.getElementById('codigoProfessor');
 
-    // 1. Lógica para Mostrar/Esconder o campo de Aluno ID
+    // 1. Lógica Visual: Mostrar/Esconder campos conforme o tipo
     radiosTipo.forEach(radio => {
         radio.addEventListener('change', (e) => {
             const tipo = e.target.value;
             
-            // Elementos visuais
-            const campoResponsavel = document.getElementById('campo-aluno-container');
-            const campoProfessor = document.getElementById('campo-professor-container'); // <--- NOVO
-            const inputCodigoProf = document.getElementById('codigoProfessor'); // <--- NOVO
+            // --- CORREÇÃO AQUI: Usando os nomes de variáveis certos ---
+            
+            // Primeiro, esconde tudo (Reset)
+            if(campoAlunoContainer) campoAlunoContainer.style.display = 'none';
+            if(campoProfessorContainer) campoProfessorContainer.style.display = 'none';
+            
+            // Tira a obrigatoriedade dos campos escondidos
+            if(inputAlunoId) inputAlunoId.required = false;
+            if(inputCodigoProf) inputCodigoProf.required = false;
 
-            // Reseta tudo primeiro (esconde tudo)
-            if(campoResponsavel) {
-                campoResponsavel.style.display = 'none';
-                document.getElementById('alunoId').required = false;
-            }
-            if(campoProfessor) { // <--- NOVO
-                campoProfessor.style.display = 'none';
-                inputCodigoProf.required = false;
-            }
-
-            // Ativa o específico
+            // Agora mostra o específico baseado na escolha
             if (tipo === 'RESPONSAVEL') {
-                if(campoResponsavel) {
-                    campoResponsavel.style.display = 'block';
-                    document.getElementById('alunoId').required = true;
+                if(campoAlunoContainer) {
+                    campoAlunoContainer.style.display = 'block';
+                    if(inputAlunoId) inputAlunoId.required = true;
                 }
-            } else if (tipo === 'PROFESSOR') { // <--- BLOCO NOVO
-                if(campoProfessor) {
-                    campoProfessor.style.display = 'block';
-                    inputCodigoProf.required = true;
+            } else if (tipo === 'PROFESSOR') {
+                if(campoProfessorContainer) {
+                    campoProfessorContainer.style.display = 'block';
+                    if(inputCodigoProf) inputCodigoProf.required = true;
                 }
             }
         });
     });
 
+    // 2. Envio do Formulário (Com SweetAlert2)
     if (cadastroForm) {
         cadastroForm.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            errorMessageEl.textContent = ''; 
+            event.preventDefault(); // Não recarrega a página
 
+            // Pega os valores
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
-            
-            // Verifica qual radio está marcado
-            const tipoRadio = document.querySelector('input[name="tipo"]:checked');
-            const tipo = tipoRadio ? tipoRadio.value : 'ALUNO';
+            const tipo = document.querySelector('input[name="tipo"]:checked').value;
             
             const alunoId = document.getElementById('alunoId').value;
-
-            const codigoProfessorValor = document.getElementById('codigoProfessor').value;
+            const codigoProfessor = document.getElementById('codigoProfessor').value;
 
             const dadosCadastro = {
-                nome: nome,
-                email: email,
-                senha: senha,
-                tipo: tipo,
+                nome, 
+                email, 
+                senha, 
+                tipo,
+                // Envia ID se for Responsável, Código se for Professor
                 alunoId: alunoId ? parseInt(alunoId) : null,
-                // Envia o código SE for professor
-                codigoProfessor: (tipo === 'PROFESSOR') ? codigoProfessorValor : undefined
+                codigoProfessor: (tipo === 'PROFESSOR') ? codigoProfessor : undefined
             };
 
             try {
@@ -79,16 +75,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Cadastro realizado com sucesso! Faça login para continuar.');
-                    window.location.href = '../index.html';
+                    // SUCESSO
+                    await Swal.fire({
+                        title: 'Cadastro Realizado! 🎉',
+                        text: 'Sua conta foi criada. Você será redirecionado para o login.',
+                        icon: 'success',
+                        timer: 3000,
+                        timerProgressBar: true,
+                        showConfirmButton: false
+                    });
+
+                    // Redireciona para o login correto
+                    if (tipo === 'ALUNO') window.location.href = '../pages/login-aluno.html';
+                    else if (tipo === 'PROFESSOR') window.location.href = '../pages/login-professor.html';
+                    else window.location.href = '../pages/login-responsavel.html';
+
                 } else {
-                    console.error('Erro ao cadastrar:', data.erro);
-                    errorMessageEl.textContent = `Erro: ${data.erro}`;
+                    // ERRO
+                    Swal.fire({
+                        title: 'Atenção',
+                        text: data.erro || 'Erro ao cadastrar.',
+                        icon: 'warning',
+                        confirmButtonColor: '#d33'
+                    });
                 }
 
             } catch (error) {
-                console.error('Erro de conexão:', error);
-                errorMessageEl.textContent = 'Erro ao conectar com o servidor.';
+                console.error(error);
+                Swal.fire('Erro de Conexão', 'Não foi possível conectar ao servidor.', 'error');
             }
         });
     }

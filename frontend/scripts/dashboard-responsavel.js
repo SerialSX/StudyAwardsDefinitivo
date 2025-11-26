@@ -1,24 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // 1. Proteção de Rota
+    // 1. Proteção de Rota e Leitura de Dados
     const usuarioLogadoString = localStorage.getItem('usuarioLogado');
     if (!usuarioLogadoString) {
-        console.error('Ninguém logado. Voltando pro login.');
         window.location.href = '../index.html';
         return;
     }
+    
     const usuarioLogado = JSON.parse(usuarioLogadoString);
 
     if (usuarioLogado.tipo !== 'RESPONSAVEL') {
-        alert('Acesso negado. Esta área é apenas para responsáveis.');
-        localStorage.removeItem('usuarioLogado');
+        alert('Acesso negado.');
         window.location.href = '../index.html';
         return;
     }
 
+    // AQUI: Pegamos o ID que o backend mandou no passo anterior
     const alunoResponsavelId = usuarioLogado.alunoIdAssociado;
+
     if (!alunoResponsavelId) {
-        alert("Erro: Nenhum aluno vinculado. Verifique o cadastro.");
+        // Se o pai cadastrou sem colocar o ID do filho (erro antigo)
+        Swal.fire({
+            title: 'Erro de Vínculo',
+            text: 'Não encontramos o aluno associado a esta conta. Por favor, recrie a conta informando o ID do aluno.',
+            icon: 'error'
+        });
         return;
     }
 

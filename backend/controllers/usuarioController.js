@@ -29,7 +29,8 @@ exports.updatePontuacao = (req, res, next) => {
 
 // --- FUNÇÃO DE CADASTRO ATUALIZADA ---
 exports.cadastro = (req, res, next) => {
-  const { nome, email, senha, tipo, alunoAssociadoId, codigoProfessor } = req.body;
+  // CORREÇÃO AQUI: Mudamos 'alunoAssociadoId' para 'alunoId' para casar com o frontend
+  const { nome, email, senha, tipo, alunoId, codigoProfessor } = req.body;
 
   if (!nome || !email || !senha || !tipo) {
     return res.status(400).json({ erro: "Todos os campos obrigatórios são necessários." });
@@ -44,20 +45,22 @@ exports.cadastro = (req, res, next) => {
   if (tipo === 'PROFESSOR') {
       const CODIGO_SECRETO = "ADMIN123"; 
       if (!codigoProfessor || codigoProfessor !== CODIGO_SECRETO) {
-          return res.status(403).json({ erro: "Código da instituição inválido. Você não tem permissão para criar conta de Professor." });
+          return res.status(403).json({ erro: "Código da instituição inválido." });
       }
   }
 
   // Lógica do Responsável
-  let idDoAluno = null;
+  let idDoAlunoParaSalvar = null;
   if (tipo === 'RESPONSAVEL') {
-    idDoAluno = alunoAssociadoId;
+    // Agora usamos a variável certa que veio do body
+    idDoAlunoParaSalvar = alunoId; 
   }
 
   bcrypt.hash(senha, 10, (err, hash) => {
     if (err) { return next(err); }
     
-    usuarioModel.createUser(nome, email, hash, tipo, idDoAluno, (err, resultado) => {
+    // Passamos idDoAlunoParaSalvar para o model
+    usuarioModel.createUser(nome, email, hash, tipo, idDoAlunoParaSalvar, (err, resultado) => {
       if (err) { 
           if (err.message && err.message.includes('UNIQUE constraint failed')) {
               return res.status(400).json({ erro: "Este email já está cadastrado." });
@@ -70,7 +73,7 @@ exports.cadastro = (req, res, next) => {
         nome: nome,
         email: email,
         tipo: tipo,
-        aluno_associado_id: idDoAluno
+        aluno_associado_id: idDoAlunoParaSalvar
       });
     });
   });
@@ -97,11 +100,12 @@ exports.login = (req, res, next) => {
             return res.status(401).json({ erro: "Senha incorreta." });
         }
 
-        const payload = {
+        // --- O PULO DO GATO ESTÁ AQUI ---
+            const payload = {
             id: row.id,
             nome: row.nome,
             tipo: row.tipo,
-            alunoIdAssociado: row.aluno_associado_id 
+            alunoIdAssociado: row.aluno_associado_id // <--- ESSA LINHA É OBRIGATÓRIA
         };
 
         const secret = "minha-senha-secreta-super-dificil"; 
@@ -110,7 +114,7 @@ exports.login = (req, res, next) => {
         res.json({
             message: "Login bem-sucedido!",
             token: token,
-            usuario: payload
+            usuario: payload // O frontend vai salvar isso no localStorage
         });
     });
   });

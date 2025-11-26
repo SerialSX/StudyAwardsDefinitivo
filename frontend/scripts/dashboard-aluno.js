@@ -134,22 +134,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- FUNÇÃO GLOBAL DE ENVIO (IMPORTANTE: TEM QUE FICAR FORA DO DOMContentLoaded) ---
 window.enviarTarefaDireto = async function(btn, id) {
-    console.log(`🖱️ Botão clicado para desafio ID: ${id}`);
-
     const input = document.getElementById(`arquivo-${id}`);
     
     if(!input || !input.files[0]) {
-        console.warn("⚠️ Nenhum arquivo selecionado.");
-        alert("⚠️ Por favor, selecione uma imagem antes de enviar.");
+        Swal.fire('Atenção', 'Selecione uma imagem para enviar.', 'warning');
         return;
     }
     
-    console.log("📁 Arquivo selecionado:", input.files[0].name);
-
     const token = localStorage.getItem('token');
     const formData = new FormData();
     formData.append('comprovante', input.files[0]);
 
+    const textoOriginal = btn.innerText;
     btn.textContent = "Enviando...";
     btn.disabled = true;
 
@@ -159,22 +155,23 @@ window.enviarTarefaDireto = async function(btn, id) {
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
         });
+        
+        // 1. LÊ O JSON (Seja sucesso ou erro do ErrorHandler)
         const data = await res.json();
         
         if(res.ok) {
-            console.log("✅ Sucesso no envio:", data);
-            alert("✅ Atividade enviada com sucesso!");
+            await Swal.fire('Enviado!', data.message || 'Atividade enviada.', 'success');
             window.location.reload();
         } else {
-            console.error("❌ Erro do servidor:", data);
-            alert("Erro: " + data.erro);
+            // 2. MOSTRA O ERRO REAL
+            Swal.fire('Erro no Envio', data.erro || 'Ocorreu um erro.', 'error');
             btn.disabled = false;
-            btn.textContent = "Enviar Atividade";
+            btn.textContent = textoOriginal;
         }
     } catch(err) {
-        console.error("❌ Erro de rede:", err);
-        alert("Erro de conexão.");
+        console.error(err);
+        Swal.fire('Erro de Rede', 'Verifique sua conexão.', 'error');
         btn.disabled = false;
-        btn.textContent = "Enviar Atividade";
+        btn.textContent = textoOriginal;
     }
 };

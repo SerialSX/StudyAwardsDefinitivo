@@ -34,21 +34,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     async function carregarDadosProfessor() {
         const token = localStorage.getItem('token');
+        
         try {
-            const res = await fetch('http://localhost:3000/ranking', {
+            // 1. BUSCAR O RESUMO (Números dos Cards)
+            const resResumo = await fetch('http://localhost:3000/api/professor/resumo', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            const data = await res.json();
-            const alunos = data.ranking;
+            
+            if (resResumo.ok) {
+                const dados = await resResumo.json();
+                
+                // Atualiza os números na tela
+                // (Certifique-se que os IDs no HTML são: 'total-alunos', 'presentes-hoje', 'atividades-ativas')
+                const elTotal = document.getElementById('total-alunos');
+                const elPresentes = document.getElementById('presentes-hoje');
+                const elAtivas = document.getElementById('atividades-ativas');
 
-            document.getElementById('total-alunos').textContent = alunos.length;
-            document.getElementById('presentes-hoje').textContent = "--"; // Placeholder
-            document.getElementById('atividades-ativas').textContent = "--"; // Placeholder
+                if(elTotal) elTotal.textContent = dados.totalAlunos || 0;
+                if(elPresentes) elPresentes.textContent = dados.presentesHoje || 0;
+                if(elAtivas) elAtivas.textContent = dados.atividadesAtivas || 0;
+            }
 
-            preencherTabelaAlunos(alunos);
+            // 2. BUSCAR O RANKING (Para a tabela) - Isso já existia no seu código
+            const resRanking = await fetch('http://localhost:3000/ranking', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const dataRanking = await resRanking.json();
+            
+            // ... (resto do seu código que preenche a tabela) ...
+            preencherTabelaAlunos(dataRanking.ranking);
 
         } catch (error) {
-            console.error(error);
+            console.error("Erro ao carregar dashboard:", error);
         }
     }
 
@@ -248,19 +265,44 @@ document.addEventListener('DOMContentLoaded', () => {
 // Função que os botões chamam
 window.avaliar = async (id, aprovou) => {
     const token = localStorage.getItem('token');
-    if(!confirm("Tem certeza?")) return;
-
-    await fetch(`http://localhost:3000/api/desafios/avaliar/${id}`, {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json', 
-            'Authorization': `Bearer ${token}` 
-        },
-        body: JSON.stringify({ aprovado: aprovou })
+    
+    // Pergunta
+    const confirmacao = await Swal.fire({
+        title: aprovou ? 'Aprovar?' : 'Rejeitar?',
+        text: aprovou ? "Dar os pontos ao aluno?" : "Devolver para refazer?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: aprovou ? '#16a34a' : '#ef4444',
+        confirmButtonText: 'Sim',
+        cancelButtonText: 'Cancelar'
     });
 
-    alert("Feito!");
-    carregarCorrecoes(); // Atualiza a lista na hora
+    if (!confirmacao.isConfirmed) return;
+
+    try {
+        const res = await fetch(`http://localhost:3000/api/desafios/avaliar/${id}`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${token}` 
+            },
+            body: JSON.stringify({ aprovado: aprovou })
+        });
+
+        // 1. O PULO DO GATO: Lê o JSON sempre
+        const data = await res.json();
+
+        if (res.ok) {
+            await Swal.fire('Sucesso!', data.message, 'success');
+            carregarCorrecoes(); 
+        } else {
+            // 2. USA O SEU ERROR HANDLER: Mostra a mensagem real do backend
+            Swal.fire('Ops!', data.erro || 'Erro desconhecido no servidor.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        Swal.fire('Erro de Rede', 'Não foi possível conectar ao servidor.', 'error');
+    }
 };
 
 // Chama a função assim que abrir a tela
