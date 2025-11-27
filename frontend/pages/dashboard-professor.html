@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Professor - StudyAwards</title>
+    
     <link rel="stylesheet" href="../styles/style.css">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -72,13 +76,17 @@
             <button class="tab-btn" data-tab="relatorios">Relatórios</button>
         </div>
 
-        <div id="tab-alunos" class="tab-content active">
+<div id="tab-alunos" class="tab-content active">
             <div class="student-list-container">
-                <div class="section-header">
+                <div class="section-header" style="flex-wrap: wrap; gap: 10px;">
                     <h3>Lista de Alunos</h3>
-                    <button class="btn btn-primary" style="height: 40px; font-size: 0.875rem; background-color: #22c55e;">
-                        Registrar Presença em Lote
-                    </button>
+                    <div style="flex-grow: 1; display: flex; justify-content: flex-end; gap: 10px;">
+                        <input type="text" id="filtro-aluno" placeholder="🔍 Buscar aluno por nome..." 
+                               style="padding: 0 15px; height: 40px; border-radius: 8px; border: 1px solid var(--border-color); width: 100%; max-width: 300px; background-color: var(--bg-body); color: var(--text-primary);">
+                        <button class="btn btn-primary" style="height: 40px; font-size: 0.875rem; background-color: #22c55e;">
+                            Registrar Presença em Lote
+                        </button>
+                    </div>
                 </div>
                 <table class="custom-table">
                     <thead>
@@ -90,20 +98,20 @@
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabela-alunos-body">
-                        </tbody>
+                    <tbody id="tabela-alunos-body"></tbody>
                 </table>
             </div>
         </div>
 
-            <div id="tab-atividades" class="tab-content">
-    
-                <div class="correction-panel">
-                    <h3>📝 Tarefas para Corrigir</h3>
-                    <div id="lista-correcoes">
-                        <p>Carregando...</p>
-                    </div>
+        <div id="tab-atividades" class="tab-content">
+            
+            <div class="correction-panel" id="painel-correcao-container">
+                <h3>📝 Tarefas para Corrigir</h3>
+                <div id="lista-correcoes">
+                    <p style="padding: 1rem; color: var(--text-secondary);">Carregando...</p>
                 </div>
+            </div>
+
             <div class="dashboard-grid">
                 <div class="grid-card">
                     <h3>Cadastrar Nova Atividade</h3>
@@ -126,30 +134,22 @@
                 <div class="grid-card">
                     <h3>Atividades Recentes</h3>
                     <ul class="recent-activities-list" id="lista-atividades-recentes">
-                        <li>
-                            <div><h4>Trabalho de Matemática</h4><p>Entregas: 28 / 35</p></div>
-                            <span class="badge badge-green">85%</span>
-                        </li>
-                        <li>
-                            <div><h4>Redação de Português</h4><p>Entregas: 32 / 35</p></div>
-                            <span class="badge badge-green">92%</span>
-                        </li>
+                        <li><div><h4>Carregando...</h4></div></li>
                     </ul>
                 </div>
             </div>
         </div>
 
         <div id="tab-relatorios" class="tab-content">
-    <div class="grid-card">
-        <h3>Ranking da Turma 🏆</h3>
-        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Comparativo de pontos entre os alunos.</p>
-        
-        <div style="position: relative; height: 400px; width: 100%;">
-            <canvas id="graficoRankingProfessor"></canvas>
+            <div class="grid-card">
+                <h3>Ranking da Turma 🏆</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Comparativo de evolução dos alunos.</p>
+                
+                <div style="position: relative; height: 400px; width: 100%;">
+                    <canvas id="graficoRankingProfessor"></canvas>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-    </div>
 
     <script src="../scripts/dashboard-professor.js" defer></script>
     <script src="../scripts/theme.js"></script>
