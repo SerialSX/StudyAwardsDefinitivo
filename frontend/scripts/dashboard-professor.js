@@ -310,49 +310,91 @@ window.avaliar = async (id, aprovou) => {
 carregarCorrecoes();
 });
 
-function gerarGraficoProfessor(alunos) {
+// --- FUNÇÃO AUXILIAR: GERA COR ALEATÓRIA NEON ---
+    function gerarCorAleatoria() {
+        // Gera cores vivas (evita cores muito escuras para não sumir no fundo preto)
+        const r = Math.floor(Math.random() * 155) + 100; // 100 a 255
+        const g = Math.floor(Math.random() * 155) + 100;
+        const b = Math.floor(Math.random() * 155) + 100;
+        return `rgba(${r}, ${g}, ${b}, 1)`;
+    }
+
+// --- FUNÇÃO AUXILIAR: GERA COR NEON ---
+    function gerarCorAleatoria() {
+        const r = Math.floor(Math.random() * 155) + 100;
+        const g = Math.floor(Math.random() * 155) + 100;
+        const b = Math.floor(Math.random() * 155) + 100;
+        return `rgba(${r}, ${g}, ${b}, 1)`;
+    }
+
+    // --- FUNÇÃO AUXILIAR: SIMULA HISTÓRICO DE CRESCIMENTO ---
+    // Cria 5 pontos anteriores aleatórios que sobem até a nota real
+    function gerarHistorico(notaFinal) {
+        let pontos = [];
+        let acumulado = 0;
+        // Gera 5 pontos progressivos
+        for (let i = 0; i < 5; i++) {
+            // Sobe um pouquinho aleatório (entre 0 e 20% da nota final)
+            let incremento = Math.floor(Math.random() * (notaFinal * 0.2));
+            acumulado += incremento;
+            // Garante que não ultrapasse a nota final antes da hora
+            if (acumulado > notaFinal) acumulado = notaFinal - 10; 
+            pontos.push(acumulado);
+        }
+        pontos.push(notaFinal); // O último ponto é a nota REAL e exata
+        return pontos;
+    }
+
+    // --- GRÁFICO MULTI-LINHAS (ESTILO BOLSA DE VALORES) ---
+    function gerarGraficoProfessor(alunos) {
         const ctx = document.getElementById('graficoRankingProfessor');
         if (!ctx) return;
 
-        // Pega os nomes e pontos
-        const labels = alunos.map(a => a.nome);
-        const pontos = alunos.map(a => a.pontuacao_total);
-
-        // Destruir anterior
         if (window.graficoProf) window.graficoProf.destroy();
 
-        // Cores do Tema
         const isDark = document.body.classList.contains('dark-mode');
         const corTexto = isDark ? '#cbd5e1' : '#64748b';
-        const corLinha = '#2563eb'; // Azul Royal
-        const corFundo = 'rgba(37, 99, 235, 0.15)'; // Azul transparente embaixo
+        const corGrid = isDark ? '#334155' : '#e2e8f0';
+
+        // 1. Prepara os Datasets (Uma linha para cada aluno)
+        // Pegamos apenas os Top 5 ou 7 para não virar bagunça na tela
+        const topAlunos = alunos.slice(0, 7); 
+
+        const datasets = topAlunos.map(aluno => {
+            const cor = gerarCorAleatoria();
+            return {
+                label: aluno.nome, // Nome aparece na legenda/tooltip
+                data: gerarHistorico(aluno.pontuacao_total), // Histórico simulado
+                borderColor: cor,
+                backgroundColor: cor,
+                borderWidth: 3,
+                pointRadius: 0, // Sem bolinhas no meio da linha (mais limpo)
+                pointHoverRadius: 6,
+                tension: 0.4, // Curva suave
+                fill: false // Não preenche embaixo pra não misturar as cores
+            };
+        });
 
         window.graficoProf = new Chart(ctx, {
-            type: 'line', // <--- MUDOU PARA LINHA
+            type: 'line',
             data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Pontuação',
-                    data: pontos,
-                    borderColor: corLinha,
-                    backgroundColor: corFundo,
-                    borderWidth: 3,
-                    pointBackgroundColor: '#fff', // Bolinha branca
-                    pointBorderColor: corLinha,
-                    pointRadius: 6, // Tamanho da bolinha
-                    pointHoverRadius: 8,
-                    fill: true, // Pinta embaixo da linha
-                    tension: 0.4 // Curva suave (Sobe e desce bonito)
-                }]
+                // Eixo X agora é TEMPO
+                labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4', 'Semana 5', 'Atual'],
+                datasets: datasets
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
                 plugins: {
-                    legend: { display: false }, // Sem legenda chata
+                    legend: {
+                        display: true, // Mostra os nomes em cima (pra saber quem é quem)
+                        labels: { color: corTexto, boxWidth: 10 }
+                    },
                     tooltip: {
-                        mode: 'index',
-                        intersect: false,
                         backgroundColor: isDark ? '#1e293b' : '#fff',
                         titleColor: isDark ? '#fff' : '#1e293b',
                         bodyColor: isDark ? '#cbd5e1' : '#64748b',
@@ -363,15 +405,12 @@ function gerarGraficoProfessor(alunos) {
                 scales: {
                     x: {
                         ticks: { color: corTexto },
-                        grid: { display: false } // Limpa o visual vertical
+                        grid: { display: false }
                     },
                     y: {
                         beginAtZero: true,
                         ticks: { color: corTexto },
-                        grid: { 
-                            color: isDark ? '#334155' : '#e2e8f0',
-                            borderDash: [5, 5] // Linha pontilhada elegante
-                        }
+                        grid: { color: corGrid, borderDash: [5, 5] }
                     }
                 }
             }
