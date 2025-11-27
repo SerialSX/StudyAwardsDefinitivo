@@ -314,39 +314,46 @@ function gerarGraficoProfessor(alunos) {
         const ctx = document.getElementById('graficoRankingProfessor');
         if (!ctx) return;
 
-        // Pega os nomes e os pontos
-        // (Podemos limitar ao Top 10 se tiver muitos alunos no futuro)
+        // Pega os nomes e pontos
         const labels = alunos.map(a => a.nome);
         const pontos = alunos.map(a => a.pontuacao_total);
 
-        // Destruir gráfico anterior para não bugar na troca de aba
+        // Destruir anterior
         if (window.graficoProf) window.graficoProf.destroy();
 
         // Cores do Tema
         const isDark = document.body.classList.contains('dark-mode');
         const corTexto = isDark ? '#cbd5e1' : '#64748b';
-        const corBarras = '#2563eb'; // Azul Royal do tema
+        const corLinha = '#2563eb'; // Azul Royal
+        const corFundo = 'rgba(37, 99, 235, 0.15)'; // Azul transparente embaixo
 
         window.graficoProf = new Chart(ctx, {
-            type: 'bar', // Gráfico de Barras é melhor para ranking
+            type: 'line', // <--- MUDOU PARA LINHA
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Pontuação Total',
+                    label: 'Pontuação',
                     data: pontos,
-                    backgroundColor: corBarras,
-                    borderRadius: 6, // Barras arredondadas
-                    barPercentage: 0.6 // Largura da barra
+                    borderColor: corLinha,
+                    backgroundColor: corFundo,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff', // Bolinha branca
+                    pointBorderColor: corLinha,
+                    pointRadius: 6, // Tamanho da bolinha
+                    pointHoverRadius: 8,
+                    fill: true, // Pinta embaixo da linha
+                    tension: 0.4 // Curva suave (Sobe e desce bonito)
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                indexAxis: 'y', // 'y' faz o gráfico ficar DEITADO (melhor para ler nomes), 'x' fica em pé
                 plugins: {
-                    legend: { display: false },
+                    legend: { display: false }, // Sem legenda chata
                     tooltip: {
-                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: isDark ? '#1e293b' : '#fff',
                         titleColor: isDark ? '#fff' : '#1e293b',
                         bodyColor: isDark ? '#cbd5e1' : '#64748b',
                         borderColor: isDark ? '#334155' : '#e2e8f0',
@@ -356,11 +363,15 @@ function gerarGraficoProfessor(alunos) {
                 scales: {
                     x: {
                         ticks: { color: corTexto },
-                        grid: { display: false }
+                        grid: { display: false } // Limpa o visual vertical
                     },
                     y: {
-                        ticks: { color: corTexto, font: { weight: 'bold' } },
-                        grid: { color: isDark ? '#334155' : '#e2e8f0' }
+                        beginAtZero: true,
+                        ticks: { color: corTexto },
+                        grid: { 
+                            color: isDark ? '#334155' : '#e2e8f0',
+                            borderDash: [5, 5] // Linha pontilhada elegante
+                        }
                     }
                 }
             }
