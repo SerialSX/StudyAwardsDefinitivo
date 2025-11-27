@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Rodando na Vercel:
     // (Cole o seu link do Railway aqui dentro das aspas, sem a barra / no final)
-    const API_URL = "studyawardsdefinitivo-production.up.railway.app"; 
+    const API_URL = "https://studyawardsdefinitivo-production.up.railway.app"; 
 
     // ---------------------------------------------
 

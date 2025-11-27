@@ -3,7 +3,7 @@
 // const API_URL = "http://localhost:3000"; 
 
 // 2. Rodando na Vercel (Produção):
-const API_URL = "studyawardsdefinitivo-production.up.railway.app"; 
+const API_URL = "https://studyawardsdefinitivo-production.up.railway.app"; 
 // ---------------------------
 
 document.addEventListener('DOMContentLoaded', () => {

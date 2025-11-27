@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // const API_URL = "http://localhost:3000"; 
 
     // 2. Rodando na Vercel (Produção):
-    const API_URL = "studyawardsdefinitivo-production.up.railway.app"; 
+    const API_URL = "https://studyawardsdefinitivo-production.up.railway.app"; 
     // (Lembre-se de conferir se este link é EXATAMENTE o que você gerou no Railway)
 
     // ---------------------------
