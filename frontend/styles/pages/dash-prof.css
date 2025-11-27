@@ -37,4 +37,4 @@ body.dark-mode .correction-panel h3 {
 @media (max-width: 1024px) {
     /* Em telas menores, o grid vira uma pilha vertical */
     .teacher-dashboard-grid { grid-template-columns: 1fr; }
-}
+}/*PEGA PLS*/

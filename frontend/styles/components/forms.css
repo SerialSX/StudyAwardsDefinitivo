@@ -19,7 +19,7 @@ input, select, textarea {
     
     /* 1. Modo Claro: Cinza Chumbo (Alto Contraste no Branco) */
     color: #1e293b; 
-}
+}/*PEGA PLS*/
 
     /* 2. Modo Escuro: Sobrescrita para Branco Gelo (Alto Contraste no Card Escuro) */
     body.dark-mode .form-group label {

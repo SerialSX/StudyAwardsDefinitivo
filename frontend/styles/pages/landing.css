@@ -49,10 +49,9 @@
     grid-template-columns: repeat(3, 1fr); /* 3 Colunas iguais */
     gap: 2rem; 
     width: 100%;
-}
+}/*PEGA PLS*/
 
 .profile-card {
-    /* CORRIGIDO: De #adadad para Branco (var(--bg-card)) */
     background-color: var(--bg-card) !important; 
     
     border-radius: 16px; 

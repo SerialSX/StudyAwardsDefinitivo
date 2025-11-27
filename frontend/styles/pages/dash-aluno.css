@@ -57,4 +57,4 @@
 @media (max-width: 768px) {
     .presence-grid { grid-template-columns: repeat(2, 1fr); } /* 2 por linha no celular */
     .activities-grid { grid-template-columns: 1fr; }
-}
+}/*PEGA PLS*/

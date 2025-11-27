@@ -22,7 +22,7 @@
 /* 3. Páginas (Layouts Específicos) */
 @import 'pages/landing.css';
 @import 'pages/auth.css';
-@import 'pages/dashboard.css';   /* Grid geral dos dashboards */
+@import 'pages/dashboard.css';   
 @import 'pages/dash-aluno.css';
 @import 'pages/dash-prof.css';
 @import 'pages/dash-resp.css';
