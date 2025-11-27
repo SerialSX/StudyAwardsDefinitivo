@@ -1,0 +1,82 @@
+/* Botão Padrão */
+.btn {
+    height: 50px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    /* Flexbox pra centralizar texto e ícones sem dor de cabeça */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1.5rem;
+    
+    text-decoration: none;
+    transition: all 0.2s; /* Microinteração no hover */
+}
+
+/* Variações de cor */
+.btn-primary, .btn-aluno {
+    background-color: var(--primary-color) !important;
+    color: white;
+}
+/* Feedback visual ao passar o mouse */
+.btn-primary:hover, .btn-aluno:hover {
+    background-color: var(--primary-hover) !important;
+}
+
+.btn-secondary { 
+    background-color: #f1f5f9; 
+    
+    /* Texto escuro para alto contraste */
+    color: #0f172a !important; /* (Quase preto) */
+    font-weight: 700;
+    
+    border: 1px solid #cbd5e1; /* Borda um pouco mais visível também */
+}
+
+.btn-secondary:hover { 
+    background-color: #e2e8f0; 
+    color: #000000 !important; /* Preto total no hover */
+    border-color: #94a3b8;
+}
+
+/* Botão vazado (Outline) */
+.btn-outline {
+    background-color: transparent;
+    color: #9c27b0;
+    border: 1px solid #e2e8f0;
+    font-size: 0.875rem;
+    height: 40px;
+    padding: 0 1rem;
+}
+.btn-outline:hover { background-color: #f9fafb; border-color: #cbd5e0; }
+
+/* Tamanhos e utilitários */
+.btn-small { height: 40px; font-size: 0.875rem; }
+.btn-full { width: 100%; margin-top: 1rem; background-color: #2563eb; }
+
+/* Botões da Home (Seleção de Perfil) */
+/* Aqui precisamos ser específicos pra sobrescrever cores */
+.btn-profile {
+    width: 100%;
+    margin-top: 1.5rem;
+    height: 50px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+}
+/* Cores por perfil */
+.btn-aluno { background-color: #2298f8; } 
+.btn-professor { background-color: #51bb55; } 
+.btn-responsavel { background-color: #9a23af; } 
+
+.btn-aluno:hover { background-color: #1e8ae9; } 
+.btn-professor:hover { background-color: #3fa144; } 
+.btn-responsavel:hover { background-color: #8e24aa; }

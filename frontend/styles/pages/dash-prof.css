@@ -1,0 +1,40 @@
+/* Grid Assimétrico: Lista de alunos maior (1.8) que o menu lateral (1) */
+.teacher-dashboard-grid { 
+    display: grid; 
+    grid-template-columns: 1.8fr 1fr; 
+    gap: 1.5rem; 
+}
+
+/* Botões de ação rápida na tabela */
+.presence-buttons { display: flex; gap: 0.5rem; }
+
+/* Painel de Correção */
+.correction-panel {
+    background-color: #fffbeb; /* Amarelo clarinho pra chamar atenção */
+    border: 1px solid #fbbf24;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+/* Ajuste de Dark Mode pro Painel de Correção */
+body.dark-mode .correction-panel { 
+    background-color: var(--bg-body); 
+    border: 1px solid var(--border-color); 
+}
+body.dark-mode .correction-panel h3 { 
+    color: var(--text-primary) !important; /* Corrige a cor do título no escuro */
+}
+
+/* Cards da lista de correções */
+#lista-correcoes > div {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-secondary) !important;
+    box-shadow: none !important; /* Flat design no dark mode */
+}
+
+@media (max-width: 1024px) {
+    /* Em telas menores, o grid vira uma pilha vertical */
+    .teacher-dashboard-grid { grid-template-columns: 1fr; }
+}

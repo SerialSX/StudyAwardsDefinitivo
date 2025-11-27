@@ -1,0 +1,53 @@
+/* Seletor múltiplo pra garantir que todos os cards sigam o tema base */
+.login-card, 
+.profile-card, 
+.status-card, 
+.grid-card, 
+.student-list-container, 
+.student-id-card, 
+.modal-content, 
+.activity-card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color);
+}
+
+/* Cards de Status (Aqueles do topo do dashboard) */
+.status-card {
+    color: var(--text-secondary) !important; 
+    border-radius: 16px;
+    padding: 1.5rem;
+    /* Space-between joga o texto pra esquerda e o ícone pra direita */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden; /* Corta o ícone de fundo se ele passar da borda */
+}
+
+/* Texto dentro do card */
+.status-card h3, .status-card span, .status-card svg {
+    color: var(--text-primary) !important;
+}
+.status-card .main-value { font-size: 2.25rem; font-weight: 700; color: #1a202c; display: block; }
+.status-card .sub-value { font-size: 0.875rem; color: #a0aec0; }
+
+/* Ícone decorativo transparente no fundo */
+.status-card .card-icon { width: 48px; height: 48px; opacity: 0.8; }
+
+/* Grid Card Genérico (Container branco padrão) */
+.grid-card {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+.grid-card h3 { 
+    font-size: 1.125rem; 
+    font-weight: 600; 
+    margin-bottom: 1.5rem; 
+    color: #2d3748; 
+    display: flex; 
+    align-items: center; 
+    gap: 0.5rem; 
+}

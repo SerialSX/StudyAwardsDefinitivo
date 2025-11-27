@@ -1,0 +1,65 @@
+.login-form-container { 
+    display: flex; 
+    justify-content: center; 
+}
+
+
+.login-card {
+    background-color: #ffffff; /* Ou var(--bg-card) se quiser tema */
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    
+    width: 100%;
+    max-width: 450px;
+    
+    /* --- O SEGREDO ESTÁ AQUI --- */
+    /* 1. Altura Mínima: Reserva espaço para o maior formulário (Professor) */
+    min-height: 750px; 
+    
+    /* 2. Centralização: Se o form for pequeno (Aluno), fica no meio bonito */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    
+    /* 3. Suavidade: Se mudar de tamanho, anima em vez de pular */
+    transition: min-height 0.3s ease;
+}
+
+/* 1. O Form ocupa tudo */
+.login-form {
+    width: 100% !important;
+}
+
+/* 2. Cada grupo ocupa a largura toda, MAS respeita o JavaScript */
+.login-form .form-group {
+    width: 100% !important;
+    /* REMOVIDO: display: block !important; (Isso estava impedindo de esconder) */
+}
+
+/* 3. O Input dentro do grupo estica até a borda */
+.login-form input, 
+.login-form select,
+.login-form textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+.login-card h2 { font-size: 1.5rem; font-weight: 600; color: #2d3748; margin-bottom: 0.25rem; }
+.login-subtitle { font-size: 1rem; color: #a0aec0; margin-bottom: 2rem; }
+
+/* Toast Notification (Popup de Aviso) */
+.toast-notification { 
+    position: fixed; 
+    bottom: 2rem; 
+    right: 2rem; 
+    background-color: #ffffff; 
+    color: #2d3748; 
+    padding: 1rem 1.5rem; 
+    border-radius: 8px; 
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+    display: flex; 
+    align-items: center; 
+    gap: 0.75rem; 
+    font-weight: 500; 
+}

@@ -1,0 +1,60 @@
+/* * Sobrescrita dos Cards de Status (Versão Aluno)
+ * Removemos o fundo padrão pra usar os gradientes coloridos.
+ */
+.status-card.card-blue, 
+.status-card.card-green, 
+.status-card.card-purple {
+    border: none; 
+    background-color: transparent !important; 
+}
+
+/* Gradientes visuais */
+.status-card.card-blue { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+.status-card.card-green { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.status-card.card-purple { background: linear-gradient(135deg, #a855f7, #9333ea); }
+
+/* Forçando texto branco pra dar contraste no gradiente */
+.status-card.card-blue *, 
+.status-card.card-green *, 
+.status-card.card-purple * {
+    color: white !important;
+}
+
+/* Grid de Histórico de Presença */
+.presence-grid { 
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 1rem; 
+    margin-bottom: 1.5rem; 
+}
+
+/* Ícones de Check/X */
+.icon-check { color: #22c55e; width: 24px; height: 24px; }
+.icon-x { color: #ef4444; width: 24px; height: 24px; }
+
+/* Barra de Progresso Customizada */
+.presence-bar-container { display: flex; align-items: center; gap: 1rem; }
+.presence-bar-bg { 
+    flex: 1; /* Ocupa o espaço que sobrar */
+    height: 8px; 
+    background-color: #e2e8f0; 
+    border-radius: 4px; 
+    overflow: hidden; 
+}
+.presence-bar-fill { 
+    height: 100%; 
+    background-color: #2563eb; 
+    border-radius: 4px; 
+    /* Largura definida inline pelo JS */
+}
+
+/* Cards de Atividade: Quando concluído muda o layout */
+.activity-card.concluded { 
+    background-color: #edf2f7; 
+    grid-template-columns: 1fr; /* Remove o espaço do botão */
+}
+
+@media (max-width: 768px) {
+    .presence-grid { grid-template-columns: repeat(2, 1fr); } /* 2 por linha no celular */
+    .activities-grid { grid-template-columns: 1fr; }
+}

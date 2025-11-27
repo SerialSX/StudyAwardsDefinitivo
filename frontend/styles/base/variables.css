@@ -1,0 +1,43 @@
+:root {
+    /* --- Design Tokens: Cores e Temas --- */
+    
+    /* Tema Claro (Padrão) */
+    --bg-body: #244064;
+    --bg-card: #ffffff;
+    
+    --text-primary: #8fa4e7;
+    --text-secondary: #475569;
+    
+    --primary-color: #2563eb; 
+    --primary-hover: #1d4ed8;
+    
+    /* UI Geral */
+    --border-color: #dbeafe;
+    --shadow-color: rgba(37, 99, 235, 0.1); /* RGBA pra sombra ficar suave */
+    
+    /* Gradiente do fundo: Mistura dois radiais pra dar profundidade */
+    --bg-gradiente: 
+        radial-gradient(at 0% 0%, #132c4d 0%, transparent 50%),
+        radial-gradient(at 100% 100%, #3c94ff 0%, transparent 50%);
+}
+
+/* --- Dark Mode --- */
+/* A classe .dark-mode entra no body via JS */
+body.dark-mode {
+    /* Aqui a gente só sobrescreve as variáveis. 
+       É bem mais performático pro navegador do que reescrever CSS inteiro. */
+    --bg-body: #020617; /* Slate 950 (bem escuro) */
+    --bg-card: #1e293b; /* Slate 800 */
+    --text-primary: #c5daff;
+    --text-secondary: #94a3b8;
+    
+    --primary-color: #3b82f6; /* Azul mais claro pra dar contraste no fundo preto */
+    --primary-hover: #2563eb;
+    
+    --border-color: #1e293b;
+    --shadow-color: rgba(0, 0, 0, 0.7); /* Sombra mais pesada pra aparecer no escuro */
+
+    --bg-gradiente: 
+        radial-gradient(at 0% 0%, #090c14 0%, transparent 50%), 
+        radial-gradient(at 100% 0%, #09143a 0%, transparent 50%);
+}

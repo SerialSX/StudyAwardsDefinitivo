@@ -1,0 +1,115 @@
+.main-container {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    width: 100%; 
+    max-width: 1000px;
+    text-align: center; 
+    margin: 0 auto; 
+    padding: 2rem;
+    min-height: 100vh; /* Ocupa altura total da viewport */
+}
+
+.main-footer {
+    margin-top: 3rem;
+    text-align: center; /* Garantindo centralização */
+}
+
+/* Texto "Não tem uma conta?" */
+.main-footer {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+/* Texto de apoio: Branco com leve transparência para hierarquia */
+.main-footer p { 
+    font-size: 1rem; 
+    color: rgba(255, 255, 255, 0.9) !important; 
+}
+
+/* Link: Branco Puro e Grosso para chamar atenção */
+.main-footer a {
+    color: #ffffff !important; 
+    font-weight: 700;
+    text-decoration: underline; 
+}
+
+.main-footer a:hover {
+    color: #93c5fd !important; /* Azul claro no hover */
+}
+
+
+.main-header h1 { font-size: 2.75rem; font-weight: 700; color: #2563eb; margin-bottom: 0.5rem; }
+.main-header p { font-size: 1.125rem; color: #718096; margin-bottom: 3rem; }
+
+/* Grid de Seleção de Perfis */
+.profile-selection {
+    display: grid; 
+    grid-template-columns: repeat(3, 1fr); /* 3 Colunas iguais */
+    gap: 2rem; 
+    width: 100%;
+}
+
+.profile-card {
+    /* CORRIGIDO: De #adadad para Branco (var(--bg-card)) */
+    background-color: var(--bg-card) !important; 
+    
+    border-radius: 16px; 
+    padding: 2rem; 
+    padding-bottom: 2.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
+    border: 2px solid transparent;
+    transition: all 0.3s ease; 
+    text-decoration: none; 
+    cursor: default; 
+    text-align: center;
+}
+
+/* Forçar a cor dos títulos dentro dos cards */
+.profile-card h2 { 
+    font-size: 1.25rem; 
+    font-weight: 700; 
+    color: #1e293b !important; /* Cinza Escuro quase preto */
+    margin-bottom: 0.5rem; 
+}
+
+/* Forçar a cor do texto de descrição */
+.profile-card p { 
+    font-size: 0.875rem; 
+    color: #475569 !important; /* Cinza médio legível */
+}
+
+/* Dark Mode Automático para os cards */
+body.dark-mode .profile-card {
+    background-color: var(--bg-card) !important; /* Vai assumir o azul escuro do tema */
+    border: 1px solid var(--border-color);
+}
+body.dark-mode .profile-card h2 { color: #e2e8f0 !important; }
+body.dark-mode .profile-card p { color: #94a3b8 !important; }
+
+/* Ícones de Perfil */
+.profile-card .icon-container {
+    width: 72px; 
+    height: 72px; 
+    border-radius: 50%;
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    margin: 0 auto 1.5rem auto; 
+    transition: all 0.3s ease;
+}
+
+/* Tematização por Perfil */
+.profile-card.aluno .icon-container { background-color: #e3f2fd; } 
+.profile-card.professor .icon-container { background-color: #e8f5e9; } 
+.profile-card.responsavel .icon-container { background-color: #f3e5f5; } 
+
+.profile-card.aluno .icon-container svg { color: #2298f8; }
+.profile-card.professor .icon-container svg { color: #51bb55; }
+.profile-card.responsavel .icon-container svg { color: #9a23af; }
+
+/* Responsividade Mobile */
+@media (max-width: 768px) {
+    .profile-selection { grid-template-columns: 1fr; } /* Pilha vertical */
+}

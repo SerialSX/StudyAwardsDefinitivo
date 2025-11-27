@@ -1,0 +1,30 @@
+/* Reset Básico */
+* {
+    margin: 0;
+    padding: 0;
+    /* Box-sizing border-box é obrigatório hoje em dia. 
+       Evita que padding e borda aumentem o tamanho final da div. */
+    box-sizing: border-box;
+    
+    /* Transição suave pra tudo. 
+       Cuidado: animar 'all' pode pesar se a página for muito grande, mas aqui tá tranquilo. */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    background-color: var(--bg-body);
+    background-image: var(--bg-gradiente); 
+    background-attachment: fixed; /* Fixar o bg ajuda na performance do scroll em alguns browsers */
+    color: var(--text-secondary);
+}
+
+/* Tipografia: Forçando as cores das variáveis pra manter consistência */
+h1, h2, h3, h4, strong {
+    color: var(--text-primary) !important; /* O !important aqui segura a onda contra estilos de libs externas */
+}
+
+a, .main-header h1, h3 svg {
+    color: var(--primary-color) !important;
+}

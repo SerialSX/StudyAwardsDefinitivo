@@ -1,0 +1,52 @@
+/* Container Principal */
+.dashboard-container { 
+    width: 100%; 
+    max-width: 1200px; /* Segura o layout pra não esticar demais */
+    margin: 0 auto;    /* Centraliza na tela */
+    padding: 2rem; 
+}
+
+.dashboard-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 2rem; 
+}
+
+/* Grid System dos Cards de Status */
+.status-grid { 
+    display: grid; 
+    /* 3 colunas iguais. O 'fr' é vida pra responsividade. */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 1.5rem; 
+    margin-bottom: 2rem; 
+}
+
+/* Grid System do Conteúdo Principal */
+.dashboard-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; /* Meio a meio */
+    gap: 1.5rem; 
+    margin-bottom: 2rem; 
+}
+
+/* --- Responsividade (Media Queries) --- */
+
+/* Tablet/Laptop pequeno */
+@media (max-width: 1024px) {
+    .dashboard-grid { grid-template-columns: 1fr; } /* Vira uma coluna só (pilha) */
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    /* Empilha tudo no mobile */
+    .status-grid, .dashboard-grid { 
+        grid-template-columns: 1fr; 
+    }
+    
+    .dashboard-header { 
+        flex-direction: column; /* Cabeçalho um item embaixo do outro */
+        align-items: flex-start; 
+        gap: 1rem; 
+    }
+}

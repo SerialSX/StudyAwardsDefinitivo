@@ -1,0 +1,31 @@
+/* Overlay: Aquele fundo escuro que bloqueia o clique atrás */
+.modal-overlay {
+    position: fixed; /* Gruda na tela toda */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    
+    /* Centralizando o modal na marra com flexbox */
+    display: none; /* JS vai trocar isso pra flex quando abrir */
+    justify-content: center; 
+    align-items: center;
+    
+    z-index: 1000; /* Garante que fique por cima de tudo */
+}
+
+/* O corpo do modal */
+.modal-content {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 500px; /* Trava a largura pra não ficar gigante em monitor wide */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content h2 { 
+    font-size: 1.5rem; 
+    font-weight: 600; 
+    color: #2d3748; 
+    margin-bottom: 2rem; 
+}

@@ -1,0 +1,24 @@
+/* Badge Base */
+.badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Variantes Semânticas */
+.badge-green { background-color: #dcfce7; color: #16a34a; } /* Sucesso */
+.badge-yellow { background-color: #fef9c3; color: #ca8a04; } /* Aviso/Médio */
+.badge-red { background-color: #fee2e2; color: #dc2626; }    /* Erro/Crítico */
+.badge-gray { background-color: #f3f4f6; color: #6b7280; }   /* Neutro */
+
+/* Badges Específicas de Pontuação */
+.points-badge { 
+    font-weight: 600; 
+    font-size: 0.875rem; 
+    padding: 0.25rem 0.75rem; 
+    border-radius: 20px; 
+}
+.points-badge.positive { background-color: #e0f2f1; color: #4caf50; }
+.points-badge.pending { background-color: #fff9c4; color: #f57f17; }
