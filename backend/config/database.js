@@ -1,24 +1,29 @@
 const { Pool } = require('pg');
 
-// --- PREENCHA SEUS DADOS AQUI ---
-// Formato: postgres://USUARIO:SENHA@HOST:PORTA/NOME_DO_BANCO
-// Geralmente o usuário é 'postgres' e a porta é '5432'
-const connectionString = 'postgresql://postgres:230313@localhost:5432/studyaward';
+// AQUI ESTÁ A MÁGICA:
+// Se existir process.env.DATABASE_URL (Railway), usa ela.
+// Se não (Seu PC), usa a string local fixa.
+const isProduction = process.env.NODE_ENV === 'production' || process.env.DATABASE_URL;
+
+const connectionString = process.env.DATABASE_URL 
+  ? process.env.DATABASE_URL 
+  : 'postgresql://postgres:230313@localhost:5432/studyawards'; // <--- SEU LINK LOCAL AQUI
 
 const pool = new Pool({
   connectionString: connectionString,
+  // O Railway EXIGE SSL (Criptografia). O Localhost NÃO aceita SSL.
+  // Essa lógica resolve o problema dos dois mundos:
+  ssl: isProduction ? { rejectUnauthorized: false } : false
 });
 
 pool.connect((err) => {
   if (err) {
     console.error('❌ Erro fatal: Não foi possível conectar ao PostgreSQL!', err.message);
-    console.error('Dica: Verifique se a senha no arquivo database.js está certa.');
   } else {
     console.log('✅ Conectado ao PostgreSQL com sucesso!');
   }
 });
 
-// Exporta o método query e o pool para transações
 module.exports = {
   query: (text, params, callback) => pool.query(text, params, callback),
   pool
