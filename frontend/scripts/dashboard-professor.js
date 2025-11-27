@@ -386,7 +386,102 @@ window.abrirAcoesAluno = async (id, nome) => {
     }
 };
 
-// ... (Aqui entra a função gerarGraficoProfessor que te mandei antes, ela não usa fetch) ...
+// --- FUNÇÃO AUXILIAR: GERA COR ALEATÓRIA (Para cada linha) --- 
+    function gerarCorAleatoria() {
+    // Gera cores vivas (para destacar no fundo escuro)
+    const r = Math.floor(Math.random() * 155) + 100;
+    const g = Math.floor(Math.random() * 155) + 100;
+    const b = Math.floor(Math.random() * 155) + 100;
+    return `rgba(${r}, ${g}, ${b}, 1)`;
+}
+
+// --- FUNÇÃO AUXILIAR: SIMULA HISTÓRICO DE CRESCIMENTO ---
+// Cria 5 pontos anteriores aleatórios que sobem até a nota final
+function gerarHistorico(notaFinal) {
+    let pontos = [];
+    let acumulado = 0;
+    // Gera 5 pontos progressivos
+    for (let i = 0; i < 5; i++) {
+        // Incremento aleatório, subindo até 20% da nota final a cada passo
+        let incremento = Math.floor(Math.random() * (notaFinal * 0.2));
+        acumulado += incremento;
+        // Garante que não ultrapasse a nota final antes da hora
+        if (acumulado > notaFinal) acumulado = notaFinal - (notaFinal * 0.1); 
+        pontos.push(Math.round(acumulado));
+    }
+    pontos.push(notaFinal); // O último ponto é a nota REAL
+    return pontos;
+}
+
+// --- GRÁFICO MULTI-LINHAS (RANKING COMPARATIVO) ---
 function gerarGraficoProfessor(alunos) {
-    // Cole aqui a função do gráfico
+    const ctx = document.getElementById('graficoRankingProfessor');
+    if (!ctx) return;
+
+    // Destroi a instância anterior do Chart.js, se existir
+    if (window.graficoProf) window.graficoProf.destroy();
+
+    // Determinação de Tema para acessibilidade
+    const isDark = document.body.classList.contains('dark-mode');
+    const corTexto = isDark ? '#cbd5e1' : '#64748b';
+    const corGrid = isDark ? '#334155' : '#e2e8f0';
+
+    // Limita ao Top 7 para evitar sobrecarga visual
+    const topAlunos = alunos.slice(0, 7); 
+
+    const datasets = topAlunos.map(aluno => {
+        const cor = gerarCorAleatoria(); // Cor aleatória para cada linha
+        return {
+            label: aluno.nome, // Nome aparece no tooltip
+            data: gerarHistorico(aluno.pontuacao_total),
+            borderColor: cor,
+            backgroundColor: cor,
+            borderWidth: 3,
+            pointRadius: 0, // Sem bolinhas no meio da linha
+            pointHoverRadius: 6, // Bolinha aparece ao passar o mouse
+            tension: 0.4, // Curva suave
+            fill: false // Sem preenchimento sob a linha
+        };
+    });
+
+    window.graficoProf = new Chart(ctx, {
+        type: 'line',
+        data: {
+            // Rótulos do Eixo X são os marcos temporais simulados
+            labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Atual'],
+            datasets: datasets
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false, // Permite interagir com várias linhas ao mesmo tempo
+            },
+            plugins: {
+                legend: {
+                    display: true, // Mostra a legenda (Nome do Aluno + Cor)
+                    labels: { color: corTexto, boxWidth: 10 }
+                },
+                tooltip: {
+                    backgroundColor: isDark ? '#1e293b' : '#fff',
+                    titleColor: isDark ? '#fff' : '#1e293b',
+                    bodyColor: isDark ? '#cbd5e1' : '#64748b',
+                    borderColor: isDark ? '#334155' : '#e2e8f0',
+                    borderWidth: 1
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: corTexto },
+                    grid: { display: false }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: corTexto },
+                    grid: { color: corGrid, borderDash: [5, 5] } // Linhas pontilhadas
+                }
+            }
+        }
+    });
 }
