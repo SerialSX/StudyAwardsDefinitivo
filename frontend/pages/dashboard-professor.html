@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -138,11 +140,15 @@
         </div>
 
         <div id="tab-relatorios" class="tab-content">
-            <div class="grid-card">
-                <h3>Relatório de Desempenho</h3>
-                <p>Em breve.</p>
-            </div>
+    <div class="grid-card">
+        <h3>Ranking da Turma 🏆</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1rem;">Comparativo de pontos entre os alunos.</p>
+        
+        <div style="position: relative; height: 400px; width: 100%;">
+            <canvas id="graficoRankingProfessor"></canvas>
         </div>
+    </div>
+</div>
     </div>
 
     <script src="../scripts/dashboard-professor.js" defer></script>

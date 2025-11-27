@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // ... (resto do seu código que preenche a tabela) ...
             preencherTabelaAlunos(dataRanking.ranking);
+            gerarGraficoProfessor(dataRanking.ranking);
 
         } catch (error) {
             console.error("Erro ao carregar dashboard:", error);
@@ -308,3 +309,60 @@ window.avaliar = async (id, aprovou) => {
 // Chama a função assim que abrir a tela
 carregarCorrecoes();
 });
+
+function gerarGraficoProfessor(alunos) {
+        const ctx = document.getElementById('graficoRankingProfessor');
+        if (!ctx) return;
+
+        // Pega os nomes e os pontos
+        // (Podemos limitar ao Top 10 se tiver muitos alunos no futuro)
+        const labels = alunos.map(a => a.nome);
+        const pontos = alunos.map(a => a.pontuacao_total);
+
+        // Destruir gráfico anterior para não bugar na troca de aba
+        if (window.graficoProf) window.graficoProf.destroy();
+
+        // Cores do Tema
+        const isDark = document.body.classList.contains('dark-mode');
+        const corTexto = isDark ? '#cbd5e1' : '#64748b';
+        const corBarras = '#2563eb'; // Azul Royal do tema
+
+        window.graficoProf = new Chart(ctx, {
+            type: 'bar', // Gráfico de Barras é melhor para ranking
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pontuação Total',
+                    data: pontos,
+                    backgroundColor: corBarras,
+                    borderRadius: 6, // Barras arredondadas
+                    barPercentage: 0.6 // Largura da barra
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y', // 'y' faz o gráfico ficar DEITADO (melhor para ler nomes), 'x' fica em pé
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+                        titleColor: isDark ? '#fff' : '#1e293b',
+                        bodyColor: isDark ? '#cbd5e1' : '#64748b',
+                        borderColor: isDark ? '#334155' : '#e2e8f0',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: corTexto },
+                        grid: { display: false }
+                    },
+                    y: {
+                        ticks: { color: corTexto, font: { weight: 'bold' } },
+                        grid: { color: isDark ? '#334155' : '#e2e8f0' }
+                    }
+                }
+            }
+        });
+    }
