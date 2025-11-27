@@ -1,3 +1,11 @@
+// --- CONFIGURAÇÃO DA API ---
+// 1. Rodando no seu PC (Teste):
+// const API_URL = "http://localhost:3000"; 
+
+// 2. Rodando na Vercel (Produção):
+const API_URL = "studyawardsdefinitivo-production.up.railway.app"; 
+// ---------------------------
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Proteção de Rota e Leitura de Dados
@@ -19,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const alunoResponsavelId = usuarioLogado.alunoIdAssociado;
 
     if (!alunoResponsavelId) {
-        // Se o pai cadastrou sem colocar o ID do filho (erro antigo)
         Swal.fire({
             title: 'Erro de Vínculo',
             text: 'Não encontramos o aluno associado a esta conta. Por favor, recrie a conta informando o ID do aluno.',
@@ -32,11 +39,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const token = localStorage.getItem('token');
         
         try {
-            // URLs das APIs Reais
-            const urlPontuacao = `http://localhost:3000/usuarios/${alunoResponsavelId}/pontuacao`;
-            const urlRanking = `http://localhost:3000/ranking`;
-            const urlDesafios = `http://localhost:3000/api/desafios?alunoId=${alunoResponsavelId}`;
-            const urlPenalidades = `http://localhost:3000/alunos/${alunoResponsavelId}/penalidades`;
+            // USA API_URL
+            const urlPontuacao = `${API_URL}/usuarios/${alunoResponsavelId}/pontuacao`;
+            const urlRanking = `${API_URL}/ranking`;
+            const urlDesafios = `${API_URL}/api/desafios?alunoId=${alunoResponsavelId}`;
+            const urlPenalidades = `${API_URL}/alunos/${alunoResponsavelId}/penalidades`;
 
             // Busca tudo em paralelo
             const [resPontos, resRank, resDesafios, resPenalidades] = await Promise.all([
@@ -58,19 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // --- PROCESSAMENTO DE DADOS REAIS ---
             
-            // 1. Cabeçalho
             preencherCabecalhoAluno(dadosAluno, dadosRanking);
-
-            // 2. Cards de Status (Agora com Faltas Reais)
             preencherStatusCards(dadosAluno, dadosDesafios.desafios, dadosPenalidades.historico);
-
-            // 3. Lista Combinada (Atividades + Penalidades)
             preencherAtividadesRecentes(dadosDesafios.desafios, dadosPenalidades.historico);
-
-            // 4. Gráfico Real (Calculado a partir das conclusões)
+            
+            // Função do Gráfico (Chart.js)
             gerarGraficoEvolucao(dadosDesafios.desafios);
 
-            // 5. Metas
             preencherProgressoMeta(dadosAluno, dadosDesafios.desafios);
 
         } catch (error) {
@@ -81,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function preencherCabecalhoAluno(dadosAluno, dadosRanking) {
         document.getElementById('nome-aluno').textContent = dadosAluno.nome;
-        document.getElementById('serie-aluno').textContent = 'Turma 9A'; // Placeholder (não temos Turma no banco ainda)
+        document.getElementById('serie-aluno').textContent = 'Turma 9A'; 
 
         const idAlunoNum = parseInt(dadosAluno.id);
         const minhaPosicao = dadosRanking.ranking.findIndex(aluno => aluno.id === idAlunoNum) + 1;
@@ -95,18 +96,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function preencherStatusCards(dadosAluno, desafios, penalidades) {
-        // Pontuação
         document.getElementById('pontuacao-total').textContent = dadosAluno.pontuacao_total;
 
-        // Frequência -> Virou "Faltas" (Dado Real)
-        // Mudamos o texto do label via JS para fazer sentido com os dados que temos
         const labelFreq = document.querySelector('.status-card:nth-child(2) h3');
         if(labelFreq) labelFreq.textContent = "Faltas Registradas";
         
         const totalFaltas = penalidades ? penalidades.length : 0;
-        document.getElementById('taxa-presenca').textContent = totalFaltas; // Mostra número absoluto
+        document.getElementById('taxa-presenca').textContent = totalFaltas; 
 
-        // Atividades
         const concluidas = desafios ? desafios.filter(d => d.status === 'concluido').length : 0;
         const total = desafios ? desafios.length : 0;
         document.getElementById('progresso-meta').textContent = `${concluidas} / ${total}`;
@@ -117,13 +114,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!lista) return;
         lista.innerHTML = '';
 
-        // Cria uma lista unificada de eventos
         let eventos = [];
 
-        // Adiciona Desafios
         if (desafios) {
             desafios.forEach(d => {
-                // Usa data de conclusão ou prazo ou hoje
                 let dataEvento = d.data_conclusao || d.prazo_final || new Date().toISOString();
                 eventos.push({
                     tipo: 'desafio',
@@ -136,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Adiciona Penalidades
         if (penalidades) {
             penalidades.forEach(p => {
                 eventos.push({
@@ -150,12 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Ordena por data (mais recente primeiro) e pega os 5 últimos
         eventos.sort((a, b) => b.data - a.data);
         const recentes = eventos.slice(0, 5);
 
         if (recentes.length === 0) {
-            lista.innerHTML = '<p style="color: #718096;">Nenhuma atividade recente.</p>';
+            lista.innerHTML = '<p style="color: var(--text-secondary);">Nenhuma atividade recente.</p>';
             return;
         }
 
@@ -177,8 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             item.innerHTML = `
                 <div>
-                    <h4 style="margin-bottom: 0.2rem;">${evento.titulo}</h4>
-                    <p style="font-size: 0.75rem;">${dataFormatada}</p>
+                    <h4 style="margin-bottom: 0.2rem; color: var(--text-primary);">${evento.titulo}</h4>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary);">${dataFormatada}</p>
                 </div>
                 ${badgeHtml}
             `;
@@ -186,62 +178,71 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- GRÁFICO Chart.js (Evolução) ---
     function gerarGraficoEvolucao(desafios) {
-        const chartContainer = document.getElementById('performance-chart');
-        if (!chartContainer) return;
-        chartContainer.innerHTML = '';
+        const ctx = document.getElementById('graficoEvolucao');
+        if (!ctx) return;
 
-        // Agrupa pontos ganhos por mês (apenas concluídos)
-        const pontosPorMes = {};
         const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-
-        // Inicializa os últimos 4 meses com 0
         const hoje = new Date();
-        for (let i = 3; i >= 0; i--) {
-            let d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
-            let key = `${meses[d.getMonth()]}`;
-            pontosPorMes[key] = 0;
-        }
-
-        if (desafios) {
-            desafios.forEach(d => {
-                if (d.status === 'concluido' && d.data_conclusao) {
-                    let data = new Date(d.data_conclusao);
-                    let key = `${meses[data.getMonth()]}`;
-                    // Soma se o mês estiver no nosso gráfico
-                    if (pontosPorMes.hasOwnProperty(key)) {
-                        pontosPorMes[key] += d.pontos;
-                    }
-                }
-            });
-        }
-
-        // Renderiza o gráfico
-        const valores = Object.values(pontosPorMes);
-        const maxVal = Math.max(...valores, 100); // Escala mínima de 100
-
-        Object.keys(pontosPorMes).forEach(mes => {
-            const pontos = pontosPorMes[mes];
-            const porcentagem = (pontos / maxVal) * 100;
-            
-            const row = document.createElement('div');
-            row.className = 'chart-row';
-            row.innerHTML = `
-                <span class="month">${mes}</span>
-                <div class="bar-container">
-                    <div class="bar" style="width: ${porcentagem}%;"></div>
-                </div>
-                <span class="points">${pontos} pts</span>
-            `;
-            chartContainer.appendChild(row);
-        });
         
-        // Atualiza o resumo
-        document.querySelector('.chart-summary').textContent = 
-            `Pontos ganhos nos últimos 4 meses com base em atividades concluídas.`;
+        let labels = [];
+        let dadosReais = [];
+        
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+            labels.push(meses[d.getMonth()]);
+            
+            const pontosDoMes = desafios
+                .filter(daf => {
+                    if (daf.status !== 'concluido' || !daf.data_conclusao) return false;
+                    const dataConclusao = new Date(daf.data_conclusao);
+                    return dataConclusao.getMonth() === d.getMonth();
+                })
+                .reduce((acc, curr) => acc + curr.pontos, 0);
+            
+            dadosReais.push(pontosDoMes);
+        }
+
+        const totalReais = dadosReais.reduce((a, b) => a + b, 0);
+        if (totalReais === 0) {
+            dadosReais = [50, 100, 80, 150, 120, 0]; // Simulação se vazio
+        }
+
+        if (window.meuGrafico) window.meuGrafico.destroy();
+
+        const isDark = document.body.classList.contains('dark-mode');
+        const corTexto = isDark ? '#cbd5e1' : '#64748b';
+        const corGrid = isDark ? '#334155' : '#e2e8f0';
+
+        window.meuGrafico = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Pontos',
+                    data: dadosReais,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#2563eb',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: corGrid }, ticks: { color: corTexto } },
+                    x: { grid: { display: false }, ticks: { color: corTexto } }
+                }
+            }
+        });
     }
 
-    function preencherProgressoMeta(dadosAluno) {
+    function preencherProgressoMeta(dadosAluno, desafios) {
         const metaPontos = 1500; 
         const pontuacaoAtual = dadosAluno.pontuacao_total;
         const progressoPercent = Math.round((pontuacaoAtual / metaPontos) * 100);

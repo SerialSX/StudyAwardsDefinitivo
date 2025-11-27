@@ -1,1 +1,0 @@
-ALTER TABLE usuarios ADD COLUMN pontuacao_total INTEGER DEFAULT 0;

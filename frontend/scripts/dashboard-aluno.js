@@ -1,3 +1,11 @@
+// --- CONFIGURAÇÃO DA API (GLOBAL) ---
+// 1. Rodando no seu PC (Teste):
+// const API_URL = "http://localhost:3000"; 
+
+// 2. Rodando na Vercel (Produção):
+const API_URL = "studyawardsdefinitivo-production.up.railway.app"; 
+// ------------------------------------
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🚀 Dashboard Aluno: Script Iniciado");
 
@@ -22,9 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("🔄 Buscando dados do aluno ID:", usuarioLogado.id);
 
         try {
-            const urlPontuacao = `http://localhost:3000/usuarios/${usuarioLogado.id}/pontuacao`;
-            const urlRanking = `http://localhost:3000/ranking`;
-            const urlDesafios = `http://localhost:3000/api/desafios?alunoId=${usuarioLogado.id}`;
+            // USA A VARIÁVEL API_URL AQUI
+            const urlPontuacao = `${API_URL}/usuarios/${usuarioLogado.id}/pontuacao`;
+            const urlRanking = `${API_URL}/ranking`;
+            const urlDesafios = `${API_URL}/api/desafios?alunoId=${usuarioLogado.id}`;
             
             const [resPontos, resRank, resDesafios] = await Promise.all([
                 fetch(urlPontuacao, { headers: { 'Authorization': `Bearer ${token}` } }),
@@ -113,7 +122,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     border: 1px solid var(--border-color); border-left: 4px solid ${corStatus};
                 `;
 
-                let linkFoto = desafio.comprovante_path ? `http://localhost:3000/uploads/${desafio.comprovante_path.split(/[/\\]/).pop()}` : '';
+                // LINK DA FOTO COM API_URL
+                let linkFoto = '';
+                if (desafio.comprovante_path) {
+                    const nomeArquivo = desafio.comprovante_path.split(/[/\\]/).pop();
+                    linkFoto = `${API_URL}/uploads/${nomeArquivo}`;
+                }
 
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
@@ -150,20 +164,19 @@ window.enviarTarefaDireto = async function(btn, id) {
     btn.disabled = true;
 
     try {
-        const res = await fetch(`http://localhost:3000/api/desafios/completar/${id}`, {
+        // FETCH COM API_URL
+        const res = await fetch(`${API_URL}/api/desafios/completar/${id}`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
         });
         
-        // 1. LÊ O JSON (Seja sucesso ou erro do ErrorHandler)
         const data = await res.json();
         
         if(res.ok) {
             await Swal.fire('Enviado!', data.message || 'Atividade enviada.', 'success');
             window.location.reload();
         } else {
-            // 2. MOSTRA O ERRO REAL
             Swal.fire('Erro no Envio', data.erro || 'Ocorreu um erro.', 'error');
             btn.disabled = false;
             btn.textContent = textoOriginal;

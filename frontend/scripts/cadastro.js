@@ -1,10 +1,20 @@
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // --- CONFIGURAÇÃO DA API ---
+    // 1. Rodando no seu PC (Teste):
+    // const API_URL = "http://localhost:3000"; 
+
+    // 2. Rodando na Vercel (Produção):
+    const API_URL = "studyawardsdefinitivo-production.up.railway.app"; 
+    // (Lembre-se de conferir se este link é EXATAMENTE o que você gerou no Railway)
+
+    // ---------------------------
+
     const cadastroForm = document.getElementById('cadastro-form');
     
     // Elementos para controle dos campos extras
     const radiosTipo = document.querySelectorAll('input[name="tipo"]');
     
-    // --- CORREÇÃO: Pegando os IDs certos do HTML ---
     const campoAlunoContainer = document.getElementById('campo-aluno-container');
     const campoProfessorContainer = document.getElementById('campo-professor-container');
     
@@ -15,8 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
     radiosTipo.forEach(radio => {
         radio.addEventListener('change', (e) => {
             const tipo = e.target.value;
-            
-            // --- CORREÇÃO AQUI: Usando os nomes de variáveis certos ---
             
             // Primeiro, esconde tudo (Reset)
             if(campoAlunoContainer) campoAlunoContainer.style.display = 'none';
@@ -41,10 +49,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. Envio do Formulário (Com SweetAlert2)
+    // 2. Envio do Formulário
     if (cadastroForm) {
         cadastroForm.addEventListener('submit', async (event) => {
             event.preventDefault(); // Não recarrega a página
+
+            // Feedback visual no botão
+            const btnSubmit = cadastroForm.querySelector('button[type="submit"]');
+            const textoOriginal = btnSubmit.innerText;
+            btnSubmit.innerText = "Cadastrando...";
+            btnSubmit.disabled = true;
 
             // Pega os valores
             const nome = document.getElementById('nome').value;
@@ -66,7 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             try {
-                const response = await fetch('http://localhost:3000/api/cadastro', {
+                // USA A VARIÁVEL AQUI
+                const response = await fetch(`${API_URL}/api/cadastro`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dadosCadastro)
@@ -98,11 +113,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         icon: 'warning',
                         confirmButtonColor: '#d33'
                     });
+                    btnSubmit.innerText = textoOriginal;
+                    btnSubmit.disabled = false;
                 }
 
             } catch (error) {
                 console.error(error);
-                Swal.fire('Erro de Conexão', 'Não foi possível conectar ao servidor.', 'error');
+                Swal.fire('Servidor Offline', 'Não foi possível conectar ao sistema.', 'error');
+                btnSubmit.innerText = textoOriginal;
+                btnSubmit.disabled = false;
             }
         });
     }
