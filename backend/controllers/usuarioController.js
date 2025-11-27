@@ -29,19 +29,18 @@ exports.updatePontuacao = (req, res, next) => {
 
 // --- FUNÇÃO DE CADASTRO ATUALIZADA ---
 exports.cadastro = (req, res, next) => {
-  // CORREÇÃO AQUI: Mudamos 'alunoAssociadoId' para 'alunoId' para casar com o frontend
+  console.log("📩 CADASTRO RECEBIDO:", req.body); // <--- VAI MOSTRAR O QUE O FRONT MANDOU
+
   const { nome, email, senha, tipo, alunoId, codigoProfessor } = req.body;
 
   if (!nome || !email || !senha || !tipo) {
     return res.status(400).json({ erro: "Todos os campos obrigatórios são necessários." });
   }
 
-  // 1. SEGURANÇA: Senha Mínima
   if (senha.length < 6) {
     return res.status(400).json({ erro: "A senha deve ter no mínimo 6 caracteres." });
   }
 
-  // 2. SEGURANÇA: Validação de Professor
   if (tipo === 'PROFESSOR') {
       const CODIGO_SECRETO = "ADMIN123"; 
       if (!codigoProfessor || codigoProfessor !== CODIGO_SECRETO) {
@@ -49,17 +48,15 @@ exports.cadastro = (req, res, next) => {
       }
   }
 
-  // Lógica do Responsável
   let idDoAlunoParaSalvar = null;
   if (tipo === 'RESPONSAVEL') {
-    // Agora usamos a variável certa que veio do body
     idDoAlunoParaSalvar = alunoId; 
+    console.log("👨‍👧 TIPO RESPONSÁVEL DETECTADO. ID ALUNO:", idDoAlunoParaSalvar); // <--- VERIFICAÇÃO
   }
 
   bcrypt.hash(senha, 10, (err, hash) => {
     if (err) { return next(err); }
     
-    // Passamos idDoAlunoParaSalvar para o model
     usuarioModel.createUser(nome, email, hash, tipo, idDoAlunoParaSalvar, (err, resultado) => {
       if (err) { 
           if (err.message && err.message.includes('UNIQUE constraint failed')) {
@@ -68,6 +65,8 @@ exports.cadastro = (req, res, next) => {
           return next(err); 
       }
       
+      console.log("✅ USUÁRIO CRIADO NO BANCO COM ID:", resultado.id); // <--- SUCESSO
+      
       res.status(201).json({
         id: resultado.id,
         nome: nome,
@@ -75,6 +74,40 @@ exports.cadastro = (req, res, next) => {
         tipo: tipo,
         aluno_associado_id: idDoAlunoParaSalvar
       });
+    });
+  });
+};
+
+exports.login = (req, res, next) => {
+  const { email, senha } = req.body;
+  
+  const sql = `SELECT * FROM usuarios WHERE email = ?`;
+  
+  db.get(sql, [email], (err, row) => {
+    if (err) { return next(err); }
+    if (!row) { return res.status(404).json({ erro: "Email não encontrado." }); }
+
+    bcrypt.compare(senha, row.senha, (err, isMatch) => {
+        if (err) { return next(err); }
+        if (!isMatch) { return res.status(401).json({ erro: "Senha incorreta." }); }
+
+        console.log("🔑 LOGIN REALIZADO. DADOS DO BANCO:", row); // <--- VAI MOSTRAR SE O ID ESTÁ NO BANCO
+
+        const payload = {
+            id: row.id,
+            nome: row.nome,
+            tipo: row.tipo,
+            alunoIdAssociado: row.aluno_associado_id 
+        };
+
+        const secret = "minha-senha-secreta-super-dificil"; 
+        const token = jwt.sign(payload, secret, { expiresIn: '1h' });
+
+        res.json({
+            message: "Login bem-sucedido!",
+            token: token,
+            usuario: payload 
+        });
     });
   });
 };
