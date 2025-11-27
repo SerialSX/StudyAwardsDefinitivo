@@ -1,7 +1,6 @@
 const penalidadeModel = require('../models/penalidadeModel.js');
 const usuarioModel = require('../models/usuarioModel.js');
 
-// 1. Lógica para GET /alunos/:id/penalidades
 exports.getPenalidades = (req, res, next) => {
   const alunoId = req.params.id;
 
@@ -11,10 +10,11 @@ exports.getPenalidades = (req, res, next) => {
   });
 };
 
-// 2. Lógica para POST /registrar-falta
 exports.registrarFalta = (req, res, next) => {
   const { alunoId, dataFalta, professorId, pontosDeduzidos, motivo } = req.body;
-  const dataAtual = new Date().toISOString();
+  
+  // Postgres prefere data YYYY-MM-DD para colunas DATE, mas aceita ISO string
+  const dataAtual = new Date().toISOString(); 
 
   penalidadeModel.registrarFrequencia(alunoId, dataFalta, professorId, (err) => {
     if (err) { return next(err); }
@@ -30,12 +30,10 @@ exports.registrarFalta = (req, res, next) => {
   });
 };
 
-// 3. Lógica para GET /verificar-atrasos
 exports.verificarAtrasos = (req, res, next) => {
-
   penalidadeModel.findTarefasAtrasadas((err, rows) => {
     if (err) { return next(err); }
-    if (rows.length === 0) {
+    if (!rows || rows.length === 0) {
       return res.json({ message: "Nenhuma tarefa atrasada encontrada." });
     }
 
@@ -47,7 +45,7 @@ exports.verificarAtrasos = (req, res, next) => {
 
       penalidadeModel.aplicarPenalidadeAtraso(tarefa.aluno_id, motivo, pontosDeduzidos, dataAtual, tarefa.aluno_desafio_id, (err) => {
         if (err) {
-          console.error(`Erro ao aplicar penalidade para aluno ${tarefa.aluno_id}: ${err.message}`);
+          console.error(`Erro ao aplicar penalidade: ${err.message}`);
         }
         tarefasProcessadas++;
         if (tarefasProcessadas === rows.length) {

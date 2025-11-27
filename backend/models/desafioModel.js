@@ -1,118 +1,46 @@
-const { db } = require('../config/database.js');
+const db = require('../config/database.js');
 
-// Model para GET /api/desafios (Listar desafios de um aluno)
 exports.findDesafiosByAlunoId = (alunoId, callback) => {
   const sql = `
     SELECT 
-      d.id, 
-      d.titulo, 
-      d.descricao, 
-      d.pontos, 
-      d.prazo_final,
-      ad.status,
-      ad.data_conclusao,
-      ad.id as aluno_desafio_id
+      d.id, d.titulo, d.descricao, d.pontos, d.prazo_final,
+      ad.status, ad.data_conclusao, ad.id as aluno_desafio_id, ad.comprovante_path
     FROM desafios d 
     JOIN aluno_desafios ad ON d.id = ad.desafio_id 
-    WHERE ad.aluno_id = ?
+    WHERE ad.aluno_id = $1
   `;
-  db.all(sql, [alunoId], (err, rows) => {
-    callback(err, rows);
+  db.query(sql, [alunoId], (err, res) => {
+    if (err) return callback(err);
+    callback(null, res.rows);
   });
 };
 
-// Model para POST /api/desafios (Criar um novo desafio)
-exports.createDesafio = (titulo, descricao, pontos, prazo_final, professorId, callback) => {
+exports.createDesafio = (titulo, descricao, pontos, prazo, profId, callback) => {
   const sql = `
     INSERT INTO desafios (titulo, descricao, pontos, prazo_final, criado_por_professor_id) 
-    VALUES (?, ?, ?, ?, ?)
+    VALUES ($1, $2, $3, $4, $5) 
+    RETURNING id
   `;
-  db.run(sql, [titulo, descricao, pontos, prazo_final, professorId], function(err) {
-    if (err) { return callback(err); }
-    callback(null, { id: this.lastID }); // Retorna o ID do novo desafio
+  db.query(sql, [titulo, descricao, pontos, prazo, profId], (err, res) => {
+    if (err) return callback(err);
+    callback(null, { id: res.rows[0].id });
   });
 };
 
-// Model para POST /api/desafios/atribuir-todos
-exports.atribuirParaTodosAlunos = (desafio_id, callback) => {
-  const sqlFindAlunos = "SELECT id FROM usuarios WHERE tipo = 'ALUNO'";
-
-  db.all(sqlFindAlunos, [], (err, alunos) => {
-    if (err) { return callback(err); }
-    if (alunos.length === 0) {
-      return callback(null, { total_alunos_atribuidos: 0 });
-    }
-
-    const sqlInsert = `
-      INSERT OR IGNORE INTO aluno_desafios (aluno_id, desafio_id, status) 
-      VALUES (?, ?, 'pendente')
-    `;
-
-    db.serialize(() => {
-      db.run('BEGIN TRANSACTION');
-      let alunosAtribuidos = 0;
-
-      alunos.forEach(aluno => {
-        db.run(sqlInsert, [aluno.id, desafio_id], function(err) {
-          if (err) {
-            console.error('Erro ao atribuir desafio:', err);
-          } else if (this.changes > 0) {
-            alunosAtribuidos++;
-          }
-        });
-      });
-
-      db.run('COMMIT', (err) => {
-        if (err) { return callback(err); }
-        callback(null, { total_alunos_atribuidos: alunosAtribuidos });
-      });
-    });
-  });
-};
-
-// Model para POST /api/desafios/completar/:id (Parte 1: Buscar)
-exports.findDesafioParaCompletar = (alunoDesafioId, alunoId, callback) => {
+// VERSÃO OTIMIZADA PARA POSTGRES (Sem Loop!)
+exports.atribuirParaTodosAlunos = (desafioId, callback) => {
+  // Esse SQL insere na tabela aluno_desafios pegando TODOS os alunos da tabela usuarios de uma vez
   const sql = `
-    SELECT 
-      ad.status, 
-      d.pontos
-    FROM aluno_desafios ad
-    JOIN desafios d ON ad.desafio_id = d.id
-    WHERE ad.id = ? AND ad.aluno_id = ?
+    INSERT INTO aluno_desafios (aluno_id, desafio_id, status)
+    SELECT id, $1, 'pendente'
+    FROM usuarios
+    WHERE tipo = 'ALUNO'
+    ON CONFLICT DO NOTHING; 
   `;
-  db.get(sql, [alunoDesafioId, alunoId], (err, row) => {
-    callback(err, row);
-  });
-};
+  // Nota: ON CONFLICT precisa de constraint, se der erro pode tirar essa linha final
 
-// Model para POST /api/desafios/completar/:id (Parte 2: Executar)
-exports.completarDesafioEAtualizarPontos = (alunoDesafioId, alunoId, pontosGanhos, callback) => {
-  db.serialize(() => {
-    db.run('BEGIN TRANSACTION');
-
-    const sqlUpdateStatus = `
-      UPDATE aluno_desafios 
-      SET status = 'concluido', data_conclusao = DATETIME('now') 
-      WHERE id = ?
-    `;
-    db.run(sqlUpdateStatus, [alunoDesafioId], function(err) {
-      if (err) {
-        db.run('ROLLBACK');
-        return callback(err);
-      }
-
-      const sqlUpdatePontos = `
-        UPDATE usuarios 
-        SET pontuacao_total = pontuacao_total + ? 
-        WHERE id = ?
-      `;
-      db.run(sqlUpdatePontos, [pontosGanhos, alunoId], function(err) {
-        if (err) {
-          db.run('ROLLBACK');
-          return callback(err);
-        }
-        db.run('COMMIT', callback);
-      });
-    });
+  db.query(sql, [desafioId], (err, res) => {
+    if (err) return callback(err);
+    callback(null, { message: "Atribuído com sucesso", count: res.rowCount });
   });
 };

@@ -1,34 +1,40 @@
-const { db } = require('../config/database.js');
+const db = require('../config/database.js');
 
 exports.findUserByEmail = (email, callback) => {
-  const sql = `SELECT * FROM usuarios WHERE email = ?`;
-  db.get(sql, [email], (err, row) => {
-    callback(err, row);
+  // Postgres usa $1, $2... em vez de ?
+  const sql = `SELECT * FROM usuarios WHERE email = $1`;
+  db.query(sql, [email], (err, res) => {
+    // Postgres retorna as linhas dentro de res.rows
+    if (err) return callback(err);
+    callback(null, res.rows[0]);
   });
 };
 
-// --- Adicionado alunoAssociadoId nos parâmetros ---
-exports.createUser = (nome, email, hash, tipo, alunoAssociadoId, callback) => {
-  const sql = `INSERT INTO usuarios (nome, email, senha, tipo, aluno_associado_id) VALUES (?, ?, ?, ?, ?)`;
-  
-  db.run(sql, [nome, email, hash, tipo, alunoAssociadoId], function(err) {
-    if (err) {
-      return callback(err);
-    }
-    callback(null, { id: this.lastID });
+exports.createUser = (nome, email, hash, tipo, alunoId, callback) => {
+  // Precisa do RETURNING id para saber qual ID foi gerado
+  const sql = `
+    INSERT INTO usuarios (nome, email, senha, tipo, aluno_associado_id) 
+    VALUES ($1, $2, $3, $4, $5) 
+    RETURNING id
+  `;
+  db.query(sql, [nome, email, hash, tipo, alunoId], (err, res) => {
+    if (err) return callback(err);
+    callback(null, { id: res.rows[0].id });
   });
 };
 
 exports.findPontuacaoById = (id, callback) => {
-  const sql = `SELECT nome, pontuacao_total FROM usuarios WHERE id = ?`;
-  db.get(sql, [id], (err, row) => {
-    callback(err, row);
+  const sql = `SELECT nome, pontuacao_total FROM usuarios WHERE id = $1`;
+  db.query(sql, [id], (err, res) => {
+    if (err) return callback(err);
+    callback(null, res.rows[0]);
   });
 };
 
 exports.updatePontuacaoById = (id, pontos, callback) => {
-  const sql = `UPDATE usuarios SET pontuacao_total = pontuacao_total + ? WHERE id = ?`;
-  db.run(sql, [pontos, id], function(err) {
-    callback(err, this.changes);
+  const sql = `UPDATE usuarios SET pontuacao_total = pontuacao_total + $1 WHERE id = $2`;
+  db.query(sql, [pontos, id], (err, res) => {
+    if (err) return callback(err);
+    callback(null, res.rowCount);
   });
 };

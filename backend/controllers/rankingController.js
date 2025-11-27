@@ -1,8 +1,6 @@
-const { db } = require('../config/database.js');
+const db = require('../config/database.js');
 
 exports.getRanking = (req, res, next) => {
-  // SQL AVANÇADO:
-  // Seleciona o aluno, os pontos E faz uma sub-consulta para contar as faltas na tabela 'frequencia'
   const sql = `
     SELECT 
       u.id, 
@@ -14,10 +12,11 @@ exports.getRanking = (req, res, next) => {
     ORDER BY u.pontuacao_total DESC
   `;
 
-  db.all(sql, [], (err, rows) => {
+  db.query(sql, [], (err, result) => {
     if (err) { 
       return next(err);
     }
-    res.json({ ranking: rows });
+    // No Postgres, os dados vem em .rows
+    res.json({ ranking: result.rows });
   });
 };

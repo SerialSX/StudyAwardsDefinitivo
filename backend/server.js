@@ -1,37 +1,46 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-const { db, criarTabelas } = require('./config/database.js'); 
+const path = require('path'); 
+
+// --- MUDANÇA AQUI ---
+// Removemos { db, criarTabelas } e deixamos sem nada, 
+// pois o server.js não acessa o banco direto, só os controllers acessam.
+// Se quiser garantir que conecta, o próprio require já roda o console.log da conexão.
+require('./config/database.js'); 
+
 const rankingRoutes = require('./routes/rankingRoutes.js');
 const usuarioRoutes = require('./routes/usuarioRoutes.js');
 const penalidadeRoutes = require('./routes/penalidadeRoutes.js');
 const desafioRoutes = require('./routes/desafioRoutes.js');
+const dashboardRoute = require('./routes/dashboardRoute.js'); // Rota do resumo
 const errorHandler = require('./middleware/errorHandler.js');
-const dashboardRoutes = require('./routes/dashboardRoutes.js');
 
 const app = express();
 
-app.use(cors());
+const PORT = process.env.PORT || 3000; 
+
+app.use(cors()); 
 app.use(express.json());
 
-const PORT = 3000;
+// --- MUDANÇA AQUI ---
+// A linha criarTabelas(); FOI REMOVIDA porque já criamos no pgAdmin.
 
-criarTabelas();
+// Configuração de Imagens
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/', dashboardRoutes);
+// Rotas
 app.use('/', rankingRoutes);
 app.use('/', usuarioRoutes);
 app.use('/', penalidadeRoutes);
 app.use('/', desafioRoutes);
-app.use(errorHandler);
-
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/', dashboardRoute);
 
 app.get('/', (req, res) => {
-  res.send('Servidor funcionando e conectado ao banco de dados!');
+  res.send('API StudyAwards com PostgreSQL está Online! 🐘');
 });
 
+app.use(errorHandler);
+
 app.listen(PORT, () => {
-  console.log(`Servidor iniciado e rodando na porta ${PORT}. Servidor
-    funcionando e conectado ao banco de dados!`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });

@@ -1,36 +1,53 @@
-// 1 - Importa o banco de dados
-const { db } = require('../config/database.js');
+// 1 - Importa o banco de dados (agora é o pool do Postgres)
+const db = require('../config/database.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const usuarioModel = require('../models/usuarioModel.js');
 
 exports.getPontuacao = (req, res, next) => {
   const usuarioId = req.params.id;
-  db.get(`SELECT nome, pontuacao_total FROM usuarios WHERE id = ?`, [usuarioId], (err, row) => {
+  
+  // POSTGRES: Usa $1 em vez de ?
+  const sql = `SELECT nome, pontuacao_total FROM usuarios WHERE id = $1`;
+  
+  db.query(sql, [usuarioId], (err, result) => {
     if (err) { return next(err); }
-    else if (!row) { res.status(404).json({ erro: "Usuário não encontrado." }); }
-    else { res.json({ id: usuarioId, nome: row.nome, pontuacao_total: row.pontuacao_total }); }
+    
+    // POSTGRES: O resultado vem em result.rows (array)
+    if (result.rows.length === 0) { 
+        res.status(404).json({ erro: "Usuário não encontrado." }); 
+    } else { 
+        const row = result.rows[0];
+        res.json({ id: usuarioId, nome: row.nome, pontuacao_total: row.pontuacao_total }); 
+    }
   });
 };
 
 exports.updatePontuacao = (req, res, next) => {
   const usuarioId = req.params.id;
   const { pontos } = req.body;
+  
   if (typeof pontos !== 'number') {
     return res.status(400).json({ erro: "Campo 'pontos' deve ser um número." });
   }
-  const query = `UPDATE usuarios SET pontuacao_total = pontuacao_total + ? WHERE id = ?`;
-  db.run(query, [pontos, usuarioId], function (err) {
+  
+  // POSTGRES: Usa $1, $2
+  const query = `UPDATE usuarios SET pontuacao_total = pontuacao_total + $1 WHERE id = $2`;
+  
+  db.query(query, [pontos, usuarioId], (err, result) => {
     if (err) { return next(err); }
-    else if (this.changes === 0) { res.status(404).json({ erro: "Usuário não encontrado." }); }
-    else { res.json({ mensagem: "Pontuação atualizada com sucesso!" }); }
+    
+    // POSTGRES: result.rowCount diz quantas linhas mudaram
+    if (result.rowCount === 0) { 
+        res.status(404).json({ erro: "Usuário não encontrado." }); 
+    } else { 
+        res.json({ mensagem: "Pontuação atualizada com sucesso!" }); 
+    }
   });
 };
 
-// --- FUNÇÃO DE CADASTRO ATUALIZADA ---
+// --- FUNÇÃO DE CADASTRO (Usa o Model que já convertemos) ---
 exports.cadastro = (req, res, next) => {
-  console.log("📩 CADASTRO RECEBIDO:", req.body); // <--- VAI MOSTRAR O QUE O FRONT MANDOU
-
   const { nome, email, senha, tipo, alunoId, codigoProfessor } = req.body;
 
   if (!nome || !email || !senha || !tipo) {
@@ -51,21 +68,20 @@ exports.cadastro = (req, res, next) => {
   let idDoAlunoParaSalvar = null;
   if (tipo === 'RESPONSAVEL') {
     idDoAlunoParaSalvar = alunoId; 
-    console.log("👨‍👧 TIPO RESPONSÁVEL DETECTADO. ID ALUNO:", idDoAlunoParaSalvar); // <--- VERIFICAÇÃO
   }
 
   bcrypt.hash(senha, 10, (err, hash) => {
     if (err) { return next(err); }
     
+    // Chama o Model (que já está adaptado para Postgres)
     usuarioModel.createUser(nome, email, hash, tipo, idDoAlunoParaSalvar, (err, resultado) => {
       if (err) { 
-          if (err.message && err.message.includes('UNIQUE constraint failed')) {
+          // POSTGRES: Código de erro para Unique Violation é '23505'
+          if (err.code === '23505') {
               return res.status(400).json({ erro: "Este email já está cadastrado." });
           }
           return next(err); 
       }
-      
-      console.log("✅ USUÁRIO CRIADO NO BANCO COM ID:", resultado.id); // <--- SUCESSO
       
       res.status(201).json({
         id: resultado.id,
@@ -78,20 +94,32 @@ exports.cadastro = (req, res, next) => {
   });
 };
 
+// --- LOGIN (Adaptado para Postgres) ---
 exports.login = (req, res, next) => {
   const { email, senha } = req.body;
+  if (!email || !senha) {
+    return res.status(400).json({ erro: "Email e senha são obrigatórios." });
+  }
   
-  const sql = `SELECT * FROM usuarios WHERE email = ?`;
+  // POSTGRES: $1
+  const sql = `SELECT * FROM usuarios WHERE email = $1`;
   
-  db.get(sql, [email], (err, row) => {
+  db.query(sql, [email], (err, result) => {
     if (err) { return next(err); }
-    if (!row) { return res.status(404).json({ erro: "Email não encontrado." }); }
+    
+    // POSTGRES: Checa se veio alguma linha
+    if (result.rows.length === 0) {
+      return res.status(404).json({ erro: "Email não encontrado." });
+    }
+
+    const row = result.rows[0]; // Pega o primeiro usuário encontrado
 
     bcrypt.compare(senha, row.senha, (err, isMatch) => {
         if (err) { return next(err); }
-        if (!isMatch) { return res.status(401).json({ erro: "Senha incorreta." }); }
-
-        console.log("🔑 LOGIN REALIZADO. DADOS DO BANCO:", row); // <--- VAI MOSTRAR SE O ID ESTÁ NO BANCO
+        
+        if (!isMatch) {
+            return res.status(401).json({ erro: "Senha incorreta." });
+        }
 
         const payload = {
             id: row.id,
@@ -107,47 +135,6 @@ exports.login = (req, res, next) => {
             message: "Login bem-sucedido!",
             token: token,
             usuario: payload 
-        });
-    });
-  });
-};
-
-exports.login = (req, res, next) => {
-  const { email, senha } = req.body;
-  if (!email || !senha) {
-    return res.status(400).json({ erro: "Email e senha são obrigatórios." });
-  }
-  
-  const sql = `SELECT * FROM usuarios WHERE email = ?`;
-  
-  db.get(sql, [email], (err, row) => {
-    if (err) { return next(err); }
-    if (!row) {
-      return res.status(404).json({ erro: "Email não encontrado." });
-    }
-
-    bcrypt.compare(senha, row.senha, (err, isMatch) => {
-        if (err) { return next(err); }
-        
-        if (!isMatch) {
-            return res.status(401).json({ erro: "Senha incorreta." });
-        }
-
-        // --- O PULO DO GATO ESTÁ AQUI ---
-            const payload = {
-            id: row.id,
-            nome: row.nome,
-            tipo: row.tipo,
-            alunoIdAssociado: row.aluno_associado_id // <--- ESSA LINHA É OBRIGATÓRIA
-        };
-
-        const secret = "minha-senha-secreta-super-dificil"; 
-        const token = jwt.sign(payload, secret, { expiresIn: '1h' });
-
-        res.json({
-            message: "Login bem-sucedido!",
-            token: token,
-            usuario: payload // O frontend vai salvar isso no localStorage
         });
     });
   });

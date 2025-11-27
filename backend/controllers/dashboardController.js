@@ -1,36 +1,34 @@
-const { db } = require('../config/database.js');
+const db = require('../config/database.js');
 
 exports.getResumoProfessor = (req, res, next) => {
-    // Vamos rodar 3 queries em paralelo (Total Alunos, Presentes Hoje, Atividades Ativas)
-    
-    const hoje = new Date().toISOString().split('T')[0]; // Data YYYY-MM-DD
+    const hoje = new Date().toISOString().split('T')[0]; 
 
+    // Postgres usa $1 para parâmetros
     const sqlTotalAlunos = "SELECT COUNT(*) as total FROM usuarios WHERE tipo = 'ALUNO'";
-    
-    // Conta presenças registradas hoje na tabela frequencia (se você tiver essa tabela populada)
-    // Se não tiver tabela frequencia usada assim, podemos simular ou contar alunos sem falta hoje.
-    // Vamos assumir que "Presentes" = Total - Faltas registradas hoje.
-    const sqlFaltasHoje = "SELECT COUNT(*) as faltas FROM penalidades WHERE data LIKE ? AND motivo LIKE '%Falta%'";
+    const sqlFaltasHoje = "SELECT COUNT(*) as faltas FROM penalidades WHERE data::text LIKE $1 AND motivo LIKE '%Falta%'"; // Cast ::text ajuda no Postgres
+    const sqlAtividadesAtivas = "SELECT COUNT(*) as ativas FROM desafios WHERE CAST(prazo_final AS DATE) >= CURRENT_DATE";
 
-    const sqlAtividadesAtivas = "SELECT COUNT(*) as ativas FROM desafios WHERE prazo_final >= date('now')";
-
-    db.get(sqlTotalAlunos, [], (err, rowTotal) => {
+    // Callback Hell adaptado para Postgres (db.query)
+    db.query(sqlTotalAlunos, [], (err, resTotal) => {
         if(err) return next(err);
         
-        db.get(sqlFaltasHoje, [`${hoje}%`], (err, rowFaltas) => {
+        db.query(sqlFaltasHoje, [`${hoje}%`], (err, resFaltas) => {
             if(err) return next(err);
 
-            db.get(sqlAtividadesAtivas, [], (err, rowAtivas) => {
+            db.query(sqlAtividadesAtivas, [], (err, resAtivas) => {
                 if(err) return next(err);
 
-                const total = rowTotal.total;
-                const faltas = rowFaltas.faltas;
-                const presentes = total - faltas; // Lógica simples
+                // No Postgres, o count vem como string (tipo "5"), precisamos converter
+                const total = parseInt(resTotal.rows[0].total);
+                const faltas = parseInt(resFaltas.rows[0].faltas);
+                const ativas = parseInt(resAtivas.rows[0].ativas);
+                
+                const presentes = total - faltas;
 
                 res.json({
                     totalAlunos: total,
                     presentesHoje: presentes,
-                    atividadesAtivas: rowAtivas.ativas
+                    atividadesAtivas: ativas
                 });
             });
         });

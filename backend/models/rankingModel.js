@@ -1,12 +1,14 @@
-const { db } = require('../config/database.js');
+const db = require('../config/database.js');
 
 exports.getRankingAlunos = (callback) => {
+  // Postgres: Query normal
   const sql = `SELECT id, nome, pontuacao_total 
                FROM usuarios 
                WHERE tipo = 'ALUNO' 
                ORDER BY pontuacao_total DESC`;
 
-  db.all(sql, [], (err, rows) => {
-    callback(err, rows);
+  db.query(sql, [], (err, res) => {
+    if (err) return callback(err, null);
+    callback(null, res.rows); // No Postgres os dados ficam em .rows
   });
 };
