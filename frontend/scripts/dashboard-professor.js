@@ -359,128 +359,166 @@ window.avaliar = async (id, aprovou) => {
     }
 };
 
+// --- LÓGICA DO BOTÃO "..." (MENU DE AÇÕES) ---
 window.abrirAcoesAluno = async (id, nome) => {
-    // ... (O código do menu de ações continua igual, ele não usa fetch) ...
-    // Vou resumir aqui pra caber na resposta, mas você mantém o que já tinha:
-    const { value: acao } = await Swal.fire({
+    // Abre o Menu de Opções
+    await Swal.fire({
         title: `Gerenciar: ${nome}`,
-        html: `<div style="display: flex; flex-direction: column; gap: 10px;">
-                <button id="btn-historico" class="swal2-confirm swal2-styled" style="background-color: #2563eb; width: 100%; margin: 0;">📜 Ver Histórico</button>
-                <button id="btn-frequencia" class="swal2-confirm swal2-styled" style="background-color: #9333ea; width: 100%; margin: 0;">📅 Relatório Frequência</button>
-                <button id="btn-perfil" class="swal2-confirm swal2-styled" style="background-color: #4b5563; width: 100%; margin: 0;">👤 Ver Perfil</button>
-            </div>`,
-        showConfirmButton: false, showCloseButton: true,
+        html: `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button id="btn-historico" class="swal2-confirm swal2-styled" style="background-color: #2563eb; width: 100%; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    📜 Ver Histórico
+                </button>
+                <button id="btn-frequencia" class="swal2-confirm swal2-styled" style="background-color: #9333ea; width: 100%; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    📅 Relatório Frequência
+                </button>
+                <button id="btn-perfil" class="swal2-confirm swal2-styled" style="background-color: #4b5563; width: 100%; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    👤 Ver Perfil
+                </button>
+            </div>
+        `,
+        showConfirmButton: false, 
+        showCloseButton: true,
         didOpen: () => {
-            document.getElementById('btn-historico').onclick = () => Swal.clickConfirm('historico');
-            document.getElementById('btn-frequencia').onclick = () => Swal.clickConfirm('frequencia');
-            document.getElementById('btn-perfil').onclick = () => Swal.clickConfirm('perfil');
+            // --- AQUI ESTÁ A CORREÇÃO ---
+            // Ao clicar, fechamos o menu atual (Swal.close) e abrimos o próximo direto!
+            
+            document.getElementById('btn-historico').onclick = () => {
+                Swal.close(); // Fecha o menu
+                verHistoricoAluno(id, nome); // Abre o histórico
+            };
+
+            document.getElementById('btn-frequencia').onclick = () => {
+                Swal.close();
+                verFrequenciaAluno(id, nome);
+            };
+
+            document.getElementById('btn-perfil').onclick = () => {
+                Swal.close();
+                verPerfilAluno(id, nome);
+            };
         }
     });
-
-    if (acao === 'historico') {
-        Swal.fire({ title: `Histórico de ${nome}`, html: `<p>Dados de histórico...</p>`, width: 600 });
-    } else if (acao === 'frequencia') {
-        Swal.fire('Frequência', `Relatório de presença de ${nome}`, 'info');
-    } else if (acao === 'perfil') {
-        Swal.fire('Perfil', `Dados de ${nome}`, 'info');
-    }
 };
 
-// --- FUNÇÃO AUXILIAR: GERA COR ALEATÓRIA (Para cada linha) --- 
-    function gerarCorAleatoria() {
-    // Gera cores vivas (para destacar no fundo escuro)
+// --- FUNÇÕES AUXILIARES DOS SUB-MENUS ---
+
+function verHistoricoAluno(id, nome) {
+    Swal.fire({
+        title: `Histórico de ${nome}`,
+        html: `
+            <table style="width: 100%; text-align: left; font-size: 0.9rem;">
+                <tr style="border-bottom: 1px solid #eee;"><th>Atividade</th><th>Nota</th><th>Data</th></tr>
+                <tr><td>Redação</td><td><span style="color:green">100 pts</span></td><td>10/10</td></tr>
+                <tr><td>Matemática</td><td><span style="color:green">80 pts</span></td><td>12/10</td></tr>
+                <tr><td>História</td><td><span style="color:orange">Pendente</span></td><td>--</td></tr>
+            </table>
+        `,
+        width: 600,
+        confirmButtonText: 'Fechar'
+    });
+}
+
+function verFrequenciaAluno(id, nome) {
+    Swal.fire({
+        title: `Frequência de ${nome}`,
+        html: `
+            <div style="display: flex; justify-content: space-around; margin-bottom: 1rem;">
+                <div style="text-align: center;">
+                    <h3 style="color: #16a34a; margin:0;">95%</h3>
+                    <small>Presença</small>
+                </div>
+                <div style="text-align: center;">
+                    <h3 style="color: #ef4444; margin:0;">2</h3>
+                    <small>Faltas</small>
+                </div>
+            </div>
+            <p style="font-size: 0.8rem; color: #666;">*Baseado nos últimos 200 dias letivos.</p>
+        `,
+        confirmButtonText: 'Voltar'
+    });
+}
+
+function verPerfilAluno(id, nome) {
+    Swal.fire({
+        title: 'Perfil do Aluno',
+        html: `
+            <div style="text-align: left;">
+                <p><strong>Nome:</strong> ${nome}</p>
+                <p><strong>ID:</strong> ${id}</p>
+                <p><strong>Turma:</strong> 9º Ano A</p>
+                <p><strong>Responsável:</strong> (Vínculo Ativo)</p>
+                <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
+                <p><strong>Situação:</strong> <span style="color: #16a34a; font-weight: bold;">Regular</span></p>
+            </div>
+        `,
+        confirmButtonText: 'OK'
+    });
+}
+
+// --- FUNÇÃO AUXILIAR: GERA COR ALEATÓRIA NEON ---
+function gerarCorAleatoria() {
     const r = Math.floor(Math.random() * 155) + 100;
     const g = Math.floor(Math.random() * 155) + 100;
     const b = Math.floor(Math.random() * 155) + 100;
     return `rgba(${r}, ${g}, ${b}, 1)`;
 }
 
-// --- FUNÇÃO AUXILIAR: SIMULA HISTÓRICO DE CRESCIMENTO ---
-// Cria 5 pontos anteriores aleatórios que sobem até a nota final
+// --- FUNÇÃO AUXILIAR: SIMULA HISTÓRICO ---
 function gerarHistorico(notaFinal) {
     let pontos = [];
     let acumulado = 0;
-    // Gera 5 pontos progressivos
     for (let i = 0; i < 5; i++) {
-        // Incremento aleatório, subindo até 20% da nota final a cada passo
         let incremento = Math.floor(Math.random() * (notaFinal * 0.2));
         acumulado += incremento;
-        // Garante que não ultrapasse a nota final antes da hora
-        if (acumulado > notaFinal) acumulado = notaFinal - (notaFinal * 0.1); 
-        pontos.push(Math.round(acumulado));
+        if (acumulado > notaFinal) acumulado = notaFinal - 10; 
+        pontos.push(acumulado);
     }
-    pontos.push(notaFinal); // O último ponto é a nota REAL
+    pontos.push(notaFinal);
     return pontos;
 }
 
-// --- GRÁFICO MULTI-LINHAS (RANKING COMPARATIVO) ---
+// --- GRÁFICO MULTI-LINHAS ---
 function gerarGraficoProfessor(alunos) {
     const ctx = document.getElementById('graficoRankingProfessor');
     if (!ctx) return;
 
-    // Destroi a instância anterior do Chart.js, se existir
     if (window.graficoProf) window.graficoProf.destroy();
 
-    // Determinação de Tema para acessibilidade
     const isDark = document.body.classList.contains('dark-mode');
     const corTexto = isDark ? '#cbd5e1' : '#64748b';
     const corGrid = isDark ? '#334155' : '#e2e8f0';
 
-    // Limita ao Top 7 para evitar sobrecarga visual
     const topAlunos = alunos.slice(0, 7); 
 
     const datasets = topAlunos.map(aluno => {
-        const cor = gerarCorAleatoria(); // Cor aleatória para cada linha
+        const cor = gerarCorAleatoria();
         return {
-            label: aluno.nome, // Nome aparece no tooltip
+            label: aluno.nome,
             data: gerarHistorico(aluno.pontuacao_total),
             borderColor: cor,
             backgroundColor: cor,
             borderWidth: 3,
-            pointRadius: 0, // Sem bolinhas no meio da linha
-            pointHoverRadius: 6, // Bolinha aparece ao passar o mouse
-            tension: 0.4, // Curva suave
-            fill: false // Sem preenchimento sob a linha
+            pointRadius: 0,
+            tension: 0.4,
+            fill: false
         };
     });
 
     window.graficoProf = new Chart(ctx, {
         type: 'line',
         data: {
-            // Rótulos do Eixo X são os marcos temporais simulados
             labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Atual'],
             datasets: datasets
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false, // Permite interagir com várias linhas ao mesmo tempo
-            },
+            responsive: true, maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: true, // Mostra a legenda (Nome do Aluno + Cor)
-                    labels: { color: corTexto, boxWidth: 10 }
-                },
-                tooltip: {
-                    backgroundColor: isDark ? '#1e293b' : '#fff',
-                    titleColor: isDark ? '#fff' : '#1e293b',
-                    bodyColor: isDark ? '#cbd5e1' : '#64748b',
-                    borderColor: isDark ? '#334155' : '#e2e8f0',
-                    borderWidth: 1
-                }
+                legend: { display: true, labels: { color: corTexto, boxWidth: 10 } }
             },
             scales: {
-                x: {
-                    ticks: { color: corTexto },
-                    grid: { display: false }
-                },
-                y: {
-                    beginAtZero: true,
-                    ticks: { color: corTexto },
-                    grid: { color: corGrid, borderDash: [5, 5] } // Linhas pontilhadas
-                }
+                x: { ticks: { color: corTexto }, grid: { display: false } },
+                y: { ticks: { color: corTexto }, grid: { color: corGrid, borderDash: [5, 5] } }
             }
         }
     });
