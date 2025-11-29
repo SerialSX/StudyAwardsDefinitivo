@@ -75,39 +75,18 @@
             </div>
         </section>
 
-        <section class="dashboard-grid">
+       <section class="dashboard-grid">
             
             <div class="grid-card">
                 <h3>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                    Histórico de Presenças
+                    Histórico de Faltas
                 </h3>
                 
                 <div class="presence-grid">
-                    <div class="presence-item">
-                        <span class="presence-date">13/10</span>
-                        <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    </div>
-                    <div class="presence-item">
-                        <span class="presence-date">12/10</span>
-                        <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    </div>
-                    <div class="presence-item">
-                        <span class="presence-date">11/10</span>
-                        <svg class="icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </div>
-                    <div class="presence-item">
-                        <span class="presence-date">10/10</span>
-                        <svg class="icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    </div>
-                </div>
-
-                <div class="presence-bar-container">
-                    <span style="font-size: 0.875rem; color: #718096;">Taxa de Presença</span>
-                    <div class="presence-bar-bg">
-                        <div class="presence-bar-fill" style="width: 75%;"></div>
-                    </div>
-                    <span style="font-weight: 600; color: #2563eb;">75%</span>
+                    <p style="grid-column: 1/-1; text-align: center; color: #718096; font-size: 0.8rem;">
+                        Carregando...
+                    </p>
                 </div>
             </div>
 
@@ -121,7 +100,7 @@
                     <div class="goal-item">
                         <label>
                             Meta de Pontos Mensal
-                            <span id="meta-pontos-texto" class="badge badge-blue" style="background: #e3f2fd; color: #2563eb;">0 / 1500</span>
+                            <span id="meta-pontos-texto" class="badge badge-blue" style="background: #e3f2fd; color: #2563eb;">-- / 1500</span>
                         </label>
                         <div class="progress-bar-container">
                             <div id="meta-barra-progresso" class="progress-bar" style="width: 0%;"></div>
@@ -131,11 +110,8 @@
                     <div class="goal-item">
                         <label>
                             Atividades Concluídas
-                            <span class="badge badge-green" style="background: #dcfce7; color: #16a34a;">8 / 12</span>
+                            <span id="meta-atividades-texto" class="badge badge-green" style="background: #dcfce7; color: #16a34a;">--</span>
                         </label>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: 66%; background-color: #22c55e;"></div>
-                        </div>
                     </div>
                 </div>
             </div>

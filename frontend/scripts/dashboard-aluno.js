@@ -1,18 +1,14 @@
-// --- CONFIGURAÇÃO DA API (GLOBAL) ---
-// 1. Rodando no seu PC (Teste):
-// const API_URL = "http://localhost:3000"; 
+/* frontend/scripts/dashboard-aluno.js */
 
-// 2. Rodando na Vercel (Produção):
+// --- CONFIGURAÇÃO DA API (Produção Railway) ---
 const API_URL = "https://studyawardsdefinitivo-production.up.railway.app"; 
-// ------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("🚀 Dashboard Aluno: Script Iniciado");
+    console.log("🚀 Dashboard Aluno: Iniciando...");
 
-    // 1. Proteção de Rota
+    // 1. Proteção de Rota e Leitura de Dados Locais
     const usuarioLogadoString = localStorage.getItem('usuarioLogado');
     if (!usuarioLogadoString) {
-        console.warn("Usuário não logado. Redirecionando...");
         window.location.href = '../index.html';
         return;
     }
@@ -24,167 +20,168 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // 2. Carregar Dados
+    // --- CORREÇÃO IMEDIATA (VISUAL) ---
+    // Preenche o nome e ID agora mesmo, usando o que está salvo no navegador
+    // (Não espera a API responder para mostrar isso)
+    if (usuarioLogado) {
+        // Pega o primeiro nome ou usa 'Aluno' se estiver vazio
+        const primeiroNome = usuarioLogado.nome ? usuarioLogado.nome.split(' ')[0] : 'Aluno';
+        
+        // Atualiza os elementos na tela
+        const elSaudacao = document.getElementById('saudacao-aluno');
+        const elId = document.getElementById('id-aluno-display');
+        
+        if (elSaudacao) elSaudacao.textContent = `Olá, ${primeiroNome}! 👋`;
+        if (elId) elId.textContent = usuarioLogado.id;
+    }
+    // ----------------------------------
+
+    // 2. Carregar Dados Reais do Backend (Presença, Notas, Desafios)
     async function carregarDadosAluno() {
         const token = localStorage.getItem('token');
-        console.log("🔄 Buscando dados do aluno ID:", usuarioLogado.id);
-
+        
         try {
-            // USA A VARIÁVEL API_URL AQUI
-            const urlPontuacao = `${API_URL}/usuarios/${usuarioLogado.id}/pontuacao`;
-            const urlRanking = `${API_URL}/ranking`;
-            const urlDesafios = `${API_URL}/api/desafios?alunoId=${usuarioLogado.id}`;
-            
-            const [resPontos, resRank, resDesafios] = await Promise.all([
-                fetch(urlPontuacao, { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(urlRanking,   { headers: { 'Authorization': `Bearer ${token}` } }),
-                fetch(urlDesafios,  { headers: { 'Authorization': `Bearer ${token}` } })
+            // Buscamos TUDO em paralelo
+            const [resDash, resDesafios, resPontos] = await Promise.all([
+                fetch(`${API_URL}/api/dashboard/aluno`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${API_URL}/api/desafios?alunoId=${usuarioLogado.id}`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${API_URL}/usuarios/${usuarioLogado.id}/pontuacao`, { headers: { 'Authorization': `Bearer ${token}` } })
             ]);
 
-            const dadosPontuacao = await resPontos.json();
-            const dadosRanking = await resRank.json();
+            const dadosDash = await resDash.json();
             const dadosDesafios = await resDesafios.json();
+            const dadosPontos = await resPontos.json();
 
-            console.log("✅ Dados recebidos:", { pontos: dadosPontuacao, desafios: dadosDesafios });
+            // A. Atualiza Pontos (O nome e ID já foram preenchidos acima)
+            const elPontos = document.getElementById('pontuacao-valor');
+            if(elPontos) elPontos.textContent = dadosPontos.pontuacao_total || 0;
 
-            // Atualiza Topo
-            document.getElementById('pontuacao-valor').textContent = dadosPontuacao.pontuacao_total || 0;
-            document.getElementById('saudacao-aluno').textContent = `Olá, ${dadosPontuacao.nome || 'Aluno'}! 👋`;
-            
-            // Renderiza Listas
+            // B. Renderiza Presença
+            renderizarPresenca(dadosDash.historicoPresenca);
+
+            // C. Renderiza Metas
+            renderizarMetas(dadosPontos.pontuacao_total || 0, dadosDash.atividadesConcluidas || 0);
+
+            // D. Renderiza Desafios
             renderizarDesafios(dadosDesafios.desafios);
 
         } catch (error) {
-            console.error('❌ Erro ao carregar dados:', error);
+            console.error('Erro ao carregar dados:', error);
         }
     }
 
-    // 3. Renderizar Cards
-    function renderizarDesafios(desafios) {
-        const containerPendentes = document.getElementById('container-pendentes');
-        const containerRealizadas = document.getElementById('container-realizadas');
+    // --- FUNÇÕES DE DESENHO (Visual) ---
 
-        if(containerPendentes) containerPendentes.innerHTML = '';
-        if(containerRealizadas) containerRealizadas.innerHTML = '';
+    function renderizarPresenca(historico) {
+        const presenceGrid = document.querySelector('.presence-grid');
+        if (!presenceGrid) return;
+        presenceGrid.innerHTML = ''; 
 
-        // Separa as listas
-        const pendentesList = desafios.filter(d => d.status === 'pendente' || d.status === 'atrasado');
-        const realizadasList = desafios.filter(d => d.status === 'em_analise' || d.status === 'concluido');
-
-        console.log(`📊 Renderizando: ${pendentesList.length} pendentes, ${realizadasList.length} realizadas.`);
-
-        // --- PENDENTES ---
-        if (!containerPendentes || pendentesList.length === 0) {
-            if(containerPendentes) containerPendentes.innerHTML = '<p style="color: var(--text-secondary); grid-column: 1/-1;">Nenhuma atividade pendente! 🎉</p>';
-        } else {
-            pendentesList.forEach(desafio => {
-                const card = document.createElement('div');
-                card.className = 'activity-card';
-                card.style.cssText = `
-                    display: flex; flex-direction: column; gap: 1rem; padding: 1.5rem; 
-                    border-radius: 12px; background-color: var(--bg-card); border: 1px solid var(--border-color);
-                `;
+        if (historico && historico.length > 0) {
+            historico.forEach(registro => {
+                const dataObj = new Date(registro.data_aula || registro.data_falta);
+                // Ajuste de fuso horário simples
+                const dataFormatada = dataObj.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'UTC' });
                 
-                const prazo = new Date(desafio.prazo_final);
-                const atrasado = prazo < new Date() && desafio.status === 'pendente';
+                // Ícone de Falta (X Vermelho)
+                const icone = `<svg class="icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`;
 
-                card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between;">
-                        <h4 style="margin: 0; color: var(--text-primary);">${desafio.titulo}</h4>
-                        <span class="badge badge-green" style="background: var(--bg-body); color: var(--primary-color); border: 1px solid var(--border-color);">+${desafio.pontos} pts</span>
-                    </div>
-                    <p style="color: var(--text-secondary);">${desafio.descricao || 'Sem descrição.'}</p>
-                    
-                    <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                        <label style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-primary);">Anexar Foto:</label>
-                        <input type="file" id="arquivo-${desafio.aluno_desafio_id}" accept="image/*" style="width: 100%; margin-bottom: 10px;">
-                        
-                        <button onclick="enviarTarefaDireto(this, ${desafio.aluno_desafio_id})" class="btn btn-primary" style="width: 100%;">
-                            Enviar Atividade
-                        </button>
-                    </div>
-                `;
-                containerPendentes.appendChild(card);
+                const div = document.createElement('div');
+                div.className = 'presence-item';
+                div.innerHTML = `<span class="presence-date" style="color:#ef4444; font-size:0.8rem">${dataFormatada}</span>${icone}`;
+                presenceGrid.appendChild(div);
             });
+        } else {
+            presenceGrid.innerHTML = '<span style="grid-column: 1/-1; color: #16a34a; font-size: 0.9rem; text-align: center;">Nenhuma falta registrada! 🎉</span>';
+        }
+    }
+
+    function renderizarMetas(pontos, concluidas) {
+        const META = 1500;
+        const pct = Math.min((pontos / META) * 100, 100);
+        document.getElementById('meta-pontos-texto').textContent = `${pontos} / ${META}`;
+        document.getElementById('meta-barra-progresso').style.width = `${pct}%`;
+        document.getElementById('meta-atividades-texto').textContent = `${concluidas} Concluídas`;
+    }
+
+    function renderizarDesafios(lista) {
+        const pendentes = document.getElementById('container-pendentes');
+        const realizadas = document.getElementById('container-realizadas'); // Se existir no HTML
+
+        if(pendentes) pendentes.innerHTML = '';
+        if(realizadas) realizadas.innerHTML = '';
+
+        if (!lista || lista.length === 0) {
+            if(pendentes) pendentes.innerHTML = '<p style="color:gray">Nenhuma atividade.</p>';
+            return;
         }
 
-        // --- REALIZADAS ---
-        if (!containerRealizadas || realizadasList.length === 0) {
-            if(containerRealizadas) containerRealizadas.innerHTML = '<p style="color: var(--text-secondary);">Nenhuma atividade entregue.</p>';
-        } else {
-            realizadasList.forEach(desafio => {
-                const card = document.createElement('div');
-                const isConcluido = desafio.status === 'concluido';
-                const corStatus = isConcluido ? '#22c55e' : '#f59e0b';
-                
-                card.style.cssText = `
-                    padding: 1.5rem; border-radius: 12px; background-color: var(--bg-card); 
-                    border: 1px solid var(--border-color); border-left: 4px solid ${corStatus};
+        lista.forEach(d => {
+            const isConcluido = d.status === 'concluido' || d.status === 'em_analise';
+            
+            const card = document.createElement('div');
+            card.className = 'activity-card';
+            
+            if (!isConcluido) {
+                // Pendente
+                card.innerHTML = `
+                    <div><h4>${d.titulo}</h4><p>Valendo: ${d.pontos} pts</p></div>
+                    <div style="margin-top:1rem; display:flex; gap:0.5rem;">
+                        <input type="file" id="arquivo-${d.aluno_desafio_id}" style="font-size:0.8rem; width:100%">
+                        <button class="btn btn-primary btn-small" onclick="enviarTarefaDireto(this, ${d.aluno_desafio_id})">Enviar</button>
+                    </div>
                 `;
+                if(pendentes) pendentes.appendChild(card);
+            } else {
+                // Realizada
+                const corStatus = d.status === 'concluido' ? '#22c55e' : '#f59e0b';
+                const txtStatus = d.status === 'concluido' ? 'Concluído' : 'Em Análise';
+                
+                card.style.borderLeft = `4px solid ${corStatus}`;
+                card.style.padding = '1rem';
+                card.style.backgroundColor = 'var(--bg-card)'; 
 
-                // LINK DA FOTO COM API_URL
-                let linkFoto = '';
-                if (desafio.comprovante_path) {
-                    const nomeArquivo = desafio.comprovante_path.split(/[/\\]/).pop();
-                    linkFoto = `${API_URL}/uploads/${nomeArquivo}`;
+                let linkComprovante = '';
+                if(d.comprovante_path) {
+                    const nomeArquivo = d.comprovante_path.split(/[/\\]/).pop();
+                    linkComprovante = `<a href="${API_URL}/uploads/${nomeArquivo}" target="_blank" style="font-size:0.8rem; color:#2563eb; text-decoration:underline; display:block; margin-top:0.5rem;">Ver Comprovante</a>`;
                 }
 
                 card.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                        <h4 style="color: var(--text-primary); margin:0;">${desafio.titulo}</h4>
-                        <span style="font-weight:bold; color: ${corStatus}; font-size: 0.85rem;">
-                            ${isConcluido ? 'Concluído ✅' : 'Em Análise ⏳'}
-                        </span>
+                    <div style="display:flex; justify-content:space-between;">
+                        <h4>${d.titulo}</h4>
+                        <span style="color:${corStatus}; font-weight:bold; font-size:0.8rem;">${txtStatus}</span>
                     </div>
-                    ${linkFoto ? `<a href="${linkFoto}" target="_blank" style="color: var(--primary-color); font-size: 0.9rem; text-decoration: underline;">Ver Comprovante</a>` : ''}
+                    ${linkComprovante}
                 `;
-                containerRealizadas.appendChild(card);
-            });
-        }
+                
+                if(realizadas) realizadas.appendChild(card);
+            }
+        });
     }
 
     carregarDadosAluno();
 });
 
-// --- FUNÇÃO GLOBAL DE ENVIO (IMPORTANTE: TEM QUE FICAR FORA DO DOMContentLoaded) ---
+// --- FUNÇÃO GLOBAL DE ENVIO ---
 window.enviarTarefaDireto = async function(btn, id) {
+    const API_URL = "https://studyawardsdefinitivo-production.up.railway.app"; 
     const input = document.getElementById(`arquivo-${id}`);
-    
-    if(!input || !input.files[0]) {
-        Swal.fire('Atenção', 'Selecione uma imagem para enviar.', 'warning');
-        return;
-    }
-    
-    const token = localStorage.getItem('token');
+    if(!input.files[0]) { alert('Selecione um arquivo!'); return; }
+
     const formData = new FormData();
     formData.append('comprovante', input.files[0]);
+    const token = localStorage.getItem('token');
 
-    const textoOriginal = btn.innerText;
-    btn.textContent = "Enviando...";
-    btn.disabled = true;
+    btn.textContent = "..."; btn.disabled = true;
 
     try {
-        // FETCH COM API_URL
         const res = await fetch(`${API_URL}/api/desafios/completar/${id}`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData
         });
-        
-        const data = await res.json();
-        
-        if(res.ok) {
-            await Swal.fire('Enviado!', data.message || 'Atividade enviada.', 'success');
-            window.location.reload();
-        } else {
-            Swal.fire('Erro no Envio', data.erro || 'Ocorreu um erro.', 'error');
-            btn.disabled = false;
-            btn.textContent = textoOriginal;
-        }
-    } catch(err) {
-        console.error(err);
-        Swal.fire('Erro de Rede', 'Verifique sua conexão.', 'error');
-        btn.disabled = false;
-        btn.textContent = textoOriginal;
-    }
+        if(res.ok) { alert('Enviado!'); window.location.reload(); }
+        else { alert('Erro ao enviar'); btn.disabled = false; btn.textContent = "Enviar"; }
+    } catch(e) { alert('Erro de conexão'); btn.disabled = false; btn.textContent = "Enviar"; }
 };
