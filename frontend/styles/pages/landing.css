@@ -1,3 +1,5 @@
+/* frontend/styles/pages/landing.css */
+
 .main-container {
     display: flex; 
     flex-direction: column; 
@@ -8,51 +10,47 @@
     text-align: center; 
     margin: 0 auto; 
     padding: 2rem;
-    min-height: 100vh; /* Ocupa altura total da viewport */
+    min-height: 100vh;
 }
 
-.main-footer {
-    margin-top: 3rem;
-    text-align: center; /* Garantindo centralização */
+/* 1. COMPORTAMENTO PADRÃO (Modo Claro / Fundo Branco) */
+.main-header h1 { 
+    font-size: 2.75rem; 
+    font-weight: 700; 
+    /* Texto Escuro (Azul Marinho) para contrastar com o fundo Branco */
+    color: #3f4579 !important; 
+    margin-bottom: 0.5rem; 
 }
 
-/* Texto "Não tem uma conta?" */
-.main-footer {
-    margin-top: 3rem;
-    text-align: center;
+.main-header p { 
+    font-size: 1.125rem; 
+    /* Texto Cinza Escuro para leitura no branco */
+    color: #000000 !important; 
+    margin-bottom: 3rem; 
 }
 
-/* Texto de apoio: Branco com leve transparência para hierarquia */
-.main-footer p { 
-    font-size: 1rem; 
-    color: rgba(255, 255, 255, 0.9) !important; 
+/* 2. COMPORTAMENTO DARK MODE (Quando clicar na lua) */
+/* O texto vira Branco para aparecer no fundo escuro */
+body.dark-mode .main-header h1 {
+    color: #ffffff !important;
 }
 
-/* Link: Branco Puro e Grosso para chamar atenção */
-.main-footer a {
-    color: #ffffff !important; 
-    font-weight: 700;
-    text-decoration: underline; 
+body.dark-mode .main-header p {
+    color: #ffffff !important;
 }
 
-.main-footer a:hover {
-    color: #93c5fd !important; /* Azul claro no hover */
-}
+/* ---------------------------------- */
 
-
-.main-header h1 { font-size: 2.75rem; font-weight: 700; color: #2563eb; margin-bottom: 0.5rem; }
-.main-header p { font-size: 1.125rem; color: #718096; margin-bottom: 3rem; }
-
-/* Grid de Seleção de Perfis */
 .profile-selection {
     display: grid; 
-    grid-template-columns: repeat(3, 1fr); /* 3 Colunas iguais */
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem; 
     width: 100%;
-}/*PEGA PLS*/
+}
 
 .profile-card {
-    background-color: var(--bg-card) !important; 
+    /* O fundo do card já usa variável, então muda sozinho */
+    background-color: var(--bg-card); 
     
     border-radius: 16px; 
     padding: 2rem; 
@@ -65,29 +63,25 @@
     text-align: center;
 }
 
-/* Forçar a cor dos títulos dentro dos cards */
+.profile-card:hover { transform: translateY(-5px); }
+
+/* Títulos dentro dos Cards */
 .profile-card h2 { 
     font-size: 1.25rem; 
     font-weight: 700; 
-    color: #1e293b !important; /* Cinza Escuro quase preto */
+    /* Usa a cor principal do texto (Escuro no Light, Claro no Dark) */
+    color: var(--text-primary); 
     margin-bottom: 0.5rem; 
 }
 
-/* Forçar a cor do texto de descrição */
+/* Descrição dentro dos Cards */
 .profile-card p { 
     font-size: 0.875rem; 
-    color: #475569 !important; /* Cinza médio legível */
+    /* Usa a cor secundária do texto */
+    color: var(--text-secondary); 
 }
 
-/* Dark Mode Automático para os cards */
-body.dark-mode .profile-card {
-    background-color: var(--bg-card) !important; /* Vai assumir o azul escuro do tema */
-    border: 1px solid var(--border-color);
-}
-body.dark-mode .profile-card h2 { color: #e2e8f0 !important; }
-body.dark-mode .profile-card p { color: #94a3b8 !important; }
-
-/* Ícones de Perfil */
+/* Ícones */
 .profile-card .icon-container {
     width: 72px; 
     height: 72px; 
@@ -99,16 +93,63 @@ body.dark-mode .profile-card p { color: #94a3b8 !important; }
     transition: all 0.3s ease;
 }
 
-/* Tematização por Perfil */
-.profile-card.aluno .icon-container { background-color: #e3f2fd; } 
-.profile-card.professor .icon-container { background-color: #e8f5e9; } 
-.profile-card.responsavel .icon-container { background-color: #f3e5f5; } 
+/* Tematização dos Ícones */
+.profile-card.aluno .icon-container { background-color: #bae0ff; } 
+.profile-card.professor .icon-container { background-color: #b7f7b9; } 
+.profile-card.responsavel .icon-container { background-color: rgb(244, 196, 252); } 
 
 .profile-card.aluno .icon-container svg { color: #2298f8; }
 .profile-card.professor .icon-container svg { color: #51bb55; }
 .profile-card.responsavel .icon-container svg { color: #9a23af; }
 
-/* Responsividade Mobile */
+/* Rodapé */
+.main-footer {
+    margin-top: 3rem;
+    text-align: center;
+}
+
+
+
+
+/* ============= Main-footer DARK MODE ============= */
+.dark-mode .main-footer p { 
+    font-size: 1rem; 
+    color: rgba(255, 255, 255, 0.9) !important; 
+}
+
+.dark-mode .main-footer a {
+    color: #ffffff !important; 
+    font-weight: 700;
+    text-decoration: underline; 
+}
+
+.dark-mode .main-footer a:hover {
+    color: #0037af !important;
+}
+
+
+
+
+/* ============= Main-footer WHITE MODE ============= */
+ .main-footer p { 
+    font-size: 1rem; 
+    color: rgba(0, 0, 0, 0.9) !important; 
+}
+
+ .main-footer a {
+    color: #000000 !important; 
+    font-weight: 700;
+    text-decoration: underline; 
+}
+
+ .main-footer a:hover {
+    color: #0037af !important;
+}
+
+
+
+
+/* Responsividade */
 @media (max-width: 768px) {
-    .profile-selection { grid-template-columns: 1fr; } /* Pilha vertical */
+    .profile-selection { grid-template-columns: 1fr; }
 }
