@@ -1,40 +1,30 @@
+/* frontend/scripts/cadastro.js */
+
 document.addEventListener('DOMContentLoaded', () => {
-    
-    // --- CONFIGURAÇÃO DA API ---
-    // 1. Rodando no seu PC (Teste):
-    // const API_URL = "http://localhost:3000"; 
-
-    // 2. Rodando na Vercel (Produção):
+    // URL API
     const API_URL = "https://studyawardsdefinitivo-production.up.railway.app"; 
-    // (Lembre-se de conferir se este link é EXATAMENTE o que você gerou no Railway)
-
-    // ---------------------------
 
     const cadastroForm = document.getElementById('cadastro-form');
     
-    // Elementos para controle dos campos extras
+    // Elementos visuais
     const radiosTipo = document.querySelectorAll('input[name="tipo"]');
-    
     const campoAlunoContainer = document.getElementById('campo-aluno-container');
     const campoProfessorContainer = document.getElementById('campo-professor-container');
-    
     const inputAlunoId = document.getElementById('alunoId');
     const inputCodigoProf = document.getElementById('codigoProfessor');
 
-    // 1. Lógica Visual: Mostrar/Esconder campos conforme o tipo
+    // 1. Mostrar/Esconder campos
     radiosTipo.forEach(radio => {
         radio.addEventListener('change', (e) => {
             const tipo = e.target.value;
             
-            // Primeiro, esconde tudo (Reset)
+            // Reset
             if(campoAlunoContainer) campoAlunoContainer.style.display = 'none';
             if(campoProfessorContainer) campoProfessorContainer.style.display = 'none';
-            
-            // Tira a obrigatoriedade dos campos escondidos
             if(inputAlunoId) inputAlunoId.required = false;
             if(inputCodigoProf) inputCodigoProf.required = false;
 
-            // Agora mostra o específico baseado na escolha
+            // Ativa específico
             if (tipo === 'RESPONSAVEL') {
                 if(campoAlunoContainer) {
                     campoAlunoContainer.style.display = 'block';
@@ -49,38 +39,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 2. Envio do Formulário
+    // 2. Envio do Cadastro
     if (cadastroForm) {
         cadastroForm.addEventListener('submit', async (event) => {
-            event.preventDefault(); // Não recarrega a página
+            event.preventDefault();
 
-            // Feedback visual no botão
             const btnSubmit = cadastroForm.querySelector('button[type="submit"]');
             const textoOriginal = btnSubmit.innerText;
             btnSubmit.innerText = "Cadastrando...";
             btnSubmit.disabled = true;
 
-            // Pega os valores
+            // Captura dados
             const nome = document.getElementById('nome').value;
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
             const tipo = document.querySelector('input[name="tipo"]:checked').value;
-            
             const alunoId = document.getElementById('alunoId').value;
             const codigoProfessor = document.getElementById('codigoProfessor').value;
 
             const dadosCadastro = {
-                nome, 
-                email, 
-                senha, 
-                tipo,
-                // Envia ID se for Responsável, Código se for Professor
+                nome, email, senha, tipo,
                 alunoId: alunoId ? parseInt(alunoId) : null,
                 codigoProfessor: (tipo === 'PROFESSOR') ? codigoProfessor : undefined
             };
 
             try {
-                // USA A VARIÁVEL AQUI
                 const response = await fetch(`${API_URL}/api/cadastro`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -90,36 +73,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok) {
-                    // SUCESSO
                     await Swal.fire({
-                        title: 'Cadastro Realizado! 🎉',
-                        text: 'Sua conta foi criada. Você será redirecionado para o login.',
+                        title: 'Sucesso! 🎉',
+                        text: 'Conta criada. Faça login para continuar.',
                         icon: 'success',
-                        timer: 3000,
-                        timerProgressBar: true,
+                        timer: 2000,
                         showConfirmButton: false
                     });
 
-                    // Redireciona para o login correto
-                    if (tipo === 'ALUNO') window.location.href = '../pages/login-aluno.html';
-                    else if (tipo === 'PROFESSOR') window.location.href = '../pages/login-professor.html';
-                    else window.location.href = '../pages/login-responsavel.html';
+                    // --- CORREÇÃO DE CAMINHO PARA O MODAL NA RAIZ ---
+                    // Como estamos na index.html, o caminho para pages é direto "pages/..."
+                    if (tipo === 'ALUNO') window.location.href = 'pages/login-aluno.html';
+                    else if (tipo === 'PROFESSOR') window.location.href = 'pages/login-professor.html';
+                    else window.location.href = 'pages/login-responsavel.html';
 
                 } else {
-                    // ERRO
-                    Swal.fire({
-                        title: 'Atenção',
-                        text: data.erro || 'Erro ao cadastrar.',
-                        icon: 'warning',
-                        confirmButtonColor: '#d33'
-                    });
+                    Swal.fire('Erro', data.erro || 'Erro ao cadastrar.', 'warning');
                     btnSubmit.innerText = textoOriginal;
                     btnSubmit.disabled = false;
                 }
 
             } catch (error) {
                 console.error(error);
-                Swal.fire('Servidor Offline', 'Não foi possível conectar ao sistema.', 'error');
+                Swal.fire('Erro', 'Falha na conexão.', 'error');
                 btnSubmit.innerText = textoOriginal;
                 btnSubmit.disabled = false;
             }

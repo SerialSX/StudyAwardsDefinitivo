@@ -1,31 +1,132 @@
-/* Overlay: Aquele fundo escuro que bloqueia o clique atrás */
+/* frontend/styles/components/modals.css */
+
+/* =========================================
+   ESTILO DO MODAL (POP-UP)
+   ========================================= */
+
+/* 1. Overlay (Fundo borrado) */
 .modal-overlay {
-    position: fixed; /* Gruda na tela toda */
+    position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    
-    /* Centralizando o modal na marra com flexbox */
-    display: none; /* JS vai trocar isso pra flex quando abrir */
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
     justify-content: center; 
     align-items: center;
-    
-    z-index: 1000; /* Garante que fique por cima de tudo */
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 20px;
 }
 
-/* O corpo do modal */
+.modal-overlay.open {
+    display: flex;
+    opacity: 1;
+}
+
+/* 2. O Cartão do Modal (Conteúdo) */
 .modal-content {
-    background-color: #fff;
-    border-radius: 16px;
+    /* Padrão (Modo Claro): Branco */
+    background-color: #ffffff; 
+    
+    border-radius: 24px;
     padding: 2.5rem;
     width: 100%;
-    max-width: 500px; /* Trava a largura pra não ficar gigante em monitor wide */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e2e8f0;
+    
+    transform: translateY(30px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
 }
 
-.modal-content h2 { 
-    font-size: 1.5rem; 
-    font-weight: 600; 
-    color: #2d3748; 
-    margin-bottom: 2rem; 
-}/*PEGA PLS*/
+.modal-overlay.open .modal-content {
+    transform: translateY(0);
+}
+
+/* 3. Cabeçalho */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1e293b; /* Texto Escuro Padrão */
+}
+
+/* Botão Fechar */
+.btn-close-modal {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #64748b;
+    padding: 0 8px;
+    transition: color 0.2s;
+}
+
+.btn-close-modal:hover {
+    color: #2563eb;
+}
+
+/* =========================================================
+   FORÇAR MODO ESCURO (AQUI ESTÁ A CORREÇÃO DEFINITIVA)
+   ========================================================= */
+
+body.dark-mode .modal-content {
+    /* Força o fundo Azul Escuro Profundo */
+    background-color: #1e293b !important; 
+    
+    /* Borda escura para combinar */
+    border-color: #334155 !important;
+    
+    /* Sombra mais pesada */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+}
+
+body.dark-mode .modal-header {
+    border-bottom-color: #334155 !important;
+}
+
+body.dark-mode .modal-header h2 {
+    color: #f1f5f9 !important; /* Título Branco */
+}
+
+body.dark-mode .btn-close-modal {
+    color: #94a3b8 !important; /* Botão X mais claro */
+}
+
+body.dark-mode .btn-close-modal:hover {
+    color: #ffffff !important;
+}   
+
+/* Quando o corpo tiver a classe .dark-mode */
+body.dark-mode div:where(.swal2-container) h2:where(.swal2-title), 
+body.dark-mode div:where(.swal2-container) div:where(.swal2-html-container) {
+    color: #ffffff !important; /* Força texto BRANCO */
+}
+
+/* Garante que o fundo do SweetAlert também fique escuro para combinar */
+body.dark-mode div:where(.swal2-container) .swal2-popup {
+    background-color: #1e293b !important; /* Azul Escuro do Tema */
+    border: 1px solid #334155;
+}
+
+/* Corrige a cor do texto dos alunos dentro do HTML injetado no JS */
+body.dark-mode div:where(.swal2-container) strong {
+    color: #e2e8f0 !important; /* Nome do aluno em Branco Gelo */
+}

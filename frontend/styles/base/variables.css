@@ -2,24 +2,30 @@
 
 :root {
     /* =========================================
-       TEMA CLARO (LIGHT MODE)
+       TEMA CLARO (LIGHT MODE) - ALTO CONTRASTE
        ========================================= */
     
-    /* 1. FUNDO DA PÁGINA (O espaço entre os cards) */
-    --bg-body: #f3f4f6;  /* <--- EDITE AQUI (Cor do Fundo Claro) */
+    /* 1. Fundo da Página */
+    --bg-body: #ffffff; /* Branco Puro */
     --bg-gradiente: none; 
 
-    /* 2. FUNDO DOS CARDS (Os blocos brancos) */
-    --bg-card: rgb(255, 255, 255);
+    /* 2. Fundo dos Cards */
+    --bg-card: #ffffff;
     
+    /* 3. TEXTOS (A MUDANÇA ESTÁ AQUI) */
+    /* Antes era Cinza Escuro. Agora é PRETO para leitura perfeita */
+    --text-primary: #000000;   
     
-    /* Outras Variáveis do Tema Claro */
-    --text-primary: #1f2937;   /* Cinza Escuro */
-    --text-secondary: #3a3d42; /* Cinza Médio */
-    --primary-color: #2563eb;  /* Azul Principal */
+    /* Antes era Cinza Médio. Agora é um Cinza Chumbo bem forte */
+    --text-secondary: #333333; 
+    
+    /* Cores da Marca */
+    --primary-color: #2563eb;  /* Azul Royal */
     --primary-hover: #1d4ed8;
-    --border-color: #000000;
-    --shadow-color: rgba(255, 0, 0, 0.05);
+    
+    /* Bordas e Sombras (Mais fortes para destacar o branco no branco) */
+    --border-color: #cbd5e1;
+    --shadow-color: rgba(0, 0, 0, 0.1); 
 }
 
 body.dark-mode {
@@ -27,18 +33,20 @@ body.dark-mode {
        TEMA ESCURO (DARK MODE)
        ========================================= */
 
-    /* 1. FUNDO DA PÁGINA (O espaço entre os cards) */
-    --bg-body: #0f172a; /* <--- EDITE AQUI (Cor do Fundo Escuro) */
+    /* Fundo */
+    --bg-body: #0f172a; 
     --bg-gradiente: none;
 
-    /* 2. FUNDO DOS CARDS */
-    --bg-card: #0f172a; /* Cinza Azulado Escuro */
+    /* Cards */
+    --bg-card: #1e293b; 
     
-    /* Outras Variáveis do Tema Escuro */
-    --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
+    /* Textos (Branco no escuro) */
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5e1; /* Cinza claro */
+    
+    /* Cores */
     --primary-color: #60a5fa;
     --primary-hover: #3b82f6;
-    --border-color: #ff0000;
-    --shadow-color: rgba(255, 0, 0, 0.5);
+    --border-color: #334155;
+    --shadow-color: rgba(0, 0, 0, 0.5);
 }

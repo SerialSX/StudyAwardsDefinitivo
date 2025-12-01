@@ -61,6 +61,13 @@ body.dark-mode .main-header p {
     text-decoration: none; 
     cursor: default; 
     text-align: center;
+
+    /* --- CORREÇÃO DE ALINHAMENTO DO BOTÃO --- */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Isso garante que o card estique se necessário */
+    height: 100%; 
 }
 
 .profile-card:hover { transform: translateY(-5px); }
@@ -79,6 +86,13 @@ body.dark-mode .main-header p {
     font-size: 0.875rem; 
     /* Usa a cor secundária do texto */
     color: var(--text-secondary); 
+}
+
+/* --- BOTÃO ALINHADO NO FUNDO --- */
+.profile-card .btn-profile {
+    /* Empurra o botão para o final do card, alinhando todos visualmente */
+    margin-top: auto; 
+    width: 100%; /* Garante que o botão ocupe a largura */
 }
 
 /* Ícones */

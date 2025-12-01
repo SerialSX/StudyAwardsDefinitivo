@@ -3,86 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyAwards - Seleção de Perfil</title>
-    
+    <title>StudyAwards - Início</title>
     <link rel="stylesheet" href="styles/style.css">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Força bruta: Se o corpo tiver dark-mode, o modal TEM que ser escuro */
+        body.dark-mode .modal-content {
+            background-color: #1e293b !important; /* Azul Escuro */
+            border: 1px solid #334155 !important; /* Borda Cinza Azulada */
+            color: #ffffff !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7) !important;
+        }
+
+        /* Corrige o Título "Criar Conta" */
+        body.dark-mode .modal-header h2 {
+            color: #ffffff !important;
+        }
+
+        /* Corrige os Inputs dentro do modal */
+        body.dark-mode .modal-content input,
+        body.dark-mode .modal-content select {
+            background-color: #0f172a !important; /* Fundo do input bem escuro */
+            border: 1px solid #334155 !important;
+            color: #ffffff !important;
+        }
+
+        /* Corrige o texto dos labels (Nome, Email...) */
+        body.dark-mode .modal-content label {
+            color: #e2e8f0 !important;
+        }
+
+        /* Botão X de fechar */
+        body.dark-mode .btn-close-modal {
+            color: #ffffff !important;
+        }
+    </style>
+</head>
 </head>
 <body>
 
     <main class="main-container">
         <header class="main-header">
-            
-            <h1 style="color: #2563eb; font-size: 2.75rem;">StudyAwards</h1>
-            <p style="font-size: 1.125rem; color: #718096; margin-bottom: 3rem;">
-                Sistema gamificado de gestão escolar
-            </p>
+            <h1>StudyAwards</h1>
+            <p>Sistema gamificado de gestão escolar</p>
         </header>
 
         <section class="profile-selection">
-            
-            <div class="profile-card aluno" data-profile="aluno">
+            <div class="profile-card aluno">
                 <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 17a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2z"/>
-                        <path d="M3 15V9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/>
-                        <path d="M12 11V3"/>
-                        <path d="M6 3h12"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 17a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2z"/><path d="M3 15V9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M12 11V3"/><path d="M6 3h12"/></svg>
                 </div>
                 <h2>Aluno</h2>
-                <p>Visualize suas atividades, pontos e ranking</p>
-                <button class="btn btn-profile btn-aluno" data-profile="aluno">
-                    Entrar como Aluno
-                </button>
+                <p>Visualize suas atividades e ranking</p>
+                <button class="btn btn-profile btn-aluno" data-profile="aluno">Entrar como Aluno</button>
             </div>
 
-            <div class="profile-card professor" data-profile="professor">
+            <div class="profile-card professor">
                 <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 </div>
                 <h2>Professor</h2>
-                <p>Gerencie atividades e registre presenças</p>
-                <button class="btn btn-profile btn-professor" data-profile="professor">
-                    Entrar como Professor
-                </button>
+                <p>Gerencie atividades e turmas</p>
+                <button class="btn btn-profile btn-professor" data-profile="professor">Entrar como Professor</button>
             </div>
 
-            <div class="profile-card responsavel" data-profile="responsavel">
+            <div class="profile-card responsavel">
                 <div class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                         <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
-                         <circle cx="12" cy="7" r="4"/>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
                 <h2>Responsável</h2>
-                <p>Acompanhe o progresso do seu filho</p>
-                <button class="btn btn-profile btn-responsavel" data-profile="responsavel">
-                    Entrar como Responsável
-                </button>
+                <p>Acompanhe o progresso escolar</p>
+                <button class="btn btn-profile btn-responsavel" data-profile="responsavel">Entrar como Responsável</button>
             </div>
         </section>
 
-        <footer class="main-footer" style="margin-top: 3rem;">
-            <p style="font-size: 1rem; color: #4a5568;">
+        <footer class="main-footer">
+            <p>
                 Não tem uma conta? 
-                <a href="pages/cadastro.html" style="color: #2563eb; font-weight: 600; text-decoration: none;">
-                    Cadastre-se
-                </a>
+                <a href="#" id="btn-abrir-cadastro">Cadastre-se</a>
             </p>
         </footer>
-
     </main>
-    
+
+    <div id="modal-cadastro" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="margin:0;">Criar Conta</h2>
+                <button class="btn-close-modal" id="btn-fechar-cadastro">&times;</button>
+            </div>
+
+            <form id="cadastro-form" class="login-form">
+                <div class="form-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" placeholder="Digite seu nome" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="Digite seu email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" placeholder="Crie uma senha" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Eu sou:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="tipo" value="ALUNO" checked required> Aluno</label>
+                        <label><input type="radio" name="tipo" value="PROFESSOR" required> Professor</label>
+                        <label><input type="radio" name="tipo" value="RESPONSAVEL" required> Pais</label>
+                    </div>
+                </div>
+
+                <div class="form-group" id="campo-professor-container" style="display: none;">
+                    <label for="codigoProfessor" style="color: #d97706;">Código da Instituição</label>
+                    <input type="password" id="codigoProfessor" placeholder="Ex: ADMIN123">
+                </div>
+
+                <div class="form-group" id="campo-aluno-container" style="display: none;">
+                    <label for="alunoId">ID do Aluno (Filho)</label>
+                    <input type="number" id="alunoId" placeholder="ID do aluno">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+
     <script src="scripts/main.js" defer></script>
-    <script src="../scripts/theme.js"></script>
-    <script src="scripts/theme.js"></script>
+    <script src="scripts/cadastro.js" defer></script> <script src="scripts/theme.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 </html>

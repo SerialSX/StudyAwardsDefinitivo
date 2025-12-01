@@ -1,65 +1,240 @@
+/* frontend/styles/pages/auth.css */
+
+/* =========================================
+   1. CONFIGURAÇÃO GERAL
+   ========================================= */
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
 .login-form-container { 
     display: flex; 
     justify-content: center; 
+    width: 100%;
+    padding: 20px;
 }
 
+/* =========================================
+   2. TEMA CLARO (ALTO CONTRASTE)
+   ========================================= */
+body {
+    background-color: #e2e8f0; 
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.3) 0%, transparent 50%), 
+        radial-gradient(at 100% 100%, rgba(147, 51, 234, 0.2) 0%, transparent 50%);
+    background-attachment: fixed;
+}
 
 .login-card {
-    background-color: #ffffff; /* Ou var(--bg-card) se quiser tema */
-    border-radius: 16px;
-    padding: 2.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    
+    background-color: #ffffff; 
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.15), 
+        0 8px 24px -6px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 450px;
-    
-    /* --- O SEGREDO ESTÁ AQUI --- */
-    /* 1. Altura Mínima: Reserva espaço para o maior formulário (Professor) */
-    min-height: 750px; 
-    
-    /* 2. Centralização: Se o form for pequeno (Aluno), fica no meio bonito */
+    max-width: 420px;
+    border: 1px solid #cbd5e1; 
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, #2563eb, #9333ea);
+}
+
+/* TÍTULOS ESCUROS */
+.login-card h2 { 
+    font-size: 1.75rem; 
+    font-weight: 800; 
+    color: #000000 !important; /* PRETO PURO */
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.login-subtitle { 
+    font-size: 0.95rem; 
+    color: #333333 !important; /* PRETO SUAVE */
+    font-weight: 600; /* Mais grosso */
+    margin-bottom: 2.5rem; 
+    text-align: center;
+}
+
+/* LABELS (OS TÍTULOS DOS CAMPOS) */
+.form-group label {
+    font-size: 0.9rem; /* Um pouco maior */
+    font-weight: 800;  /* BEM GROSSO (BOLD) */
+    color: #000000 !important; /* PRETO PURO */
+    margin-bottom: 0.5rem;
+    margin-left: 4px;
+    display: block;
+}
+
+/* INPUTS (ONDE DIGITA) */
+.login-form input,
+.login-form select {
+    width: 100% !important;
+    height: 52px;
+    padding: 0 1.25rem;
     
-    /* 3. Suavidade: Se mudar de tamanho, anima em vez de pular */
-    transition: min-height 0.3s ease;
+    /* Borda escura */
+    border: 2px solid #64748b; 
+    background-color: #ffffff;
+    border-radius: 12px;
+    
+    font-size: 1rem;
+    font-weight: 600; /* Texto digitado mais grosso */
+    color: #000000 !important; /* Texto preto */
+    transition: all 0.2s ease;
 }
 
-/* 1. O Form ocupa tudo */
-.login-form {
-    width: 100% !important;
+/* Texto de Exemplo (Placeholder) */
+.login-form input::placeholder {
+    color: #666666 !important; /* Cinza escuro, não claro */
+    font-weight: 500;
 }
 
-/* 2. Cada grupo ocupa a largura toda, MAS respeita o JavaScript */
-.login-form .form-group {
-    width: 100% !important;
-    /* REMOVIDO: display: block !important; (Isso estava impedindo de esconder) */
+.login-form input:focus {
+    background-color: #fff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    outline: none;
 }
 
-/* 3. O Input dentro do grupo estica até a borda */
-.login-form input, 
-.login-form select,
-.login-form textarea {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box !important;
+/* =========================================
+   3. TEMA ESCURO (Dark Mode)
+   ========================================= */
+body.dark-mode {
+    background-color: #020617 !important;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.2) 0%, transparent 50%), 
+        radial-gradient(at 100% 100%, rgba(147, 51, 234, 0.2) 0%, transparent 50%) !important;
 }
-.login-card h2 { font-size: 1.5rem; font-weight: 600; color: #2d3748; margin-bottom: 0.25rem; }
-.login-subtitle { font-size: 1rem; color: #a0aec0; margin-bottom: 2rem; }
 
-/* Toast Notification (Popup de Aviso) */
-.toast-notification { 
-    position: fixed; 
-    bottom: 2rem; 
-    right: 2rem; 
-    background-color: #ffffff; 
-    color: #2d3748; 
-    padding: 1rem 1.5rem; 
-    border-radius: 8px; 
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
-    display: flex; 
-    align-items: center; 
-    gap: 0.75rem; 
-    font-weight: 500; 
-}/*PEGA PLS*/
+body.dark-mode .login-card {
+    background-color: #1e293b; 
+    border-color: #334155;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+body.dark-mode .login-card h2 { color: #ffffff !important; }
+body.dark-mode .login-subtitle { color: #cbd5e1 !important; }
+body.dark-mode .form-group label { color: #e2e8f0 !important; } /* Branco no escuro */
+
+body.dark-mode .login-form input,
+body.dark-mode .login-form select {
+    background-color: #0f172a;
+    border-color: #475569;
+    color: #ffffff !important;
+}
+
+body.dark-mode .login-form input::placeholder {
+    color: #94a3b8 !important;
+}
+
+body.dark-mode .login-form input:focus {
+    border-color: #60a5fa;
+    background-color: #1e293b;
+}
+
+/* =========================================
+   4. BOTÕES
+   ========================================= */
+.form-actions {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.btn-primary {
+    height: 54px;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: white;
+    font-weight: 700; /* Texto do botão mais grosso */
+    font-size: 1.05rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+}
+
+.btn-primary:active { transform: translateY(1px); }
+
+.btn-secondary {
+    background: transparent !important;
+    border: none !important;
+    color: #333333 !important; /* Preto suave */
+    font-size: 0.9rem;
+    font-weight: 700; /* Mais grosso */
+    height: auto;
+    padding: 0.5rem;
+    text-align: center;
+    width: 100%;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    color: #2563eb !important;
+    text-decoration: underline;
+}
+
+/* Botão voltar no escuro */
+body.dark-mode .btn-secondary { color: #94a3b8 !important; }
+body.dark-mode .btn-secondary:hover { color: #60a5fa !important; }
+
+/* Correção de Layout */
+.login-form { width: 100% !important; display: flex; flex-direction: column; gap: 1.25rem; }
+.form-group { margin-bottom: 0; width: 100%; }
+.login-card { min-height: auto; transition: none; }
+
+.login-form input[type="radio"] {
+    width: 15px !important;  /* Tamanho fixo pequeno */
+    height: 15px !important; /* Tamanho fixo pequeno */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #cbd5e1;
+    background-color: #fff;
+    cursor: pointer;
+    box-shadow: none !important; /* Tira a sombra gigante */
+}
+
+/* 2. Alinhamento correto (Lado a lado com o texto) */
+.radio-group {
+    display: flex;
+    gap: 1.5rem; /* Espaço entre as opções */
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Espaço entre bolinha e texto */
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin: 0 !important; /* Remove margem lateral do label geral */
+}
+
+/* Ajuste Dark Mode */
+body.dark-mode .login-form input[type="radio"] {
+    background-color: #1e293b;
+    border-color: #475569;
+}
