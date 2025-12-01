@@ -190,38 +190,78 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 5. Gráfico Real
-    function gerarGraficoProfessor(dadosReais) {
+
+  // --- GRÁFICO DE LINHAS (EVOLUÇÃO POR ALUNO) ---
+    function gerarGraficoProfessor(dadosRaw) {
         const ctx = document.getElementById('graficoRankingProfessor');
         if (!ctx) return;
+        
         if (window.graficoProf) window.graficoProf.destroy();
 
-        const labels = dadosReais && dadosReais.length ? dadosReais.map(d => d.mes) : ['Sem dados'];
-        const dataPoints = dadosReais && dadosReais.length ? dadosReais.map(d => d.total_pontos) : [0];
         const isDark = document.body.classList.contains('dark-mode');
         const corTexto = isDark ? '#cbd5e1' : '#64748b';
+        const corGrid = isDark ? '#334155' : '#e2e8f0';
+
+        // 1. Extrair Labels (Meses únicos)
+        // Set remove duplicatas, Array.from converte de volta para array
+        const labels = Array.from(new Set(dadosRaw.map(d => d.mes)));
+
+        // 2. Agrupar dados por Aluno
+        const alunosMap = {};
+        dadosRaw.forEach(d => {
+            if (!alunosMap[d.nome]) {
+                alunosMap[d.nome] = { label: d.nome, data: [], tension: 0.4, borderWidth: 3 };
+            }
+            // Encontra o índice do mês e coloca o valor lá
+            // (Lógica simplificada: assume ordem cronológica vinda do banco)
+            alunosMap[d.nome].data.push(parseInt(d.pontos));
+        });
+
+        // 3. Gerar Cores para cada linha (Paleta Neon/Moderna)
+        const cores = ['#2563eb', '#16a34a', '#d97706', '#9333ea', '#db2777'];
+        const datasets = Object.values(alunosMap).map((dataset, index) => {
+            const cor = cores[index % cores.length]; // Cicla as cores
+            return {
+                ...dataset,
+                borderColor: cor,
+                backgroundColor: cor,
+                pointRadius: 4,
+                fill: false
+            };
+        });
+
+        // Se não tiver dados, cria um placeholder vazio
+        if (datasets.length === 0) {
+            labels.push('Sem dados');
+            datasets.push({ label: 'Nenhuma atividade', data: [0] });
+        }
 
         window.graficoProf = new Chart(ctx, {
-            type: 'bar',
+            type: 'line', // VOLTOU PARA LINHA
             data: {
                 labels: labels,
-                datasets: [{
-                    label: 'Pontos Totais da Turma',
-                    data: dataPoints,
-                    backgroundColor: 'rgba(37, 99, 235, 0.7)',
-                    borderColor: '#2563eb',
-                    borderWidth: 1,
-                    borderRadius: 5
-                }]
+                datasets: datasets
             },
             options: {
                 responsive: true, 
                 maintainAspectRatio: false,
                 scales: {
-                    y: { beginAtZero: true, ticks: { color: corTexto } },
-                    x: { ticks: { color: corTexto }, grid: { display: false } }
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: corGrid, borderDash: [5, 5] },
+                        ticks: { color: corTexto } 
+                    },
+                    x: { 
+                        grid: { display: false },
+                        ticks: { color: corTexto } 
+                    }
                 },
-                plugins: { legend: { display: false } }
+                plugins: { 
+                    legend: { 
+                        display: true, // Legenda volta a aparecer para identificar o aluno
+                        labels: { color: corTexto, boxWidth: 12 } 
+                    } 
+                }
             }
         });
     }
