@@ -24,11 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove classe active de todos
             tabBtns.forEach(b => b.classList.remove('active'));
             tabContents.forEach(c => c.classList.remove('active'));
             
-            // Adiciona no clicado
             btn.classList.add('active');
             const tabId = btn.dataset.tab; 
             const tabContent = document.getElementById(`tab-${tabId}`);
@@ -40,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function carregarDadosProfessor() {
         const token = localStorage.getItem('token');
         try {
-            // A. Busca o Painel Geral (Resumo + Gráfico + Atividades)
+            // A. Busca o Painel Geral
             const resDash = await fetch(`${API_URL}/api/dashboard/professor`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
@@ -48,15 +46,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (resDash.ok) {
                 const dados = await resDash.json();
                 
-                // --- PREENCHE OS CARDS DO TOPO ---
+                // Cards do Topo
                 document.getElementById('total-alunos').textContent = dados.resumo.totalAlunos || 0;
                 document.getElementById('presentes-hoje').textContent = dados.resumo.presentesHoje || 0;
                 document.getElementById('atividades-ativas').textContent = dados.resumo.atividadesAtivas || 0;
 
-                // --- PREENCHE A LISTA DE ATIVIDADES RECENTES (A CORREÇÃO ESTÁ AQUI) ---
+                // Lista de Atividades
                 const listaRecentes = document.getElementById('lista-atividades-recentes');
                 if (listaRecentes) {
-                    listaRecentes.innerHTML = ''; // Limpa o "Carregando..."
+                    listaRecentes.innerHTML = ''; 
                     
                     if (!dados.atividadesRecentes || dados.atividadesRecentes.length === 0) {
                         listaRecentes.innerHTML = '<li><div style="padding:1rem; color:gray; text-align:center">Nenhuma atividade entregue recentemente.</div></li>';
@@ -81,11 +79,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
 
-                // --- GERA O GRÁFICO REAL ---
+                // Gráfico
                 gerarGraficoProfessor(dados.dadosGrafico);
             }
 
-            // B. Busca e Preenche a Tabela de Alunos (Ranking)
+            // B. Tabela de Alunos (Ranking)
             const resRanking = await fetch(`${API_URL}/ranking`, { headers: { 'Authorization': `Bearer ${token}` } });
             const dataRanking = await resRanking.json();
             preencherTabelaAlunos(dataRanking.ranking);
@@ -95,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Funções da Tabela de Alunos
+    // 4. Funções da Tabela
     function preencherTabelaAlunos(alunos) {
         const tbody = document.getElementById('tabela-alunos-body');
         if (!tbody) return;
@@ -103,8 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         alunos.forEach(aluno => {
             const tr = document.createElement('tr');
-            
-            // Estimativa de frequência baseada nas faltas
             const totalFaltas = parseInt(aluno.total_faltas || 0);
             const diasLetivos = 200; 
             const freq = Math.round(((diasLetivos - totalFaltas) / diasLetivos) * 100);
@@ -137,12 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             tbody.appendChild(tr);
         });
-        
         ativarBotoesPresenca();
     }
 
     function ativarBotoesPresenca() {
-        // Botão Falta (F)
         document.querySelectorAll('.btn-absence').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const div = e.target.closest('.presence-buttons');
@@ -173,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             })
                         });
                         Swal.fire('Registrado', 'Falta lançada.', 'success');
-                        carregarDadosProfessor(); // Atualiza os contadores
+                        carregarDadosProfessor(); 
                     } catch (err) {
                         Swal.fire('Erro', 'Falha ao registrar.', 'error');
                     }
@@ -181,46 +175,36 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Botão Presença (P) - Apenas visual
         document.querySelectorAll('.btn-presence').forEach(btn => {
             btn.addEventListener('click', () => {
                 const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
-                Toast.fire({ icon: 'success', title: 'Presença OK' });
+                Toast.fire({ icon: 'success', title: 'Presença Confirmada' });
             });
         });
     }
 
-
-  // --- GRÁFICO DE LINHAS (EVOLUÇÃO POR ALUNO) ---
+    // 5. Gráfico Real (Linhas)
     function gerarGraficoProfessor(dadosRaw) {
         const ctx = document.getElementById('graficoRankingProfessor');
         if (!ctx) return;
-        
         if (window.graficoProf) window.graficoProf.destroy();
 
         const isDark = document.body.classList.contains('dark-mode');
         const corTexto = isDark ? '#cbd5e1' : '#64748b';
         const corGrid = isDark ? '#334155' : '#e2e8f0';
 
-        // 1. Extrair Labels (Meses únicos)
-        // Set remove duplicatas, Array.from converte de volta para array
         const labels = Array.from(new Set(dadosRaw.map(d => d.mes)));
-
-        // 2. Agrupar dados por Aluno
         const alunosMap = {};
         dadosRaw.forEach(d => {
             if (!alunosMap[d.nome]) {
                 alunosMap[d.nome] = { label: d.nome, data: [], tension: 0.4, borderWidth: 3 };
             }
-            // Encontra o índice do mês e coloca o valor lá
-            // (Lógica simplificada: assume ordem cronológica vinda do banco)
             alunosMap[d.nome].data.push(parseInt(d.pontos));
         });
 
-        // 3. Gerar Cores para cada linha (Paleta Neon/Moderna)
         const cores = ['#2563eb', '#16a34a', '#d97706', '#9333ea', '#db2777'];
         const datasets = Object.values(alunosMap).map((dataset, index) => {
-            const cor = cores[index % cores.length]; // Cicla as cores
+            const cor = cores[index % cores.length];
             return {
                 ...dataset,
                 borderColor: cor,
@@ -230,69 +214,84 @@ document.addEventListener('DOMContentLoaded', () => {
             };
         });
 
-        // Se não tiver dados, cria um placeholder vazio
         if (datasets.length === 0) {
             labels.push('Sem dados');
             datasets.push({ label: 'Nenhuma atividade', data: [0] });
         }
 
         window.graficoProf = new Chart(ctx, {
-            type: 'line', // VOLTOU PARA LINHA
-            data: {
-                labels: labels,
-                datasets: datasets
-            },
+            type: 'line',
+            data: { labels, datasets },
             options: {
-                responsive: true, 
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 scales: {
-                    y: { 
-                        beginAtZero: true, 
-                        grid: { color: corGrid, borderDash: [5, 5] },
-                        ticks: { color: corTexto } 
-                    },
-                    x: { 
-                        grid: { display: false },
-                        ticks: { color: corTexto } 
-                    }
+                    y: { beginAtZero: true, grid: { color: corGrid }, ticks: { color: corTexto } },
+                    x: { grid: { display: false }, ticks: { color: corTexto } }
                 },
-                plugins: { 
-                    legend: { 
-                        display: true, // Legenda volta a aparecer para identificar o aluno
-                        labels: { color: corTexto, boxWidth: 12 } 
-                    } 
-                }
+                plugins: { legend: { display: true, labels: { color: corTexto } } }
             }
         });
     }
 
-    // 6. Ações Extras (Menu "...")
+    // ==================================================
+    // --- CORREÇÃO: MENU VISUAL DE AÇÕES (RESTAURADO) ---
+    // ==================================================
     window.abrirAcoesAluno = async (id, nome) => {
-        const { value: opcao } = await Swal.fire({
+        // Em vez de 'select', injetamos HTML com botões estilizados
+        await Swal.fire({
             title: `Gerenciar: ${nome}`,
-            input: 'select',
-            inputOptions: {
-                'historico': '📜 Ver Histórico',
-                'frequencia': '📅 Frequência',
-                'perfil': '👤 Perfil'
-            },
-            showCancelButton: true
+            html: `
+                <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                    <button id="btn-historico" class="swal2-confirm swal2-styled" style="background-color: #2563eb; width: 100%; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem;">
+                        📜 Ver Histórico
+                    </button>
+                    <button id="btn-frequencia" class="swal2-confirm swal2-styled" style="background-color: #9333ea; width: 100%; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem;">
+                        📅 Relatório Frequência
+                    </button>
+                    <button id="btn-perfil" class="swal2-confirm swal2-styled" style="background-color: #4b5563; width: 100%; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 1rem;">
+                        👤 Ver Perfil
+                    </button>
+                </div>
+            `,
+            showConfirmButton: false, // Tira o botão OK padrão
+            showCloseButton: true,
+            didOpen: () => {
+                // Adiciona os cliques manualmente aos botões criados
+                document.getElementById('btn-historico').onclick = () => {
+                    Swal.close(); // Fecha o menu
+                    verHistoricoAluno(id, nome); // Abre o próximo
+                };
+                document.getElementById('btn-frequencia').onclick = () => {
+                    Swal.close();
+                    verFrequenciaAluno(id, nome);
+                };
+                document.getElementById('btn-perfil').onclick = () => {
+                    Swal.close();
+                    verPerfilAluno(id, nome);
+                };
+            }
         });
-
-        if (opcao === 'historico') verHistoricoAluno(id, nome);
-        else if (opcao === 'frequencia') verFrequenciaAluno(id, nome);
-        else if (opcao === 'perfil') verPerfilAluno(id, nome);
     };
 
-    // Funções dos Modais (Buscam do Backend)
+    // Funções Auxiliares (Conectadas ao Backend)
     async function verFrequenciaAluno(id, nome) {
         const token = localStorage.getItem('token');
         const res = await fetch(`${API_URL}/api/dashboard/professor/aluno/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
         const f = data.frequencia;
+        
         Swal.fire({
             title: `Frequência: ${nome}`,
-            html: `<h3>${f.porcentagem}%</h3><p>✅ ${f.presencas} Presenças | ❌ ${f.faltas} Faltas</p>`
+            html: `
+                <div style="text-align:center; margin: 1rem 0;">
+                    <h2 style="color:${f.porcentagem >= 75 ? '#16a34a' : '#ef4444'}; font-size:3rem; margin:0;">${f.porcentagem}%</h2>
+                    <p style="color:gray">Presença Global</p>
+                    <hr>
+                    <p>✅ <strong>${f.presencas}</strong> Presenças</p>
+                    <p>❌ <strong>${f.faltas}</strong> Faltas</p>
+                </div>
+            `,
+            confirmButtonText: 'Voltar'
         });
     }
 
@@ -301,7 +300,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch(`${API_URL}/api/dashboard/professor/aluno/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
         const a = data.aluno;
-        Swal.fire({ title: 'Perfil', html: `<p><strong>Email:</strong> ${a.email}</p><p><strong>Pontos:</strong> ${a.pontuacao_total}</p>` });
+
+        Swal.fire({
+            title: 'Perfil do Aluno',
+            html: `
+                <div style="text-align:left">
+                    <p><strong>Nome:</strong> ${a.nome}</p>
+                    <p><strong>Email:</strong> ${a.email}</p>
+                    <p><strong>Pontuação Total:</strong> <span style="color:#eab308; font-weight:bold">${a.pontuacao_total} pts</span></p>
+                </div>
+            `,
+            confirmButtonText: 'OK'
+        });
     }
     
     async function verHistoricoAluno(id, nome) {
@@ -309,10 +319,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch(`${API_URL}/api/desafios?alunoId=${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
         
-        const lista = data.desafios.map(d => `<li>${d.titulo}: ${d.pontos}pts (${d.status})</li>`).join('');
-        Swal.fire({ title: `Histórico: ${nome}`, html: `<ul style="text-align:left">${lista || 'Sem atividades'}</ul>` });
+        let html = '<p style="color:gray; margin-top:1rem;">Nenhuma atividade registrada.</p>';
+        if (data.desafios && data.desafios.length > 0) {
+            const listItems = data.desafios.map(d => {
+                const status = d.status === 'concluido' ? '✅' : (d.status === 'pendente' ? '⏳' : '❌');
+                return `<li style="margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid #eee;">
+                    <strong>${d.titulo}</strong> <br> 
+                    <span style="font-size:0.85rem; color:gray">${d.pontos}pts - ${status}</span>
+                </li>`;
+            }).join('');
+            html = `<ul style="text-align:left; padding-left:0; list-style:none;">${listItems}</ul>`;
+        }
+        
+        Swal.fire({ 
+            title: `Histórico: ${nome}`, 
+            html: html,
+            confirmButtonText: 'Fechar'
+        });
     }
 
-    // Inicializa
     carregarDadosProfessor();
 });
