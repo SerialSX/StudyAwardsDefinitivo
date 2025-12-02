@@ -1,6 +1,6 @@
 /* Container da Tabela com Scroll e Sombra */
 .student-list-container {
-    background-color: white;
+    background-color: #1e293b;
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -23,7 +23,7 @@
 
 .custom-table th { 
     text-align: left; 
-    color: #718096; 
+    color: #ffffff; 
     font-weight: 500; 
     font-size: 0.875rem; 
     padding: 0 1rem; 
