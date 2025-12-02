@@ -33,6 +33,7 @@ exports.criarDesafio = (req, res, next) => {
     return res.status(400).json({ erro: "Título e pontos são obrigatórios." });
   }
 
+  // 1. Cria o desafio na tabela 'desafios'
   const sql = `
     INSERT INTO desafios (titulo, descricao, pontos, prazo_final, criado_por_professor_id) 
     VALUES ($1, $2, $3, $4, $5) 
@@ -42,11 +43,27 @@ exports.criarDesafio = (req, res, next) => {
   db.query(sql, [titulo, descricao, pontos, prazo_final, professorId], (err, result) => {
     if (err) { return next(err); }
 
-    res.status(201).json({
-      id: result.rows[0].id,
-      titulo: titulo,
-      pontos: pontos,
-      criado_por_professor_id: professorId
+    const novoDesafioId = result.rows[0].id;
+
+    // 2. CORREÇÃO CRÍTICA: Distribui imediatamente para todos os alunos
+    // Usa a função do model que faz o INSERT INTO ... SELECT
+    desafioModel.atribuirParaTodosAlunos(novoDesafioId, (errAtrib, resAtrib) => {
+        if (errAtrib) {
+            console.error("Erro ao atribuir desafio:", errAtrib);
+            // Mesmo com erro na atribuição, o desafio foi criado. Avisamos o front.
+            return res.status(201).json({ 
+                message: "Atenção: Desafio criado, mas houve erro ao distribuir para a turma.",
+                id: novoDesafioId
+            });
+        }
+
+        // Sucesso total
+        res.status(201).json({
+            id: novoDesafioId,
+            titulo: titulo,
+            pontos: pontos,
+            message: "Atividade criada e enviada para todos os alunos!"
+        });
     });
   });
 };

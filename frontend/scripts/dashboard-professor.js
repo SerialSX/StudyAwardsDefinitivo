@@ -18,6 +18,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- LÓGICA PARA CRIAR NOVA ATIVIDADE (IDs Corrigidos) ---
+    const formCriar = document.getElementById('form-criar-desafio-aba');
+
+    if (formCriar) {
+        formCriar.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Impede a página de recarregar
+            
+            // Pegando os valores pelos IDs corretos do seu HTML
+            const titulo = document.getElementById('aba-titulo').value;
+            const descricao = document.getElementById('aba-descricao').value;
+            const pontos = document.getElementById('aba-pontos').value;
+            const prazo = document.getElementById('aba-prazo').value;
+            
+            const token = localStorage.getItem('token');
+
+            // Feedback visual imediato (Opcional, mas bom para UX)
+            const btnSubmit = formCriar.querySelector('button[type="submit"]');
+            const textoOriginal = btnSubmit.innerText;
+            btnSubmit.innerText = "Enviando...";
+            btnSubmit.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/api/desafios`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        titulo, 
+                        descricao, 
+                        pontos: parseInt(pontos), 
+                        prazo_final: prazo 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    Swal.fire('Sucesso!', data.message || 'Atividade enviada para a turma.', 'success');
+                    formCriar.reset(); // Limpa os campos
+                    carregarDadosProfessor(); // Atualiza a lista de recentes
+                } else {
+                    Swal.fire('Erro', data.erro || 'Falha ao criar atividade', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                Swal.fire('Erro', 'Erro de conexão com o servidor.', 'error');
+            } finally {
+                // Restaura o botão
+                btnSubmit.innerText = textoOriginal;
+                btnSubmit.disabled = false;
+            }
+        });
+    } else {
+        console.error("ERRO: Formulário 'form-criar-desafio-aba' não encontrado no HTML.");
+    }
+
     async function carregarDadosProfessor() {
         const token = localStorage.getItem('token');
         try {
