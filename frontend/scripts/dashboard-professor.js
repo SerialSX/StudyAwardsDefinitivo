@@ -225,5 +225,114 @@ document.addEventListener('DOMContentLoaded', () => {
         Swal.fire({ title: `Histórico: ${nome}`, html: html, confirmButtonText: 'Fechar' });
     }
 
+    // --- FUNÇÃO DE CORREÇÃO (Adicione isto ao final do seu arquivo) ---
+
+    async function carregarCorrecoes() {
+        const listaCorrecoes = document.getElementById('lista-correcoes');
+        if (!listaCorrecoes) return;
+
+        const token = localStorage.getItem('token');
+
+        try {
+            // Busca as tarefas pendentes na rota que já existe no seu backend
+            const response = await fetch(`${API_URL}/api/desafios/pendentes`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            const data = await response.json();
+
+            // Limpa o texto "Carregando..."
+            listaCorrecoes.innerHTML = ''; 
+
+            if (data.entregas && data.entregas.length > 0) {
+                
+                data.entregas.forEach(entrega => {
+                    // Cria o card visual da entrega
+                    const div = document.createElement('div');
+                    // Estilo inline básico para garantir que fique bonito mesmo sem CSS extra
+                    div.style.cssText = "background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;";
+                    
+                    div.innerHTML = `
+                        <div>
+                            <h4 style="margin: 0; color: #1e293b; font-size: 0.95rem;">${entrega.titulo_desafio}</h4>
+                            <p style="margin: 4px 0 0; font-size: 0.85rem; color: #64748b;">
+                                Aluno: <strong>${entrega.nome_aluno}</strong>
+                            </p>
+                            ${entrega.comprovante_path ? 
+                                `<a href="${API_URL}/${entrega.comprovante_path}" target="_blank" style="display:inline-block; margin-top:5px; font-size: 0.8rem; color: #2563eb; text-decoration: underline;">📎 Ver Comprovante/Foto</a>` 
+                                : '<span style="font-size:0.8rem; color:gray; display:block; margin-top:5px;">Sem anexo</span>'}
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-acao btn-aprovar" data-id="${entrega.aluno_desafio_id}" style="background: #22c55e; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight:500; font-size:0.8rem;">✅ Aprovar</button>
+                            <button class="btn-acao btn-rejeitar" data-id="${entrega.aluno_desafio_id}" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight:500; font-size:0.8rem;">❌ Rejeitar</button>
+                        </div>
+                    `;
+                    listaCorrecoes.appendChild(div);
+                });
+
+                // Ativa os cliques dos botões que acabamos de criar
+                configurarBotoesAvaliacao();
+
+            } else {
+                listaCorrecoes.innerHTML = '<div style="text-align:center; padding: 2rem; color: #94a3b8;">✅ Tudo limpo! Nenhuma tarefa pendente.</div>';
+            }
+        } catch (error) {
+            console.error("Erro ao carregar correções:", error);
+            listaCorrecoes.innerHTML = '<p style="color: #ef4444; text-align: center;">Erro ao carregar tarefas.</p>';
+        }
+    }
+
+    function configurarBotoesAvaliacao() {
+        // Remove listeners antigos para evitar duplicação e adiciona novos
+        const botoes = document.querySelectorAll('.btn-acao');
+        botoes.forEach(btn => {
+            btn.onclick = async (e) => {
+                const id = e.target.dataset.id;
+                const aprovado = e.target.classList.contains('btn-aprovar');
+                
+                // Pergunta de confirmação
+                const confirmacao = await Swal.fire({
+                    title: aprovado ? 'Aprovar tarefa?' : 'Rejeitar tarefa?',
+                    text: aprovado ? "O aluno receberá os pontos imediatamente." : "A tarefa voltará para o aluno refazer.",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: aprovado ? '#22c55e' : '#ef4444',
+                    confirmButtonText: aprovado ? 'Sim, aprovar!' : 'Rejeitar'
+                });
+
+                if (confirmacao.isConfirmed) {
+                    enviarAvaliacao(id, aprovado);
+                }
+            };
+        });
+    }
+
+    async function enviarAvaliacao(id, aprovado) {
+        const token = localStorage.getItem('token');
+        try {
+            // Chama a rota de avaliação do seu backend
+            const res = await fetch(`${API_URL}/api/desafios/avaliar/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ aprovado })
+            });
+
+            if (res.ok) {
+                Swal.fire('Feito!', aprovado ? 'Tarefa aprovada!' : 'Tarefa rejeitada.', 'success');
+                carregarCorrecoes(); // Recarrega a lista para sumir com o item
+                carregarDadosProfessor(); // Atualiza os gráficos/resumo lá em cima
+            } else {
+                Swal.fire('Erro', 'Não foi possível completar a ação.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            Swal.fire('Erro', 'Erro de conexão.', 'error');
+        }
+    }
+
     carregarDadosProfessor();
+    carregarCorrecoes();
 });
