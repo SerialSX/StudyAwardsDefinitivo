@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
                         Swal.fire('Registrado', 'Falta lançada.', 'success');
                         
-                        // CRUCIAL: Atualiza a tela
+                        // Atualiza a tela
                         carregarDadosProfessor(); 
                     } catch (err) { 
                         Swal.fire('Erro', 'Falha ao registrar.', 'error'); 
@@ -214,8 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
                             Toast.fire({ icon: 'success', title: '+5 Pontos Enviados!' });
                             
-                            // 3. CRUCIAL (O QUE VOCÊ QUERIA MANTER): 
-                            // Atualiza os dados da tela (incluindo a frequência)
+                            // Atualiza os dados da tela 
                             carregarDadosProfessor(); 
                         }
                     } catch (err) {
