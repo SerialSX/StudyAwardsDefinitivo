@@ -1,8 +1,5 @@
-/* frontend/styles/components/tables.css */
 
-/* Container da Tabela */
 .student-list-container {
-    /* CORREÇÃO 1: Usar variável em vez de 'white' */
     background-color: var(--bg-card) !important; 
     
     border-radius: 16px;
@@ -39,10 +36,10 @@
 }
 
 .custom-table td {
-    /* CORREÇÃO 2: Fundo da linha deve seguir o card */
+    /*  Fundo da linha deve seguir o card */
     background-color: var(--bg-card) !important;
     
-    /* CORREÇÃO 3: Cor do texto */
+    /*  Cor do texto */
     color: var(--text-primary) !important;
     
     padding: 1rem;
