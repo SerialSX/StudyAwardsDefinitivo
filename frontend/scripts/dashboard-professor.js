@@ -138,23 +138,79 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function ativarBotoesPresenca() {
+        // --- BOTÃO DE FALTA (VERMELHO) ---
         document.querySelectorAll('.btn-absence').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const div = e.target.closest('.presence-buttons');
                 const alunoId = div.dataset.alunoId;
                 const nomeAluno = div.dataset.alunoNome;
                 const token = localStorage.getItem('token');
-                const { value: motivo } = await Swal.fire({ title: `Registrar Falta: ${nomeAluno}`, input: 'text', inputPlaceholder: 'Motivo', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Registrar' });
-                if (motivo) {
+                
+                // Pergunta o motivo
+                const { value: motivo } = await Swal.fire({ 
+                    title: `Registrar Falta: ${nomeAluno}`, 
+                    input: 'text', 
+                    inputPlaceholder: 'Motivo da falta (Opcional)', 
+                    showCancelButton: true, 
+                    confirmButtonColor: '#d33', 
+                    confirmButtonText: 'Registrar Falta' 
+                });
+
+                if (motivo !== undefined) { // Se não cancelou
                     try {
-                        await fetch(`${API_URL}/registrar-falta`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ alunoId, dataFalta: new Date().toISOString(), professorId: usuarioLogado.id, pontosDeduzidos: 10, motivo }) });
-                        Swal.fire('Sucesso', 'Falta registrada.', 'success');
-                        carregarDadosProfessor();
-                    } catch (err) { Swal.fire('Erro', 'Falha ao registrar.', 'error'); }
+                        // Chama o backend para registrar falta
+                        await fetch(`${API_URL}/registrar-falta`, { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                            body: JSON.stringify({ 
+                                alunoId, 
+                                dataFalta: new Date().toISOString(), 
+                                pontosDeduzidos: 10, 
+                                motivo: motivo || "Não justificado"
+                            }) 
+                        });
+                        
+                        Swal.fire('Registrado', 'Falta lançada com sucesso.', 'success');
+                        
+                        // CRUCIAL: Atualiza os números da tela (Frequência Hoje)
+                        carregarDadosProfessor(); 
+                        
+                    } catch (err) { 
+                        Swal.fire('Erro', 'Falha ao registrar falta.', 'error'); 
+                    }
                 }
             });
         });
-        document.querySelectorAll('.btn-presence').forEach(btn => { btn.addEventListener('click', () => { const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 }); Toast.fire({ icon: 'success', title: 'Presença Confirmada' }); }); });
+
+        // --- BOTÃO DE PRESENÇA (VERDE) ---
+        document.querySelectorAll('.btn-presence').forEach(btn => { 
+            btn.addEventListener('click', async (e) => { 
+                const div = e.target.closest('.presence-buttons');
+                const alunoId = div.dataset.alunoId;
+                const token = localStorage.getItem('token');
+
+                try {
+                    // Opcional: Se seu sistema permite "retirar falta" (Caso tenha marcado errado)
+                    // Descomente e ajuste a rota abaixo se tiver backend para isso:
+                    /*
+                    await fetch(`${API_URL}/remover-falta`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ alunoId, data: new Date().toISOString() })
+                    });
+                    */
+
+                    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 }); 
+                    Toast.fire({ icon: 'success', title: 'Presença Confirmada' }); 
+                    
+                    // CRUCIAL: Recarrega os dados para atualizar a porcentagem "Frequência Hoje"
+                    carregarDadosProfessor();
+
+                } catch (err) {
+                    console.error(err);
+                }
+            }); 
+        });
     }
 
     function gerarGraficoProfessor(dadosRaw) {
@@ -331,6 +387,27 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(err);
             Swal.fire('Erro', 'Erro de conexão.', 'error');
         }
+    }
+
+    // --- LÓGICA DE PESQUISA (FILTRO) ---
+    const inputFiltro = document.getElementById('filtro-aluno');
+    if (inputFiltro) {
+        inputFiltro.addEventListener('input', (e) => {
+            const termo = e.target.value.toLowerCase();
+            const linhas = document.querySelectorAll('#tabela-alunos-body tr');
+
+            linhas.forEach(linha => {
+                // Pega o texto da primeira coluna (Nome do Aluno)
+                const nomeAluno = linha.querySelector('td:first-child').textContent.toLowerCase();
+                
+                // Se o nome incluir o termo digitado, mostra. Se não, esconde.
+                if (nomeAluno.includes(termo)) {
+                    linha.style.display = '';
+                } else {
+                    linha.style.display = 'none';
+                }
+            });
+        });
     }
 
     carregarDadosProfessor();
