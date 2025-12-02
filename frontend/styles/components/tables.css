@@ -1,9 +1,14 @@
-/* Container da Tabela com Scroll e Sombra */
+/* frontend/styles/components/tables.css */
+
+/* Container da Tabela */
 .student-list-container {
-    background-color: #1e293b;
+    /* CORREÇÃO 1: Usar variável em vez de 'white' */
+    background-color: var(--bg-card) !important; 
+    
     border-radius: 16px;
     padding: 2rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color); /* Garante a borda do tema */
 }
 
 .section-header { 
@@ -13,47 +18,55 @@
     margin-bottom: 1.5rem; 
 }
 
-/* Tabela Customizada (Espaçamento entre linhas) */
+/* Título da Seção */
+.section-header h3 {
+    color: var(--text-primary) !important; /* Garante texto certo */
+}
+
+/* Tabela Customizada */
 .custom-table {
     width: 100%;
-    /* Separate permite espaçamento entre as células/linhas */
     border-collapse: separate; 
     border-spacing: 0 1rem; 
 }
 
 .custom-table th { 
     text-align: left; 
-    color: #ffffff; 
+    color: var(--text-secondary); /* Cinza no claro, claro no escuro */
     font-weight: 500; 
     font-size: 0.875rem; 
     padding: 0 1rem; 
 }
 
 .custom-table td {
-    background-color: #ffffff;
+    /* CORREÇÃO 2: Fundo da linha deve seguir o card */
+    background-color: var(--bg-card) !important;
+    
+    /* CORREÇÃO 3: Cor do texto */
+    color: var(--text-primary) !important;
+    
     padding: 1rem;
-    /* Bordas apenas em cima e embaixo para criar efeito de "card" na linha */
-    border-top: 1px solid #f7fafc;
-    border-bottom: 1px solid #f7fafc;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     vertical-align: middle;
 }
 
-/* Arredondamento das pontas da linha (Row Radius) */
+/* Arredondamento e Bordas Laterais */
 .custom-table tr td:first-child { 
-    border-left: 1px solid #f7fafc; 
+    border-left: 1px solid var(--border-color); 
     border-top-left-radius: 12px; 
     border-bottom-left-radius: 12px; 
 }
 .custom-table tr td:last-child { 
-    border-right: 1px solid #f7fafc; 
+    border-right: 1px solid var(--border-color); 
     border-top-right-radius: 12px; 
     border-bottom-right-radius: 12px; 
 }
 
-/* Botão de Ação Rápida (Ícone) */
+/* Botão de Ação Rápida (Ícone ...) */
 .btn-icon {
-    background: #f7fafc; 
-    border: 1px solid #e2e8f0;
+    background: transparent; 
+    border: 1px solid var(--border-color);
     width: 36px; 
     height: 36px;
     border-radius: 8px; 
@@ -62,8 +75,10 @@
     align-items: center; 
     justify-content: center;
     transition: all 0.2s;
+    color: var(--text-secondary); /* Ícone visível */
 }
 .btn-icon:hover { 
-    background: #e2e8f0; 
-    border-color: #cbd5e0; 
-}/*PEGA PLS*/
+    background: var(--bg-body); 
+    color: var(--primary-color);
+    border-color: var(--primary-color); 
+}
