@@ -29,6 +29,14 @@ exports.registrarFalta = (req, res, next) => {
     });
   });
 };
+exports.registrarPresenca = (req, res, next) => {
+    const { alunoId, pontosGanhos } = req.body;
+    // Apenas dá os pontos de bônus
+    usuarioModel.updatePontuacaoById(alunoId, pontosGanhos, (err, changes) => {
+        if (err) return next(err);
+        res.json({ message: `Presença confirmada! +${pontosGanhos} pontos.` });
+    });
+};
 
 exports.verificarAtrasos = (req, res, next) => {
   penalidadeModel.findTarefasAtrasadas((err, rows) => {

@@ -138,78 +138,91 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function ativarBotoesPresenca() {
-        // --- BOTÃO DE FALTA (VERMELHO) ---
+        // --- BOTÃO FALTA (Vermelho) ---
         document.querySelectorAll('.btn-absence').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const div = e.target.closest('.presence-buttons');
                 const alunoId = div.dataset.alunoId;
                 const nomeAluno = div.dataset.alunoNome;
                 const token = localStorage.getItem('token');
-                
-                // Pergunta o motivo
-                const { value: motivo } = await Swal.fire({ 
-                    title: `Registrar Falta: ${nomeAluno}`, 
-                    input: 'text', 
-                    inputPlaceholder: 'Motivo da falta (Opcional)', 
-                    showCancelButton: true, 
-                    confirmButtonColor: '#d33', 
-                    confirmButtonText: 'Registrar Falta' 
+
+                const { value: motivo } = await Swal.fire({
+                    title: `Registrar Falta: ${nomeAluno}`,
+                    input: 'text',
+                    inputPlaceholder: 'Motivo (Ex: Atraso)',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Registrar (-10 pts)'
                 });
 
-                if (motivo !== undefined) { // Se não cancelou
+                if (motivo) {
                     try {
-                        // Chama o backend para registrar falta
-                        await fetch(`${API_URL}/registrar-falta`, { 
-                            method: 'POST', 
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, 
+                        await fetch(`${API_URL}/registrar-falta`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                             body: JSON.stringify({ 
                                 alunoId, 
                                 dataFalta: new Date().toISOString(), 
+                                professorId: usuarioLogado.id, 
                                 pontosDeduzidos: 10, 
-                                motivo: motivo || "Não justificado"
-                            }) 
+                                motivo 
+                            })
                         });
+                        Swal.fire('Registrado', 'Falta lançada.', 'success');
                         
-                        Swal.fire('Registrado', 'Falta lançada com sucesso.', 'success');
-                        
-                        // CRUCIAL: Atualiza os números da tela (Frequência Hoje)
+                        // CRUCIAL: Atualiza a tela
                         carregarDadosProfessor(); 
-                        
                     } catch (err) { 
-                        Swal.fire('Erro', 'Falha ao registrar falta.', 'error'); 
+                        Swal.fire('Erro', 'Falha ao registrar.', 'error'); 
                     }
                 }
             });
         });
 
-        // --- BOTÃO DE PRESENÇA (VERDE) ---
-        document.querySelectorAll('.btn-presence').forEach(btn => { 
-            btn.addEventListener('click', async (e) => { 
+        // --- BOTÃO PRESENÇA (Verde) - DAR PONTOS ---
+        document.querySelectorAll('.btn-presence').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
                 const div = e.target.closest('.presence-buttons');
                 const alunoId = div.dataset.alunoId;
+                const nomeAluno = div.dataset.alunoNome;
                 const token = localStorage.getItem('token');
 
-                try {
-                    // Opcional: Se seu sistema permite "retirar falta" (Caso tenha marcado errado)
-                    // Descomente e ajuste a rota abaixo se tiver backend para isso:
-                    /*
-                    await fetch(`${API_URL}/remover-falta`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                        body: JSON.stringify({ alunoId, data: new Date().toISOString() })
-                    });
-                    */
+                // Confirmação rápida
+                const result = await Swal.fire({
+                    title: `Confirmar Presença`,
+                    text: `Dar 5 pontos para ${nomeAluno}?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#22c55e',
+                    confirmButtonText: 'Sim (+5 pts)'
+                });
 
-                    const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 }); 
-                    Toast.fire({ icon: 'success', title: 'Presença Confirmada' }); 
-                    
-                    // CRUCIAL: Recarrega os dados para atualizar a porcentagem "Frequência Hoje"
-                    carregarDadosProfessor();
-
-                } catch (err) {
-                    console.error(err);
+                if (result.isConfirmed) {
+                    try {
+                        // 1. Chama o Backend para dar pontos
+                        const res = await fetch(`${API_URL}/registrar-presenca`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                            body: JSON.stringify({ 
+                                alunoId, 
+                                pontosGanhos: 5 
+                            })
+                        });
+                        
+                        if(res.ok) {
+                            // 2. Mostra sucesso visual
+                            const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+                            Toast.fire({ icon: 'success', title: '+5 Pontos Enviados!' });
+                            
+                            // 3. CRUCIAL (O QUE VOCÊ QUERIA MANTER): 
+                            // Atualiza os dados da tela (incluindo a frequência)
+                            carregarDadosProfessor(); 
+                        }
+                    } catch (err) {
+                        console.error(err);
+                    }
                 }
-            }); 
+            });
         });
     }
 
