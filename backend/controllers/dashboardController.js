@@ -7,14 +7,12 @@ exports.getDashboardProfessor = async (req, res, next) => {
         const hoje = new Date().toISOString().split('T')[0]; 
         
         // 1. Resumo (Cards do Topo)
-        const sqlResumo = `
+       const sqlResumo = `
             SELECT 
                 (SELECT COUNT(*) FROM usuarios WHERE tipo = 'ALUNO') as total_alunos,
-                -- CORREÇÃO: Conta faltas na tabela certa (frequencia)
                 (SELECT COUNT(*) FROM frequencia WHERE data_falta::text LIKE $1) as total_faltas_hoje,
                 (SELECT COUNT(*) FROM desafios WHERE CAST(prazo_final AS DATE) >= CURRENT_DATE) as atividades_ativas
         `;
-        
         // 2. Atividades Recentes
         const sqlRecentes = `
             SELECT u.nome as nome_aluno, d.titulo, ad.status, ad.data_conclusao
@@ -46,9 +44,8 @@ exports.getDashboardProfessor = async (req, res, next) => {
 
         const totalAlunos = parseInt(resResumo.rows[0].total_alunos || 0);
         const faltasHoje = parseInt(resResumo.rows[0].total_faltas_hoje || 0);
-        const presentesHoje = Math.max(0, totalAlunos - faltasHoje);
         
-        // Cálculo da Frequência DIÁRIA da Turma
+        const presentesHoje = Math.max(0, totalAlunos - faltasHoje);
         const freqPercent = totalAlunos > 0 ? Math.round((presentesHoje / totalAlunos) * 100) : 0;
 
         res.json({
@@ -56,7 +53,7 @@ exports.getDashboardProfessor = async (req, res, next) => {
                 totalAlunos: totalAlunos,
                 presentesHoje: presentesHoje,
                 atividadesAtivas: parseInt(resResumo.rows[0].atividades_ativas || 0),
-                frequencia: freqPercent
+                frequencia: freqPercent // Envia a % calculada 
             },
             atividadesRecentes: resRecentes.rows,
             dadosGrafico: resGrafico.rows
@@ -66,7 +63,6 @@ exports.getDashboardProfessor = async (req, res, next) => {
         next(err);
     }
 };
-
 // --- DASHBOARD ALUNO ---
 exports.getDashboardAluno = (req, res, next) => {
     const alunoId = req.usuario.id;
