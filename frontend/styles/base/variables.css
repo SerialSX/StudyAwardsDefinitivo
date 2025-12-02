@@ -1,9 +1,9 @@
 /* frontend/styles/base/variables.css */
 
 :root {
-    /* =========================================
-       TEMA CLARO (LIGHT MODE) - ALTO CONTRASTE
-       ========================================= */
+    /* 
+       TEMA CLARO 
+       */
     
     /* 1. Fundo da Página */
     --bg-body: #ffffff; /* Branco Puro */
@@ -12,7 +12,6 @@
     /* 2. Fundo dos Cards */
     --bg-card: #ffffff;
     
-    /* 3. TEXTOS (A MUDANÇA ESTÁ AQUI) */
     /* Antes era Cinza Escuro. Agora é PRETO para leitura perfeita */
     --text-primary: #000000;   
     
@@ -29,9 +28,9 @@
 }
 
 body.dark-mode {
-    /* =========================================
-       TEMA ESCURO (DARK MODE)
-       ========================================= */
+    /* 
+       TEMA ESCURO 
+     */
 
     /* Fundo */
     --bg-body: #0f172a; 

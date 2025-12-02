@@ -82,7 +82,7 @@
     display: flex; 
     justify-content: space-between; 
     align-items: center; 
-    background-color: var(--bg-card) !important; 
+    background-color: color #334155; 
     border: 1px solid var(--border-color) !important;
     color: var(--text-primary) !important;
     
